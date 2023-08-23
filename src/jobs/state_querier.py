@@ -17,6 +17,20 @@ class StateQuerier:
         self._w3.middleware_onion.inject(geth_poa_middleware, layer=0)
         self.client_querier = ClientQuerier(provider_url=provider_uri)
 
+    @staticmethod
+    def get_function_info(address: str, abi: list, fn_name: str, fn_paras=None, block_number: int = 'latest'):
+        if fn_paras is None:
+            fn_paras = []
+        data = {
+            "address": address,
+            "abi": abi,
+            "function": fn_name,
+            "params": fn_paras,
+            "block_number": block_number
+        }
+
+        return data
+
     def query_state_data(self, queries: dict, batch_size: int = 100, workers: int = 5):
         """
         Args:
@@ -69,7 +83,7 @@ class StateQuerier:
             for item in fn_paras:
                 if self._w3.isAddress(item):
                     item = self._w3.toChecksumAddress(item)
-                args = [item]
+                args.append(item)
 
         data_call = encode_eth_call_data(abi=abi, fn_name=fn_name, args=args)
         eth_call = EthCall(to=self._w3.toChecksumAddress(contract_address), block_number=block_number, data=data_call,

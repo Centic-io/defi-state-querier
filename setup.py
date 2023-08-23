@@ -2,7 +2,7 @@ import re
 
 import setuptools
 
-with open("src/defi_services/__init__.py", "rt", encoding="utf8") as f:
+with open("src/services/__init__.py", "rt", encoding="utf8") as f:
     version = re.search(r"__version__ = \"(.*?)\"", f.read()).group(1)
 
 with open('README.md', 'r', encoding='utf-8') as f:
