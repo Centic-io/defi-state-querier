@@ -1,3 +1,5 @@
 web3==5.31.1
 QueryStateLib==1.1.4
 pycoingecko==2.2.0
+python-dotenv==0.21.0
+pymongo==4.3.3

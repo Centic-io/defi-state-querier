@@ -17,6 +17,9 @@ class StateQuerier:
         self._w3.middleware_onion.inject(geth_poa_middleware, layer=0)
         self.client_querier = ClientQuerier(provider_url=provider_uri)
 
+    def get_w3(self):
+        return self._w3
+
     @staticmethod
     def get_function_info(address: str, abi: list, fn_name: str, fn_paras=None, block_number: int = 'latest'):
         if fn_paras is None:
@@ -101,7 +104,7 @@ class StateQuerier:
                 logger.error(f"An exception when decode data from provider: {e}")
                 raise
 
-            if len(decoded_data) == 1:
+            if len(decoded_datum) == 1:
                 decoded_data[call_id] = decoded_datum[0]
             else:
                 decoded_data[call_id] = decoded_datum
