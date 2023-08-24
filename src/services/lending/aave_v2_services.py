@@ -1,5 +1,4 @@
 from web3 import Web3
-
 from abis.lending.aave_v2_and_forlks.aave_v2_incentives_abi import AAVE_V2_INCENTIVES_ABI
 from abis.lending.aave_v2_and_forlks.lending_pool_abi import LENDING_POOL_ABI
 from abis.lending.aave_v2_and_forlks.oracle_abi import ORACLE_ABI
@@ -432,6 +431,7 @@ class AaveV2StateService(ProtocolServices):
                 "deposit_amount_in_usd": deposit_amount_in_usd,
             }
         return result
+
 
 if __name__ == "__main__":
     provider_uri = "https://rpc.ankr.com/eth"

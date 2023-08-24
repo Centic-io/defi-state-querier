@@ -1,4 +1,9 @@
 class ProtocolServices:
+
+    def get_dapp_asset_info(self, block_number: int = 'latest'):
+        #Get asset information of protocol
+        pass
+
     def get_function_info(
             self,
             query_types: list,
@@ -22,9 +27,5 @@ class ProtocolServices:
 
     def get_token_list(self):
         # Get necessary tokens
-        pass
-
-    def get_token_prices(self, tokens):
-        # Get token prices
         pass
 
