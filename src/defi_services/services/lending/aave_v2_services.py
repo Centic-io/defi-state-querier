@@ -25,7 +25,6 @@ class AaveInfo:
         Chain.polygon: AAVE_V2_POLYGON,
     }
 
-
 class AaveV2StateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
         self.name = f"{chain_id}_aave_v2"
@@ -35,6 +34,15 @@ class AaveV2StateService(ProtocolServices):
         self.incentive_abi = AAVE_V2_INCENTIVES_ABI
         self.oracle_abi = ORACLE_ABI
         self.state_service = state_service
+
+    def get_service_info(self):
+        info = {
+            "aave-v2": {
+                "chain_id": self.chain_id,
+                "type": "lending"
+            }
+        }
+        return info
 
     def get_dapp_asset_info(self, block_number: int = 'latest'):
         begin = time.time()
