@@ -21,5 +21,6 @@ queries = [
         "query_type": "protocol_reward"
     },
 ]
+info = job.get_service_info()
 data = job.run('0xfe2e023bba664757aaf6b72f9b6a8cfc3ada0b28', queries, 17983787)
 print(data)

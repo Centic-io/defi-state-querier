@@ -4,6 +4,7 @@ from defi_services.constants.entities.lending import Lending
 from defi_services.constants.query_constant import Query
 from defi_services.database.mongodb import MongoDB
 from defi_services.jobs.state_querier import StateQuerier
+from defi_services.services.nft_services import NFTServices
 from defi_services.services.protocol_services import ProtocolServices
 from defi_services.services.token_services import TokenServices
 from defi_services.utils.init_services import init_services
@@ -16,7 +17,16 @@ class StateProcessor:
         self.chain_id = chain_id
         self.services = init_services(self.state_querier, chain_id)
         self.token_service = TokenServices(self.state_querier, chain_id)
+        self.nft_service = NFTServices(self.state_querier, chain_id)
         self.lending_services = Lending.mapping.get(chain_id)
+
+    def get_service_info(self):
+        info = self.nft_service.get_service_info()
+        info.update(self.token_service.get_service_info())
+        for service, value in self.services.items():
+            info.update(value.get_service_info())
+
+        return info
 
     @staticmethod
     def check_address(address):
@@ -35,11 +45,17 @@ class StateProcessor:
         queries = {}
         tokens = []
         rpc_calls = {}
-        if self.check_address(entity_id) and Query.token_balance == query_type:
-            rpc_calls.update(self.token_service.get_function_info(
-                wallet, entity_id, block_number
-            ))
-            tokens.append(entity_id)
+        if self.check_address(entity_id):
+            if Query.token_balance == query_type:
+                rpc_calls.update(self.token_service.get_function_info(
+                    wallet, entity_id, block_number
+                ))
+                tokens.append(entity_id)
+
+            if Query.nft_balance == query_type:
+                rpc_calls.update(self.nft_service.get_function_info(
+                    wallet, entity_id, block_number
+                ))
 
         if entity_id in self.services:
             entity_service: ProtocolServices = self.services.get(entity_id)
@@ -79,8 +95,13 @@ class StateProcessor:
         query_value = decoded_data.get(query_id)
         for entity, entity_value in query_value.items():
             result["entity_id"] = entity
+            data = None
             if self.check_address(entity):
-                data = self.token_service.get_data(wallet, entity, entity_value, token_prices, block_number)
+                if Query.token_balance == query_type:
+                    data = self.token_service.get_data(wallet, entity, entity_value, token_prices, block_number)
+
+                if Query.nft_balance == query_type:
+                    data = self.nft_service.get_data(wallet, entity, entity_value, token_prices, block_number)
 
             elif entity in self.lending_services:
                 entity_service: ProtocolServices = self.services.get(entity)
