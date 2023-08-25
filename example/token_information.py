@@ -1,5 +1,5 @@
 from abis.token.erc20_abi import ERC20_ABI
-from job.state_querier import StateQuerier
+from jobs.state_querier import StateQuerier
 
 queries = {
     "symbol": {
