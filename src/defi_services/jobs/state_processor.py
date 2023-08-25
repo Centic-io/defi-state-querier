@@ -1,16 +1,16 @@
 from web3 import Web3
 
-from constants.entities.lending import Lending
-from constants.query_constant import Query
-from database.mongodb import MongoDB
-from jobs.state_querier import StateQuerier
-from services.protocol_services import ProtocolServices
-from services.token_services import TokenServices
-from utils.init_services import init_services
+from defi_services.constants.entities.lending import Lending
+from defi_services.constants.query_constant import Query
+from defi_services.database.mongodb import MongoDB
+from defi_services.jobs.state_querier import StateQuerier
+from defi_services.services.protocol_services import ProtocolServices
+from defi_services.services.token_services import TokenServices
+from defi_services.utils.init_services import init_services
 
 
 class StateProcessor:
-    def __init__(self, provider_uri: str, chain_id: str, mongodb: MongoDB):
+    def __init__(self, provider_uri: str, chain_id: str, mongodb: MongoDB = None):
         self.mongodb = mongodb
         self.state_querier = StateQuerier(provider_uri)
         self.chain_id = chain_id
@@ -92,7 +92,7 @@ class StateProcessor:
 
         return result
 
-    def run(self, wallet: str, queries: list, block_number: int = 'latest'):
+    def run(self, wallet: str, queries: list, block_number: int = 'latest', batch_size: int = 100, max_workers: int = 8):
         all_rpc_calls, all_tokens = {}, []
         for query in queries:
             query_id = query.get("query_id")
@@ -103,8 +103,10 @@ class StateProcessor:
             all_rpc_calls.update(rpc_calls)
             all_tokens += tokens
         result = []
-        decoded_data = self.execute_rpc_calls(all_rpc_calls)
-        token_prices = self.get_token_prices(all_tokens)
+        decoded_data = self.execute_rpc_calls(all_rpc_calls, batch_size, max_workers)
+        token_prices = {}
+        if self.mongodb:
+            token_prices = self.get_token_prices(all_tokens)
         for query in queries:
             query_id = query.get("query_id")
             query_type = query.get("query_type")

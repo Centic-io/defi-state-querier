@@ -2,19 +2,19 @@ import logging
 import time
 
 from web3 import Web3
-from abis.lending.aave_v2_and_forlks.aave_v2_incentives_abi import AAVE_V2_INCENTIVES_ABI
-from abis.lending.aave_v2_and_forlks.lending_pool_abi import LENDING_POOL_ABI
-from abis.lending.aave_v2_and_forlks.oracle_abi import ORACLE_ABI
-from abis.token.erc20_abi import ERC20_ABI
-from constants.chain_constant import Chain
-from constants.db_constant import DBConst
-from constants.query_constant import Query
-from constants.time_constant import TimeConstants
-from constants.token_constant import Token
-from jobs.state_querier import StateQuerier
-from services.lending.lending_info.ethereum.aave_v2_eth import AAVE_V2_ETH
-from services.lending.lending_info.polygon.aave_v2_polygon import AAVE_V2_POLYGON
-from services.protocol_services import ProtocolServices
+from defi_services.abis.lending.aave_v2_and_forlks.aave_v2_incentives_abi import AAVE_V2_INCENTIVES_ABI
+from defi_services.abis.lending.aave_v2_and_forlks.lending_pool_abi import LENDING_POOL_ABI
+from defi_services.abis.lending.aave_v2_and_forlks.oracle_abi import ORACLE_ABI
+from defi_services.abis.token.erc20_abi import ERC20_ABI
+from defi_services.constants.chain_constant import Chain
+from defi_services.constants.db_constant import DBConst
+from defi_services.constants.query_constant import Query
+from defi_services.constants.time_constant import TimeConstants
+from defi_services.constants.token_constant import Token
+from defi_services.jobs.state_querier import StateQuerier
+from defi_services.services.lending.lending_info.ethereum.aave_v2_eth import AAVE_V2_ETH
+from defi_services.services.lending.lending_info.polygon.aave_v2_polygon import AAVE_V2_POLYGON
+from defi_services.services.protocol_services import ProtocolServices
 
 logger = logging.getLogger("Aave V2 Lending Pool State Service")
 
@@ -109,17 +109,17 @@ class AaveV2StateService(ProtocolServices):
     ):
         begin = time.time()
         reserves_info = kwargs.get("reserves_info", {})
-        get_price = kwargs.get("get_price", False) # get price by oracle
+        is_oracle_price = kwargs.get("is_oracle_price", False) # get price by oracle
         if not reserves_info:
             reserves_info = self.aave_info['reservesList']
         rpc_calls = {}
         if Query.deposit_borrow in query_types and wallet:
             rpc_calls.update(self.get_wallet_deposit_borrow_balance_function_info(
-                wallet, reserves_info, block_number, get_price
+                wallet, reserves_info, block_number, is_oracle_price
             ))
 
         if Query.protocol_apy in query_types:
-            rpc_calls.update(self.get_apy_lending_pool_function_info(reserves_info, block_number, get_price))
+            rpc_calls.update(self.get_apy_lending_pool_function_info(reserves_info, block_number, is_oracle_price))
 
         if Query.protocol_reward in query_types and wallet:
             rpc_calls.update(self.get_rewards_balance_function_info(wallet, reserves_info, block_number))
@@ -270,10 +270,10 @@ class AaveV2StateService(ProtocolServices):
             self,
             reserves_info: dict,
             block_number: int = "latest",
-            get_price: bool = False # get price by oracle
+            is_oracle_price: bool = False # get price by oracle
     ):
         rpc_calls = {}
-        if get_price:
+        if is_oracle_price:
             asset_price_key = f"getAssetsPrices_{self.name}_{block_number}".lower()
             rpc_calls[asset_price_key] = self.get_function_oracle_info(
                 "getAssetsPrices", list(reserves_info.keys()), block_number)
@@ -310,10 +310,10 @@ class AaveV2StateService(ProtocolServices):
             wallet: str,
             reserves_info: dict,
             block_number: int = "latest",
-            get_price: bool = False # get price by oracle
+            is_oracle_price: bool = False # get price by oracle
     ):
         rpc_calls = {}
-        if get_price:
+        if is_oracle_price:
             asset_price_key = f"getAssetsPrices_{self.name}_{block_number}".lower()
             rpc_calls[asset_price_key] = self.get_function_oracle_info(
                 "getAssetsPrices", list(reserves_info.keys()), block_number)
@@ -367,9 +367,9 @@ class AaveV2StateService(ProtocolServices):
             pool_token_price: float,
             wrapped_native_token_price: float = 1900,
             pool_decimals: int = 18,
-            get_price: bool = False # get price by oracle
+            is_oracle_price: bool = False # get price by oracle
     ):
-        if not get_price:
+        if not is_oracle_price:
             wrapped_native_token_price = 1
         for token_address in reserves_info:
             atoken = atokens.get(token_address)
@@ -425,7 +425,7 @@ class AaveV2StateService(ProtocolServices):
             borrow_amount,
             stable_borrow_amount,
             wrapped_native_token_price: float = 1900,
-            get_price: bool = False # get price by oracle
+            is_oracle_price: bool = False # get price by oracle
     ):
         result = {}
         for token in reserves_info:
@@ -433,17 +433,20 @@ class AaveV2StateService(ProtocolServices):
             deposit_amount_wallet = deposit_amount.get(token) / 10 ** decimals_token
             borrow_amount_wallet = borrow_amount.get(token) / 10 ** decimals_token
             borrow_amount_wallet += stable_borrow_amount.get(token) / 10 ** decimals_token
-            if get_price:
-                deposit_amount_wallet *= wrapped_native_token_price
-                borrow_amount_wallet *= wrapped_native_token_price
-            deposit_amount_in_usd = deposit_amount_wallet * token_prices.get(token, 0)
-            borrow_amount_in_usd = borrow_amount_wallet * token_prices.get(token, 0)
             result[token] = {
                 "borrow_amount": borrow_amount_wallet,
-                "borrow_amount_in_usd": borrow_amount_in_usd,
                 "deposit_amount": deposit_amount_wallet,
-                "deposit_amount_in_usd": deposit_amount_in_usd,
             }
+            if token_prices:
+                deposit_amount_in_usd = deposit_amount_wallet * token_prices.get(token, 0)
+                borrow_amount_in_usd = borrow_amount_wallet * token_prices.get(token, 0)
+                if is_oracle_price:
+                    deposit_amount_wallet *= wrapped_native_token_price
+                    borrow_amount_wallet *= wrapped_native_token_price
+                result[token].update({
+                    "borrow_amount_in_usd": borrow_amount_in_usd,
+                    "deposit_amount_in_usd": deposit_amount_in_usd,
+                })
         return result
 
 

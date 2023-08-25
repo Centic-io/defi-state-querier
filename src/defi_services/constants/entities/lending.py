@@ -1,5 +1,5 @@
-from constants.chain_constant import Chain
-from services.lending.aave_v2_services import AaveV2StateService
+from defi_services.constants.chain_constant import Chain
+from defi_services.services.lending.aave_v2_services import AaveV2StateService
 
 
 class Lending:

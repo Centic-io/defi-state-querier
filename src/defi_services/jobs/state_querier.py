@@ -5,7 +5,7 @@ from query_state_lib.base.utils.encoder import encode_eth_call_data
 from query_state_lib.client.client_querier import ClientQuerier
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
-from constants.query_constant import Query
+from defi_services.constants.query_constant import Query
 
 logger = logging.getLogger("StateService")
 

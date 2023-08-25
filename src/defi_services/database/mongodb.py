@@ -3,8 +3,8 @@ import sys
 from pymongo import MongoClient
 
 from config import MongoDBConfig
-from constants.mongo_constant import MongoDBCollections
-from utils.logger_utils import get_logger
+from defi_services.constants.mongo_constant import MongoDBCollections
+from defi_services.utils.logger_utils import get_logger
 
 logger = get_logger('MongoDB')
 
@@ -19,7 +19,7 @@ class MongoDB:
             self.connection = MongoClient(connection_url)
             self.mongo_db = self.connection[database]
         except Exception as e:
-            logger.exception(f"Failed to connect to ArangoDB: {connection_url}: {e}")
+            logger.exception(f"Failed to connect to MongoDB: {connection_url}: {e}")
             sys.exit(1)
         self._smart_contracts_col = self.mongo_db[MongoDBCollections.smart_contracts]
 

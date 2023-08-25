@@ -1,6 +1,6 @@
-from abis.token.erc20_abi import ERC20_ABI
-from constants.token_constant import Token
-from jobs.state_querier import StateQuerier
+from defi_services.abis.token.erc20_abi import ERC20_ABI
+from defi_services.constants.token_constant import Token
+from defi_services.jobs.state_querier import StateQuerier
 
 
 class TokenServices:

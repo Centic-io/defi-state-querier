@@ -1,11 +1,8 @@
-from database.mongodb import MongoDB
-from jobs.state_processor import StateProcessor
+from defi_services.jobs.state_processor import StateProcessor
 
-mongodb = MongoDB("mongodb://{name}:{password}@{url}")
 job = StateProcessor(
     provider_uri="https://rpc.ankr.com/eth",
-    chain_id="0x1",
-    mongodb=mongodb
+    chain_id="0x1"
 )
 queries = [
     {
