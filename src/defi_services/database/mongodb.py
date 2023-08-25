@@ -19,7 +19,7 @@ class MongoDB:
             self.connection = MongoClient(connection_url)
             self.mongo_db = self.connection[database]
         except Exception as e:
-            logger.exception(f"Failed to connect to MongoDB: {connection_url}: {e}")
+            logger.exception(f"Failed to connect to MophamvietbangngoDB: {connection_url}: {e}")
             sys.exit(1)
         self._smart_contracts_col = self.mongo_db[MongoDBCollections.smart_contracts]
 

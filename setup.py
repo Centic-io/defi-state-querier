@@ -28,10 +28,9 @@ setuptools.setup(
     packages=setuptools.find_packages(where="src"),
     python_requires='>=3.6',
     install_requires=[
-        "web3==5.31.1",
+        "web3<=6.0.0",
         "QueryStateLib==1.1.4",
-        "pycoingecko==2.2.0",
-        "python-dotenv==0.21.0",
-        "pymongo==4.3.3"
+        "python-dotenv>=0.18.0",
+        "pymongo>=4.3.3"
     ],
 )
