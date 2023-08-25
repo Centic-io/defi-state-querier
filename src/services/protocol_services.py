@@ -22,10 +22,10 @@ class ProtocolServices:
             block_number: int = 'latest',
             **kwargs
     ):
-        # Get final result
+        # Get final result or process response data
         pass
 
     def get_token_list(self):
-        # Get necessary tokens
+        # Get necessary tokens related to protocol
         pass
 

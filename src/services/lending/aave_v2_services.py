@@ -1,3 +1,6 @@
+import logging
+import time
+
 from web3 import Web3
 from abis.lending.aave_v2_and_forlks.aave_v2_incentives_abi import AAVE_V2_INCENTIVES_ABI
 from abis.lending.aave_v2_and_forlks.lending_pool_abi import LENDING_POOL_ABI
@@ -12,6 +15,8 @@ from jobs.state_querier import StateQuerier
 from services.lending.lending_info.ethereum.aave_v2_eth import AAVE_V2_ETH
 from services.lending.lending_info.polygon.aave_v2_polygon import AAVE_V2_POLYGON
 from services.protocol_services import ProtocolServices
+
+logger = logging.getLogger("Aave V2 Lending Pool State Service")
 
 
 class AaveInfo:
@@ -32,6 +37,7 @@ class AaveV2StateService(ProtocolServices):
         self.state_service = state_service
 
     def get_dapp_asset_info(self, block_number: int = 'latest'):
+        begin = time.time()
         _w3 = self.state_service.get_w3()
         pool_address = Web3.toChecksumAddress(self.aave_info['address'])
         contract = _w3.eth.contract(address=pool_address, abi=self.lending_abi)
@@ -46,16 +52,18 @@ class AaveV2StateService(ProtocolServices):
             reserves_info[key]["sdToken"] = value[8].lower()
             risk_param = bin(value[0][0])[2:]
             reserves_info[key]["liquidationThreshold"] = int(risk_param[-31:-16], 2) / 10 ** 4
+        logger.info(f"Get reserves information in {time.time()-begin}s")
         return reserves_info
 
     def get_token_list(self):
+        begin = time.time()
         tokens = [self.aave_info.get('rewardToken'), self.aave_info.get("poolToken")]
         for token in self.aave_info.get("reservesList"):
             if token == Token.native_token:
                 tokens.append(Token.wrapped_token.get(self.chain_id))
                 continue
             tokens.append(token)
-
+        logger.info(f"Get token list related in {time.time()-begin}s")
         return tokens
 
     def get_data(
@@ -66,6 +74,7 @@ class AaveV2StateService(ProtocolServices):
             block_number: int = 'latest',
             **kwargs
     ):
+        begin = time.time()
         reserves_info = kwargs.get("reserves_info", self.aave_info.get("reservesList"))
         token_prices = kwargs.get("token_prices", {})
         pool_token_price = token_prices.get(self.aave_info.get('poolToken'), 1)
@@ -88,6 +97,7 @@ class AaveV2StateService(ProtocolServices):
                 reserves_info, decoded_data, token_prices, pool_token_price, wrapped_native_token_price, pool_decimals,
                 block_number
             ))
+        logger.info(f"Process protocol data in {time.time() - begin}")
         return result
 
     def get_function_info(
@@ -97,8 +107,9 @@ class AaveV2StateService(ProtocolServices):
             block_number: int = "latest",
             **kwargs
     ):
+        begin = time.time()
         reserves_info = kwargs.get("reserves_info", {})
-        get_price = kwargs.get("get_price", False)
+        get_price = kwargs.get("get_price", False) # get price by oracle
         if not reserves_info:
             reserves_info = self.aave_info['reservesList']
         rpc_calls = {}
@@ -112,7 +123,7 @@ class AaveV2StateService(ProtocolServices):
 
         if Query.protocol_reward in query_types and wallet:
             rpc_calls.update(self.get_rewards_balance_function_info(wallet, reserves_info, block_number))
-
+        logger.info(f"Get encoded rpc calls in {time.time()-begin}s")
         return rpc_calls
 
     def calculate_apy_lending_pool_function_call(
@@ -259,7 +270,7 @@ class AaveV2StateService(ProtocolServices):
             self,
             reserves_info: dict,
             block_number: int = "latest",
-            get_price: bool = False,
+            get_price: bool = False # get price by oracle
     ):
         rpc_calls = {}
         if get_price:
@@ -299,7 +310,7 @@ class AaveV2StateService(ProtocolServices):
             wallet: str,
             reserves_info: dict,
             block_number: int = "latest",
-            get_price: bool = False,
+            get_price: bool = False # get price by oracle
     ):
         rpc_calls = {}
         if get_price:
@@ -355,8 +366,11 @@ class AaveV2StateService(ProtocolServices):
             token_prices: dict,
             pool_token_price: float,
             wrapped_native_token_price: float = 1900,
-            pool_decimals: int = 18
+            pool_decimals: int = 18,
+            get_price: bool = False # get price by oracle
     ):
+        if not get_price:
+            wrapped_native_token_price = 1
         for token_address in reserves_info:
             atoken = atokens.get(token_address)
             debt_token = debt_tokens.get(token_address)
@@ -411,7 +425,7 @@ class AaveV2StateService(ProtocolServices):
             borrow_amount,
             stable_borrow_amount,
             wrapped_native_token_price: float = 1900,
-            get_price: bool = False
+            get_price: bool = False # get price by oracle
     ):
         result = {}
         for token in reserves_info:

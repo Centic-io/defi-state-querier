@@ -10,9 +10,7 @@ from utils.init_services import init_services
 
 
 class StateProcessor:
-    def __init__(self, provider_uri: str, chain_id: str, mongodb: MongoDB, batch_size: int = 100, max_workers: int = 8):
-        self.max_workers = max_workers
-        self.batch_size = batch_size
+    def __init__(self, provider_uri: str, chain_id: str, mongodb: MongoDB):
         self.mongodb = mongodb
         self.state_querier = StateQuerier(provider_uri)
         self.chain_id = chain_id
@@ -51,14 +49,14 @@ class StateProcessor:
         tokens = list(set(tokens))
         return {query_id: queries}, tokens
 
-    def execute_rpc_calls(self, queries: dict):
+    def execute_rpc_calls(self, queries: dict, batch_size: int = 100, max_workers: int = 8):
         rpc_calls = {}
         for query, query_info in queries.items():
             for entity, entity_value in query_info.items():
                 rpc_calls.update(entity_value)
 
         decoded_data = self.state_querier.query_state_data(
-            rpc_calls, batch_size=self.batch_size, workers=self.max_workers)
+            rpc_calls, batch_size=batch_size, workers=max_workers)
         result = {}
         for query, query_info in queries.items():
             query_data = {}
@@ -115,32 +113,6 @@ class StateProcessor:
             result.append(processed_data)
 
         return result
-
-if __name__ == "__main__":
-    mongodb = MongoDB("mongodb://klgWriter:klgEntity_writer523@35.198.222.97:27017,34.124.133.164:27017,34.124.205.24:27017/")
-    job = StateProcessor(
-        provider_uri="https://rpc.ankr.com/eth",
-        chain_id="0x1",
-        mongodb=mongodb
-    )
-    queries = [{
-        "query_id": 1,
-        "entity_id": "0x6b175474e89094c44da98b954eedeac495271d0f",
-        "query_type": "token_balance"
-    },
-        {
-            "query_id": 2,
-            "entity_id": "aave-v2",
-            "query_type": "deposit_borrow"
-        },
-        {
-            "query_id": 3,
-            "entity_id": "aave-v2",
-            "query_type": "protocol_reward"
-        },
-    ]
-    data = job.run('0xfe2e023bba664757aaf6b72f9b6a8cfc3ada0b28', queries)
-    print(data)
 
 
 
