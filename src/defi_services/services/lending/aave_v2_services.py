@@ -2,19 +2,19 @@ import logging
 import time
 
 from web3 import Web3
-from abis.lending.aave_v2_and_forlks.aave_v2_incentives_abi import AAVE_V2_INCENTIVES_ABI
-from abis.lending.aave_v2_and_forlks.lending_pool_abi import LENDING_POOL_ABI
-from abis.lending.aave_v2_and_forlks.oracle_abi import ORACLE_ABI
-from abis.token.erc20_abi import ERC20_ABI
-from constants.chain_constant import Chain
-from constants.db_constant import DBConst
-from constants.query_constant import Query
-from constants.time_constant import TimeConstants
-from constants.token_constant import Token
-from jobs.state_querier import StateQuerier
-from services.lending.lending_info.ethereum.aave_v2_eth import AAVE_V2_ETH
-from services.lending.lending_info.polygon.aave_v2_polygon import AAVE_V2_POLYGON
-from services.protocol_services import ProtocolServices
+from defi_services.abis.lending.aave_v2_and_forlks.aave_v2_incentives_abi import AAVE_V2_INCENTIVES_ABI
+from defi_services.abis.lending.aave_v2_and_forlks.lending_pool_abi import LENDING_POOL_ABI
+from defi_services.abis.lending.aave_v2_and_forlks.oracle_abi import ORACLE_ABI
+from defi_services.abis.token.erc20_abi import ERC20_ABI
+from defi_services.constants.chain_constant import Chain
+from defi_services.constants.db_constant import DBConst
+from defi_services.constants.query_constant import Query
+from defi_services.constants.time_constant import TimeConstants
+from defi_services.constants.token_constant import Token
+from defi_services.jobs.state_querier import StateQuerier
+from defi_services.services.lending.lending_info.ethereum.aave_v2_eth import AAVE_V2_ETH
+from defi_services.services.lending.lending_info.polygon.aave_v2_polygon import AAVE_V2_POLYGON
+from defi_services.services.protocol_services import ProtocolServices
 
 logger = logging.getLogger("Aave V2 Lending Pool State Service")
 

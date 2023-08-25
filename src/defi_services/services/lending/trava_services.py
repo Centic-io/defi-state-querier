@@ -1,7 +1,7 @@
 import logging
 
-from constants.db_constant import DBConst
-from constants.time_constant import TimeConstants
+from defi_services.constants.db_constant import DBConst
+from defi_services.constants.time_constant import TimeConstants
 
 logger = logging.getLogger("Trava Lending Pool State Service")
 

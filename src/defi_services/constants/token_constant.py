@@ -1,4 +1,4 @@
-from constants.chain_constant import Chain
+from defi_services.constants.chain_constant import Chain
 
 
 class Token:

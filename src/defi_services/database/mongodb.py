@@ -3,8 +3,8 @@ import sys
 from pymongo import MongoClient
 
 from config import MongoDBConfig
-from constants.mongo_constant import MongoDBCollections
-from utils.logger_utils import get_logger
+from defi_services.constants.mongo_constant import MongoDBCollections
+from defi_services.utils.logger_utils import get_logger
 
 logger = get_logger('MongoDB')
 

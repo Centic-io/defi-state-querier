@@ -25,7 +25,7 @@ python3 -m build
 twine check dist/*
 
 # Upload package
-#twine upload -r testpypi dist/*
-twine upload dist/*
+twine upload -r testpypi dist/*
+#twine upload dist/*
 # Remove built package
 rm -rf dist/

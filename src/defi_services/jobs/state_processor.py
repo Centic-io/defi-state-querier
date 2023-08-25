@@ -1,12 +1,12 @@
 from web3 import Web3
 
-from constants.entities.lending import Lending
-from constants.query_constant import Query
-from database.mongodb import MongoDB
-from jobs.state_querier import StateQuerier
-from services.protocol_services import ProtocolServices
-from services.token_services import TokenServices
-from utils.init_services import init_services
+from defi_services.constants.entities.lending import Lending
+from defi_services.constants.query_constant import Query
+from defi_services.database.mongodb import MongoDB
+from defi_services.jobs.state_querier import StateQuerier
+from defi_services.services.protocol_services import ProtocolServices
+from defi_services.services.token_services import TokenServices
+from defi_services.utils.init_services import init_services
 
 
 class StateProcessor:

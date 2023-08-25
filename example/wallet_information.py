@@ -1,4 +1,4 @@
-from jobs.state_processor import StateProcessor
+from defi_services.jobs.state_processor import StateProcessor
 
 job = StateProcessor(
     provider_uri="https://rpc.ankr.com/eth",
