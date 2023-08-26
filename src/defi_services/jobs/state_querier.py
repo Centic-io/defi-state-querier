@@ -1,11 +1,14 @@
 import logging
 
 from query_state_lib.base.mappers.eth_call_mapper import EthCall
+from query_state_lib.base.mappers.get_balance_mapper import GetBalance
 from query_state_lib.base.utils.encoder import encode_eth_call_data
 from query_state_lib.client.client_querier import ClientQuerier
 from web3 import Web3
 from web3.middleware import geth_poa_middleware
+
 from defi_services.constants.query_constant import Query
+from defi_services.constants.token_constant import Token
 
 logger = logging.getLogger("StateService")
 
@@ -21,7 +24,7 @@ class StateQuerier:
         return self._w3
 
     @staticmethod
-    def get_function_info(address: str, abi: list, fn_name: str, fn_paras=None, block_number: int = 'latest'):
+    def get_function_info(address: str, abi: list, fn_name: str, fn_paras: list = None, block_number: int = 'latest'):
         if fn_paras is None:
             fn_paras = []
         data = {
@@ -32,6 +35,14 @@ class StateQuerier:
             "block_number": block_number
         }
 
+        return data
+
+    @staticmethod
+    def get_native_token_balance_info(fn_paras: str = None, block_number: int = 'latest'):
+        data = {
+            "params": fn_paras,
+            "block_number": block_number
+        }
         return data
 
     def query_state_data(self, queries: dict, batch_size: int = 100, workers: int = 5):
@@ -57,27 +68,35 @@ class StateQuerier:
         """
         list_rpc_call, list_call_id = [], []
         for key, value in queries.items():
-            abi = value.get(Query.abi)
-            contract_address = value.get(Query.address)
-            fn_name = value.get(Query.function)
             fn_paras = value.get(Query.params)
             block_number = value.get(Query.block_number)
-            if not block_number or block_number == 'latest':
-                eth_call = self.add_rpc_call(
-                    abi=abi, fn_name=fn_name, contract_address=contract_address,
-                    fn_paras=fn_paras, call_id=key
-                )
+            if Token.native_token in key and "balanceof" in key:
+                eth_call = self.add_native_token_balance_rpc_call(fn_paras, key, block_number)
             else:
-                eth_call = self.add_rpc_call(
-                    abi=abi, fn_name=fn_name, contract_address=contract_address,
-                    block_number=block_number, fn_paras=fn_paras, call_id=key
-                )
+                abi = value.get(Query.abi)
+                contract_address = value.get(Query.address)
+                fn_name = value.get(Query.function)
+                if not block_number or block_number == 'latest':
+                    eth_call = self.add_rpc_call(
+                        abi=abi, fn_name=fn_name, contract_address=contract_address,
+                        fn_paras=fn_paras, call_id=key
+                    )
+                else:
+                    eth_call = self.add_rpc_call(
+                        abi=abi, fn_name=fn_name, contract_address=contract_address,
+                        block_number=block_number, fn_paras=fn_paras, call_id=key
+                    )
             list_call_id.append(key)
             list_rpc_call.append(eth_call)
 
         response_data = self.client_querier.sent_batch_to_provider(list_rpc_call, batch_size, workers)
         decoded_data = self.decode_response_data(response_data, list_call_id)
         return decoded_data
+
+    def add_native_token_balance_rpc_call(
+            self, fn_paras: str = None, call_id: str = None, block_number: int = "latest"):
+        eth_call = GetBalance(Web3.toChecksumAddress(fn_paras), block_number, call_id)
+        return eth_call
 
     def add_rpc_call(self, abi: dict, fn_name: str, contract_address: str,
                      fn_paras: list = None, call_id: str = None, block_number: int = "latest"):
@@ -103,8 +122,9 @@ class StateQuerier:
             except Exception as e:
                 logger.error(f"An exception when decode data from provider: {e}")
                 raise
-
-            if len(decoded_datum) == 1:
+            if isinstance(decoded_datum, int):
+                decoded_data[call_id] = decoded_datum
+            elif len(decoded_datum) == 1:
                 decoded_data[call_id] = decoded_datum[0]
             else:
                 decoded_data[call_id] = decoded_datum

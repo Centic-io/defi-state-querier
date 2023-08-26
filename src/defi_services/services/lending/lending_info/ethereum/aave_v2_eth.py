@@ -6,6 +6,7 @@ AAVE_V2_ETH = {
     "poolToken": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
     "oracleAddress": "0xa50ba011c48153de246e5192c8f9258a2ba79ca9",
     "type": "LENDING_POOL",
+    "forked": "aave-v2",
     "reservesList": {
         "0xdac17f958d2ee523a2206206994597c13d831ec7": {
             "tToken": "0x3ed3b47dd13ec9a98b44e6204a523e766b225811",
