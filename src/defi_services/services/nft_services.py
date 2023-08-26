@@ -21,7 +21,7 @@ class NFTServices:
     def get_data(wallet: str, token: str, decoded_data: dict, token_price: dict, block_number: int = "latest"):
         balance_key = f"balanceOf_{wallet}_{token}_{block_number}".lower()
         if balance_key in decoded_data:
-            balance = decoded_data.get(balance_key)
+            balance = decoded_data.get(balance_key) or 0
             return balance * token_price.get(token, 1)
 
         return None
