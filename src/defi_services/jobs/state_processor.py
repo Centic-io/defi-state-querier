@@ -65,21 +65,21 @@ class StateProcessor:
         tokens = list(set(tokens))
         return {query_id: queries}, tokens
 
-    def execute_rpc_calls(self, queries: dict, batch_size: int = 100, max_workers: int = 8):
+    def execute_rpc_calls(self, queries: dict, batch_size: int = 100, max_workers: int = 8, ignore_error: bool = False):
         rpc_calls = {}
         for query, query_info in queries.items():
             for entity, entity_value in query_info.items():
                 rpc_calls.update(entity_value)
 
         decoded_data = self.state_querier.query_state_data(
-            rpc_calls, batch_size=batch_size, workers=max_workers)
+            rpc_calls, batch_size=batch_size, workers=max_workers, ignore_error=ignore_error)
         result = {}
         for query, query_info in queries.items():
             query_data = {}
             for entity, entity_value in query_info.items():
                 entity_data = {}
                 for key, value in entity_value.items():
-                    entity_data[key] = decoded_data[key]
+                    entity_data[key] = decoded_data.get(key)
                 query_data[entity] = entity_data
             result[query] = query_data
 
@@ -113,7 +113,7 @@ class StateProcessor:
 
         return result
 
-    def run(self, wallet: str, queries: list, block_number: int = 'latest', batch_size: int = 100, max_workers: int = 8):
+    def run(self, wallet: str, queries: list, block_number: int = 'latest', batch_size: int = 100, max_workers: int = 8, ignore_error=False):
         all_rpc_calls, all_tokens = {}, []
         for query in queries:
             query_id = query.get("query_id")
@@ -124,7 +124,7 @@ class StateProcessor:
             all_rpc_calls.update(rpc_calls)
             all_tokens += tokens
         result = []
-        decoded_data = self.execute_rpc_calls(all_rpc_calls, batch_size, max_workers)
+        decoded_data = self.execute_rpc_calls(all_rpc_calls, batch_size, max_workers, ignore_error=ignore_error)
         token_prices = {}
         if self.mongodb:
             token_prices = self.get_token_prices(all_tokens)
@@ -136,8 +136,3 @@ class StateProcessor:
             result.append(processed_data)
 
         return result
-
-
-
-
-

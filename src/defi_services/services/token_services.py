@@ -22,8 +22,8 @@ class TokenServices:
         decimals_key = f"decimals_{token}_{block_number}".lower()
         balance_key = f"balanceOf_{wallet}_{token}_{block_number}".lower()
         if balance_key in decoded_data:
-            balance = decoded_data.get(balance_key)
-            decimals = decoded_data.get(decimals_key)
+            balance = decoded_data.get(balance_key) or 0
+            decimals = decoded_data.get(decimals_key, 18)
             return balance * token_price.get(token, 1) / 10 ** decimals
 
         return None
