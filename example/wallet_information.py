@@ -1,3 +1,4 @@
+from defi_services.constants.token_constant import Token
 from defi_services.jobs.state_processor import StateProcessor
 
 job = StateProcessor(
@@ -5,6 +6,11 @@ job = StateProcessor(
     chain_id="0x1"
 )
 queries = [
+    {
+        "query_id": 4,
+        "entity_id": Token.native_token,
+        "query_type": "token_balance"
+    },
     {
         "query_id": 1,
         "entity_id": "0x6b175474e89094c44da98b954eedeac495271d0f",
@@ -22,5 +28,5 @@ queries = [
     },
 ]
 info = job.get_service_info()
-data = job.run('0xfe2e023bba664757aaf6b72f9b6a8cfc3ada0b28', queries, 17983787)
+data = job.run('0x4838b106fce9647bdf1e7877bf73ce8b0bad5f97', queries, 17983787)
 print(data)

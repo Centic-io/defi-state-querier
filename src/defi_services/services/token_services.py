@@ -1,3 +1,5 @@
+from query_state_lib.base.mappers.eth_call_balance_of_mapper import EthCallBalanceOf
+
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.token_constant import Token
 from defi_services.jobs.state_querier import StateQuerier
@@ -50,14 +52,15 @@ class TokenServices:
 
     def get_function_balance_info(self, wallet: str, token: str, block_number: int = "latest"):
         balance_token = token
-        if token == Token.native_token:
-            balance_token = Token.wrapped_token.get(self.chain_id)
         key = f"balanceOf_{wallet}_{balance_token}_{block_number}".lower()
+        if token == Token.native_token:
+            return {key: self.state_service.get_native_token_balance_info(wallet, block_number)}
+
         return {key: self.state_service.get_function_info(balance_token, ERC20_ABI, "balanceOf", [wallet], block_number)}
 
     def get_decimals_info(self, token: str, block_number: int = "latest"):
         decimals_token = token
         if token == Token.native_token:
             decimals_token = Token.wrapped_token.get(self.chain_id)
-        key = f"decimals_{decimals_token}_{block_number}".lower()
+        key = f"decimals_{token}_{block_number}".lower()
         return {key: self.state_service.get_function_info(decimals_token, ERC20_ABI, "decimals", [], block_number)}
