@@ -39,7 +39,8 @@ class AaveV2StateService(ProtocolServices):
         info = {
             "aave-v2": {
                 "chain_id": self.chain_id,
-                "type": "lending"
+                "type": "lending",
+                "protocol_info": self.aave_info
             }
         }
         return info
