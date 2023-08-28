@@ -5,6 +5,8 @@ GEIST_ETH = {
     "multiFeeAddress": "0x49c93a95dbcc9a6a4d8f77e59c038ce5020e82f8",
     "chefIncentiveAddress": '0x297fddc5c33ef988dd03bd13e162ae084ea1fe57',
     "oracleAddress": "0xc466e3fee82c6bdc2e17f2eaf2c6f1e91ad10fd3",
+    "poolToken": "0xd8321aa83fb0a4ecd6348d4577431310a6e0814d",
+    "forked": "aave-v2",
     "type": "LENDING_POOL",
     "reservesList": {
         "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e": {

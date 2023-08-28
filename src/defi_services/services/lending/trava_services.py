@@ -31,7 +31,7 @@ class TravaInfo:
 
 class TravaStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
-        self.name = f"{chain_id}_trava"
+        self.name = f"{chain_id}_trava-finance"
         self.chain_id = chain_id
         self.pool_info = TravaInfo.mapping.get(chain_id)
         self.lending_abi = TRAVA_LENDING_POOL_ABI
@@ -42,7 +42,7 @@ class TravaStateService(ProtocolServices):
     # BASIC FUNCTION
     def get_service_info(self):
         info = {
-            "trava": {
+            "trava-finance": {
                 "chain_id": self.chain_id,
                 "type": "lending",
                 "protocol_info": self.pool_info
