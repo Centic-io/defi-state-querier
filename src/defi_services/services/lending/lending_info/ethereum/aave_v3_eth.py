@@ -1,7 +1,7 @@
 AAVE_V3_ETH = {
     "address": "0x87870bca3f3fd6335c3f4ce8392d69350b4fa4e2",
     "name": "AAVE V3 Lending Pool",
-    "incentiveAddress": '0x8164cc65827dcfe994ab23944cbc90e0aa80bfcb',
+    "stakedIncentiveAddress": '0x8164cc65827dcfe994ab23944cbc90e0aa80bfcb',
     "rewardTokensList": [],
     "oracleAddress": "0x54586be62e3c3580375ae3723c145253060ca0c2",
     "type": "LENDING_POOL",

@@ -4,6 +4,8 @@ TRAVA_BSC = {
     "oracleAddress": "0x7cd53b71bf56cc6c9c9b43719fe98e7c360c35df",
     "name": "Trava Lending Pool",
     "rewardToken": "0x170772a06affc0d375ce90ef59c8ec04c7ebf5d2",
+    "poolToken": "0x0391be54e72f7e001f6bbc331777710b4f2999ef",
+    "forked": "aave-v2",
     "reservesList": {
         "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3": {
             "tToken": "0x17335ff98beba2e36d11421d4bd613c24b61acbe",
