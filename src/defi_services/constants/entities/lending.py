@@ -4,6 +4,7 @@ from defi_services.services.lending.compound_service import CompoundStateService
 from defi_services.services.lending.geist_services import GeistStateService
 from defi_services.services.lending.trava_services import TravaStateService
 from defi_services.services.lending.valas_services import ValasStateService
+from defi_services.services.lending.flux_services import FluxStateService
 
 
 class Lending:
@@ -13,13 +14,15 @@ class Lending:
     trava = "trava"
     valas = "valas"
     geist = "geist"
-    all = [aave_v2]
+    flux = "flux"
+    all = [flux]
 
     # chain
     ethereum = {
         aave_v2: AaveV2StateService,
         compound: CompoundStateService,
-        trava: TravaStateService
+        trava: TravaStateService,
+        flux: FluxStateService
     }
     fantom = {
         trava: TravaStateService,
