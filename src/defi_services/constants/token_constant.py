@@ -4,8 +4,12 @@ from defi_services.constants.chain_constant import Chain
 class Token:
     native_token = '0x0000000000000000000000000000000000000000'
     wrapped_ethereum = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+    wrapped_bsc = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
+    wrapped_ftm = '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83'
     wrapped_token = {
-        Chain.ethereum: wrapped_ethereum
+        Chain.ethereum: wrapped_ethereum,
+        Chain.bsc: wrapped_bsc,
+        Chain.fantom: wrapped_ftm
     }
 
 
