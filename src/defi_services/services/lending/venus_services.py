@@ -1,3 +1,5 @@
+import logging
+
 from web3 import Web3
 
 from defi_services.abis.lending.venus.venus_comptroller_abi import VENUS_COMPTROLLER_ABI
@@ -8,6 +10,8 @@ from defi_services.constants.token_constant import ContractAddresses, Token
 from defi_services.jobs.state_querier import StateQuerier
 from defi_services.services.lending.compound_service import CompoundStateService
 from defi_services.services.lending.lending_info.bsc.venus_bsc import VENUS_BSC
+
+logger = logging.getLogger("Venus Lending Pool State Service")
 
 
 class VenusInfo:
@@ -27,6 +31,7 @@ class VenusStateService(CompoundStateService):
         self.comptroller_abi = VENUS_COMPTROLLER_ABI
 
         # BASIC FUNCTIONS
+
     def get_service_info(self):
         info = {
             "venus": {
@@ -221,7 +226,7 @@ class VenusStateService(CompoundStateService):
                 result[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
         return result
 
-    #TOKEN DEPOSIT BORROW BALANCE
+    # TOKEN DEPOSIT BORROW BALANCE
     def get_token_deposit_borrow_balance_function_info(
             self,
             reserves_info: dict,
