@@ -1,12 +1,11 @@
 COMPOUND_ETH = {
-    "chainId": "0x38",
     "name": "Compound Lending Pool",
     "rewardToken": "0xc00e94cb662c3520282e6f5717214004a7f26888",
     "comptrollerAddress": "0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b",
     "lensAddress": "0xa6c8d1c55951e8ac44a0eaa959be5fd21cc07531",
     "poolToken": "0xc00e94cb662c3520282e6f5717214004a7f26888",
     "type": "LENDING_POOL",
-    "forked": "compound-v2",
+    "forked": "compound",
     "reservesList": {
         "0x0d8775f648430679a709e98d2b0cb6250d2887ef": {
             "cToken": "0x6c8c6b02e7b2be14d4fa6022dfd6d75921d90e4e",
