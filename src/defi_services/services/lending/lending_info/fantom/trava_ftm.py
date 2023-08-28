@@ -4,6 +4,8 @@ TRAVA_FTM = {
     "oracleAddress": "0x290346e682d51b97e2c1f186eb61eb49881c5ec7",
     "name": "Trava Lending Pool",
     "rewardToken": "0x1ddec3377347cba814027fbf13a86b6000f201fb",
+    "poolToken": "0x477a9d5df9beda06f6b021136a2efe7be242fcc9",
+    "forked": "aave-v2",
     "reservesList": {
         "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e": {
             "tToken": "0xb80a70e0bf4d60f80b58103054ada2439335796d",

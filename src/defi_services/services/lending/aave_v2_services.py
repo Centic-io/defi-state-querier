@@ -133,7 +133,7 @@ class AaveV2StateService(ProtocolServices):
             rpc_calls.update(self.get_apy_lending_pool_function_info(reserves_info, block_number, is_oracle_price))
 
         if Query.protocol_reward in query_types and wallet:
-            rpc_calls.update(self.get_rewards_balance_function_info(wallet, reserves_info, block_number))
+            rpc_calls.update(self.get_all_rewards_balance_function_info(wallet, reserves_info, block_number))
         logger.info(f"Get encoded rpc calls in {time.time() - begin}s")
         return rpc_calls
 

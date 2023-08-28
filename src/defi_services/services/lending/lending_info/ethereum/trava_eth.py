@@ -4,6 +4,8 @@ TRAVA_ETH = {
     "oracleAddress": "0x2bd81260fe864173b6ec1ec9ee41a76366922565",
     "name": "Trava Lending Pool",
     "rewardToken": "0x044ede67afdb0f56d7451bb3aaccaeab3f772fad",
+    "poolToken": "0x186d0ba3dfc3386c464eecd96a61fbb1e2da00bf",
+    "forked": "aave-v2",
     "reservesList": {
         "0x6b175474e89094c44da98b954eedeac495271d0f": {
             "tToken": "0x9ba5f8d3343cb2555a81b1d6caee25be10526540",
