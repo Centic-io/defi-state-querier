@@ -96,10 +96,6 @@ class UwuStateService(ProtocolServices):
                 block_number
             ))
 
-        # if Query.protocol_reward in query_types and wallet:
-        #     result.update(self.calculate_all_rewards_balance(
-        #         decoded_data, wallet, block_number
-        #     ))
         if Query.protocol_reward in query_types and wallet:
             result.update(self.calculate_rewards_balance(
                 decoded_data, wallet, reserves_info, block_number

@@ -1,7 +1,7 @@
 UWU_ETH = {
     "address": "0x2409aF0251DCB89EE3Dee572629291f9B087c668",
     "name": "Uwu Lending Pool",
-    "rewardToken": "0xe3643512532Fe1f3522745787e883F9729527186",
+    "rewardToken": "0x55C08ca52497e2f1534B59E2917BF524D4765257",
     "stakedIncentiveAddress": '0xDB5C23ae97f76dacC907f5F13bDa54131C8e9e5a',
     "poolToken": "0x55C08ca52497e2f1534B59E2917BF524D4765257",
     "oracleAddress": "0xAC4A2aC76D639E10f2C05a41274c1aF85B772598",
