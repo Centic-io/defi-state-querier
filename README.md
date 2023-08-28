@@ -52,25 +52,11 @@ Return the asset list of an address in a blockchain. These assets are native tok
     "query_id": "<query_id>",
     "entity_id": "<protocol_id>",
     "query_type": "protocol_reward",
-    "protocol_reward": 
-   {
-      "<asset_address_1>": {
-        "deposit": {
-          "rewards": {
-            "<reward_address>": {
-              "amount": 1.4
-            }
-          }
-        },
-        "borrow": {
-          "rewards": {
-            "<reward_address>": {
-              "amount": 1.4
-            }
-          }
-        }
-      }
-    }
+    "protocol_reward": {
+      "<reward_address>": {
+        "amount": 1.4
+     }
+  }
   }
 ]
 ```
