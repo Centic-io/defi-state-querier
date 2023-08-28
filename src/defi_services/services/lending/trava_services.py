@@ -31,9 +31,9 @@ class TravaInfo:
 
 class TravaStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
-        self.name = f"{chain_id}_aave_v2"
+        self.name = f"{chain_id}_trava"
         self.chain_id = chain_id
-        self.trava_info = TravaInfo.mapping.get(chain_id)
+        self.pool_info = TravaInfo.mapping.get(chain_id)
         self.lending_abi = TRAVA_LENDING_POOL_ABI
         self.incentive_abi = STAKED_INCENTIVES_ABI
         self.oracle_abi = ORACLE_ABI
@@ -45,7 +45,7 @@ class TravaStateService(ProtocolServices):
             "trava": {
                 "chain_id": self.chain_id,
                 "type": "lending",
-                "protocol_info": self.trava_info
+                "protocol_info": self.pool_info
             }
         }
         return info
@@ -53,7 +53,7 @@ class TravaStateService(ProtocolServices):
     def get_dapp_asset_info(self, block_number: int = 'latest'):
         begin = time.time()
         _w3 = self.state_service.get_w3()
-        pool_address = Web3.toChecksumAddress(self.trava_info['address'])
+        pool_address = Web3.toChecksumAddress(self.pool_info['address'])
         contract = _w3.eth.contract(address=pool_address, abi=self.lending_abi)
         reserves_list = contract.functions.getReservesList().call(block_identifier=block_number)
         reserves_info = {}
@@ -70,8 +70,8 @@ class TravaStateService(ProtocolServices):
 
     def get_token_list(self):
         begin = time.time()
-        tokens = [self.trava_info.get('rewardToken'), self.trava_info.get("poolToken")]
-        for token in self.trava_info.get("reservesList"):
+        tokens = [self.pool_info.get('rewardToken'), self.pool_info.get("poolToken")]
+        for token in self.pool_info.get("reservesList"):
             if token == Token.native_token:
                 tokens.append(Token.wrapped_token.get(self.chain_id))
                 continue
@@ -88,9 +88,9 @@ class TravaStateService(ProtocolServices):
             **kwargs
     ):
         begin = time.time()
-        reserves_info = kwargs.get("reserves_info", self.trava_info.get("reservesList"))
+        reserves_info = kwargs.get("reserves_info", self.pool_info.get("reservesList"))
         token_prices = kwargs.get("token_prices", {})
-        pool_token_price = token_prices.get(self.trava_info.get('poolToken'), 1)
+        pool_token_price = token_prices.get(self.pool_info.get('poolToken'), 1)
         wrapped_native_token_price = token_prices.get(Token.wrapped_token.get(self.chain_id), 1)
         pool_decimals = kwargs.get("pool_decimals", 18)
         result = {}
@@ -122,7 +122,7 @@ class TravaStateService(ProtocolServices):
         reserves_info = kwargs.get("reserves_info", {})
         is_oracle_price = kwargs.get("is_oracle_price", False)  # get price by oracle
         if not reserves_info:
-            reserves_info = self.trava_info['reservesList']
+            reserves_info = self.pool_info['reservesList']
         rpc_calls = {}
         if Query.deposit_borrow in query_types and wallet:
             rpc_calls.update(self.get_wallet_deposit_borrow_balance_function_info(
@@ -387,7 +387,7 @@ class TravaStateService(ProtocolServices):
 
     def calculate_all_rewards_balance(
             self, decoded_data: dict, wallet_address: str, block_number: int = "latest"):
-        reward_token = self.trava_info['rewardToken']
+        reward_token = self.pool_info['rewardToken']
         key = f"getRewardsBalance_{wallet_address}_{block_number}".lower()
         rewards = decoded_data.get(key) / 10 ** 18
         result = {
@@ -416,7 +416,7 @@ class TravaStateService(ProtocolServices):
     def calculate_rewards_balance(
             self, decoded_data: dict, wallet_address: str, reserves_info: dict, block_number: int = "latest"):
         result = {}
-        reward_token = self.trava_info['rewardToken']
+        reward_token = self.pool_info['rewardToken']
         for token, value in reserves_info.items():
             atoken, debt_token = value['tToken'], value['dToken']
             akey = f"getRewardsBalance_{atoken}_{wallet_address}_{block_number}".lower()
@@ -444,15 +444,15 @@ class TravaStateService(ProtocolServices):
 
     def get_function_lending_pool_info(self, fn_name: str, fn_paras=None, block_number: int = 'latest'):
         return self.state_service.get_function_info(
-            self.trava_info['address'], self.lending_abi, fn_name, fn_paras, block_number
+            self.pool_info['address'], self.lending_abi, fn_name, fn_paras, block_number
         )
 
     def get_function_incentive_info(self, fn_name: str, fn_paras=None, block_number: int = 'latest'):
         return self.state_service.get_function_info(
-            self.trava_info['stakedIncentiveAddress'], self.incentive_abi, fn_name, fn_paras, block_number
+            self.pool_info['stakedIncentiveAddress'], self.incentive_abi, fn_name, fn_paras, block_number
         )
 
     def get_function_oracle_info(self, fn_name: str, fn_paras=None, block_number: int = 'latest'):
         return self.state_service.get_function_info(
-            self.trava_info['oracleAddress'], self.oracle_abi, fn_name, fn_paras, block_number
+            self.pool_info['oracleAddress'], self.oracle_abi, fn_name, fn_paras, block_number
         )
