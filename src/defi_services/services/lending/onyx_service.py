@@ -26,7 +26,7 @@ class OnyxInfo:
 
 class OnyxStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
-        self.name = f"{chain_id}_onyx"
+        self.name = f"{chain_id}_onyx-protocol"
         self.chain_id = chain_id
         self.pool_info = OnyxInfo.mapping.get(chain_id)
         self.state_service = state_service
@@ -36,7 +36,7 @@ class OnyxStateService(ProtocolServices):
     # BASIC FUNCTIONS
     def get_service_info(self):
         info = {
-            "compound": {
+            "onyx-protocol": {
                 "chain_id": self.chain_id,
                 "type": "lending",
                 "protocol_info": self.pool_info
