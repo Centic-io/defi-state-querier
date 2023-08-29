@@ -10,6 +10,7 @@ from defi_services.services.lending.trava_services import TravaStateService
 from defi_services.services.lending.valas_services import ValasStateService
 from defi_services.services.lending.iron_bank_service import IronBankStateService
 from defi_services.services.lending.venus_services import VenusStateService
+from defi_services.services.lending.liqee_service import LiqeeStateService
 from defi_services.services.lending.strike_service import StrikeStateService
 
 
@@ -25,6 +26,8 @@ class Lending:
     geist = "geist-finance"
     cream = "cream-lending"
     venus = "venus"
+    liqee = "liqee"
+    all = [liqee]
     strike = "strike"
     uwu = "uwu"
     all = [strike]
@@ -38,6 +41,7 @@ class Lending:
         uwu: UwuStateService
         trava: TravaStateService,
         aave_v3: AaveV3StateService,
+        liqee: LiqeeStateService
         strike: StrikeStateService
     }
     fantom = {

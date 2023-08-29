@@ -8,7 +8,6 @@ job = StateProcessor(
     chain_id="0x1"
 )
 
-
 queries = [
     {
         "query_id": 4,
