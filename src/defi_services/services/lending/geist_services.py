@@ -17,5 +17,15 @@ class GeistInfo:
 class GeistStateService(ValasStateService):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0xfa"):
         super().__init__(state_service, chain_id)
-        self.name = f"{chain_id}_geist"
+        self.name = f"{chain_id}_geist-finance"
         self.pool_info = GeistInfo.mapping.get(chain_id)
+
+    def get_service_info(self):
+        info = {
+            "geist-finance": {
+                "chain_id": self.chain_id,
+                "type": "lending",
+                "protocol_info": self.pool_info
+            }
+        }
+        return info

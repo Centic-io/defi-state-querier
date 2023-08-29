@@ -10,6 +10,8 @@ AAVE_V3_POLYGON = {
         "0xfa68fb4628dff1028cfec22b4162fccd0d45efb6"
     ],
     "type": "LENDING_POOL",
+    "poolToken": "0xd6df932a45c0f255f85145f286ea0b292b21c90b",
+    "forked": "aave-v3",
     "reservesList": {
         "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063": {
             "tToken": "0x82e64f49ed5ec1bc6e43dad4fc8af9bb3a2312ee",

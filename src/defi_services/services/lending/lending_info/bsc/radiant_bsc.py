@@ -5,6 +5,8 @@ RADIANT_BSC = {
     "multiFeeAddress": "0x4fd9f7c5ca0829a656561486bada018505dfcb5e",
     "chefIncentiveAddress": '0x7c16abb090d3fb266e9d17f60174b632f4229933',
     "oracleAddress": "0x0bb5c1bc173b207cbf47cdf013617087776f3782",
+    "poolToken": "0xf7de7e8a6bd59ed41a4b5fe50278b3b7f31384df",
+    "forked": "aave-v2",
     "type": "LENDING_POOL",
     "reservesList": {
         "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c": {

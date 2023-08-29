@@ -12,23 +12,23 @@ from defi_services.constants.db_constant import DBConst
 from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import ContractAddresses, Token
 from defi_services.jobs.state_querier import StateQuerier
-from defi_services.services.lending.lending_info.ethereum.compound_eth import COMPOUND_ETH
+from defi_services.services.lending.lending_info.ethereum.iron_bank_eth import IRON_BANK_ETH
 from defi_services.services.protocol_services import ProtocolServices
 
-logger = logging.getLogger("Compound Lending Pool State Service")
+logger = logging.getLogger("Iron Bank Lending Pool State Service")
 
 
-class CompoundInfo:
+class IronBankInfo:
     mapping = {
-        Chain.ethereum: COMPOUND_ETH
+        Chain.ethereum: IRON_BANK_ETH
     }
 
 
-class CompoundStateService(ProtocolServices):
+class IronBankStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
-        self.name = f"{chain_id}_compound"
+        self.name = f"{chain_id}_iron-bank"
         self.chain_id = chain_id
-        self.pool_info = CompoundInfo.mapping.get(chain_id)
+        self.iron_bank_info = IronBankInfo.mapping.get(chain_id)
         self.state_service = state_service
         self.lens_abi = CREAM_LENS_ABI
         self.comptroller_abi = CREAM_COMPTROLLER_ABI
@@ -36,10 +36,10 @@ class CompoundStateService(ProtocolServices):
     # BASIC FUNCTIONS
     def get_service_info(self):
         info = {
-            "compound": {
+            "iron-bank": {
                 "chain_id": self.chain_id,
                 "type": "lending",
-                "protocol_info": self.pool_info
+                "protocol_info": self.iron_bank_info
             }
         }
         return info
@@ -49,7 +49,7 @@ class CompoundStateService(ProtocolServices):
             block_number: int = "latest"):
         _w3 = self.state_service.get_w3()
         comptroller_contract = _w3.eth.contract(
-            address=_w3.toChecksumAddress(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
+            address=_w3.toChecksumAddress(self.iron_bank_info.get("comptrollerAddress")), abi=self.comptroller_abi)
         ctokens = []
         for token in comptroller_contract.functions.getAllMarkets().call(block_identifier=block_number):
             if token in [ContractAddresses.LUNA.lower(), ContractAddresses.UST.lower(), ContractAddresses.LUNA,
@@ -58,10 +58,11 @@ class CompoundStateService(ProtocolServices):
             ctokens.append(token)
 
         lens_contract = _w3.eth.contract(
-            address=Web3.toChecksumAddress(self.pool_info.get("lensAddress")), abi=self.lens_abi
+            address=Web3.toChecksumAddress(self.iron_bank_info.get("lensAddress")), abi=self.lens_abi
         )
         tokens = [Web3.toChecksumAddress(i) for i in ctokens]
         metadata = lens_contract.functions.cTokenMetadataAll(tokens).call(block_identifier=block_number)
+
         reserves_info = {}
         for data in metadata:
             underlying = data[11].lower()
@@ -76,8 +77,8 @@ class CompoundStateService(ProtocolServices):
 
     def get_token_list(self):
         begin = time.time()
-        tokens = [self.pool_info.get('rewardToken'), self.pool_info.get("poolToken")]
-        for token in self.pool_info.get("reservesList"):
+        tokens = [self.iron_bank_info.get('rewardToken'), self.iron_bank_info.get("poolToken")]
+        for token in self.iron_bank_info.get("reservesList"):
             if token == Token.native_token:
                 tokens.append(Token.wrapped_token.get(self.chain_id))
                 continue
@@ -94,7 +95,7 @@ class CompoundStateService(ProtocolServices):
             **kwargs
     ):
         begin = time.time()
-        reserves_info = kwargs.get("reserves_info", self.pool_info.get("reservesList"))
+        reserves_info = kwargs.get("reserves_info", self.iron_bank_info.get("reservesList"))
         token_prices = kwargs.get("token_prices", {})
         wrapped_native_token_price = token_prices.get(Token.wrapped_token.get(self.chain_id), 1)
         pool_decimals = kwargs.get("pool_decimals", 18)
@@ -127,7 +128,7 @@ class CompoundStateService(ProtocolServices):
         reserves_info = kwargs.get("reserves_info", {})
         is_oracle_price = kwargs.get("is_oracle_price", False)  # get price by oracle
         if not reserves_info:
-            reserves_info = self.pool_info['reservesList']
+            reserves_info = self.iron_bank_info['reservesList']
         rpc_calls = {}
         if Query.deposit_borrow in query_types and wallet:
             rpc_calls.update(self.get_wallet_deposit_borrow_balance_function_info(
@@ -217,7 +218,7 @@ class CompoundStateService(ProtocolServices):
             is_oracle_price: bool = False,
     ):
         wrapped_native_token_price = token_prices.get(Token.wrapped_token.get(self.chain_id))
-        pool_token_price = token_prices.get(self.pool_info.get("poolToken"))
+        pool_token_price = token_prices.get(self.iron_bank_info.get("poolToken"))
         tokens_interest_rates = dict()
         decode_data = self.get_apy_lending_pool(
             decoded_data, reserves_info, block_number,
@@ -308,9 +309,9 @@ class CompoundStateService(ProtocolServices):
             wallet_address: str,
             block_number: int = "latest",
     ):
-        token = self.pool_info.get("poolToken")
+        token = self.iron_bank_info.get("poolToken")
         fn_paras = [Web3.toChecksumAddress(token),
-                    Web3.toChecksumAddress(self.pool_info.get("comptrollerAddress")),
+                    Web3.toChecksumAddress(self.iron_bank_info.get("comptrollerAddress")),
                     Web3.toChecksumAddress(wallet_address)]
         rpc_call = self.get_lens_function_info("getCompBalanceMetadataExt", fn_paras, block_number)
         get_reward_id = f"getCompBalanceMetadataExt_{wallet_address}_{block_number}".lower()
@@ -319,7 +320,7 @@ class CompoundStateService(ProtocolServices):
     def calculate_rewards_balance(self, wallet_address: str, decoded_data: dict, block_number: int = "latest"):
         get_reward_id = f"getCompBalanceMetadataExt_{wallet_address}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id)[-1] / 10 ** 18
-        reward_token = self.pool_info.get("rewardToken")
+        reward_token = self.iron_bank_info.get("rewardToken")
         result = {
             reward_token: {"amount": rewards}
         }
@@ -470,14 +471,15 @@ class CompoundStateService(ProtocolServices):
                 result[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
         return result
 
+
     def get_lens_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
         return self.state_service.get_function_info(
-            self.pool_info['lensAddress'], self.lens_abi, fn_name, fn_paras, block_number
+            self.iron_bank_info['lensAddress'], self.lens_abi, fn_name, fn_paras, block_number
         )
 
     def get_comptroller_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
         return self.state_service.get_function_info(
-            self.pool_info['comptrollerAddress'], self.comptroller_abi, fn_name, fn_paras, block_number
+            self.iron_bank_info['comptrollerAddress'], self.comptroller_abi, fn_name, fn_paras, block_number
         )
 
     def get_ctoken_function_info(self, ctoken: str, fn_name: str, fn_paras: list, block_number: int = "latest"):
@@ -491,7 +493,7 @@ class CompoundStateService(ProtocolServices):
             block_number: int = "latest"
     ):
         tokens = [Web3.toChecksumAddress(value['cToken']) for key, value in reserves_info.items()]
-        key = f"cTokenMetadataAll_{self.pool_info.get('lensAddress')}_{block_number}".lower()
+        key = f"cTokenMetadataAll_{self.iron_bank_info.get('lensAddress')}_{block_number}".lower()
         return {
             key: self.get_lens_function_info("cTokenMetadataAll", tokens, block_number)
         }
@@ -499,14 +501,14 @@ class CompoundStateService(ProtocolServices):
     def ctoken_underlying_price_all(
             self, reserves_info, block_number: int = 'latest'):
         tokens = [Web3.toChecksumAddress(value['cToken']) for key, value in reserves_info.items()]
-        key = f"cTokenUnderlyingPriceAll_{self.pool_info.get('lensAddress')}_{block_number}".lower()
+        key = f"cTokenUnderlyingPriceAll_{self.iron_bank_info.get('lensAddress')}_{block_number}".lower()
         return {
             key: self.get_lens_function_info("cTokenUnderlyingPriceAll", tokens, block_number)
         }
 
     def get_all_markets(
             self, block_number: int = 'latest'):
-        key = f"getAllMarkets_{self.pool_info.get('comptrollerAddress')}_{block_number}".lower()
+        key = f"getAllMarkets_{self.iron_bank_info.get('comptrollerAddress')}_{block_number}".lower()
         return {
             key: self.get_comptroller_function_info("getAllMarkets", [], block_number)
         }

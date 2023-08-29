@@ -1,4 +1,4 @@
-AAVE_V3_ETH = {
+SPARK_ETH = {
     "address": "0x87870bca3f3fd6335c3f4ce8392d69350b4fa4e2",
     "name": "Spark Lending Pool",
     "stakedIncentiveAddress": '0x8164cc65827dcfe994ab23944cbc90e0aa80bfcb',
