@@ -13,6 +13,7 @@ from defi_services.services.lending.iron_bank_service import IronBankStateServic
 from defi_services.services.lending.venus_services import VenusStateService
 from defi_services.services.lending.liqee_service import LiqeeStateService
 from defi_services.services.lending.strike_service import StrikeStateService
+from defi_services.services.lending.onyx_service import OnyxStateService
 
 
 class Lending:
@@ -31,7 +32,8 @@ class Lending:
     liqee = "liqee"
     strike = "strike"
     uwu = "uwu"
-    all = [strike, aave_v2, aave_v3, radiant_v2, compound, flux, 
+    onyx = "onyx"
+    all = [strike, aave_v2, aave_v3, radiant_v2, compound, flux, onyx
            iron_bank, trava, valas, geist, cream, venus, liqee, strike, uwu]
 
     # chain
@@ -46,6 +48,7 @@ class Lending:
         aave_v3: AaveV3StateService,
         liqee: LiqeeStateService
         strike: StrikeStateService
+        onyx: OnyxStateService
     }
     fantom = {
         trava: TravaStateService,

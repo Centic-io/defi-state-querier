@@ -1,5 +1,6 @@
 import sys
 import os
+
 from defi_services.constants.token_constant import Token
 from defi_services.jobs.state_processor import StateProcessor
 
