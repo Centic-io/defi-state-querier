@@ -5,7 +5,9 @@ VENUS_BSC = {
     "rewardToken": "0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63",
     "comptrollerAddress": "0xfd36e2c2a6789db23113685031d7f16329158384",
     "lensAddress": "0xcda4a4ab96dfc1728ee265b9392373db40e769f2",
+    "poolToken": "0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63",
     "type": "LENDING_POOL",
+    "forked": "compound",
     "reservesList": {
         "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d": {
             "cToken": "0xeca88125a5adbe82614ffc12d0db554e2e2867c8",

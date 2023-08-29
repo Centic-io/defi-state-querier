@@ -5,6 +5,8 @@ AAVE_V3_FTM = {
     "oracleAddress": "0xfd6f3c1845604c8ae6c6e402ad17fb9885160754",
     "rewardTokensList": [],
     "type": "LENDING_POOL",
+    "poolToken": "0x6a07a792ab2965c72a5b8088d3a069a7ac3a993b",
+    "forked": "aave-v3",
     "reservesList": {
         "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e": {
             "tToken": "0x82e64f49ed5ec1bc6e43dad4fc8af9bb3a2312ee",

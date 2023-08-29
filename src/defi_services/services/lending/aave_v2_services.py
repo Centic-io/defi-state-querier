@@ -12,6 +12,7 @@ from defi_services.constants.query_constant import Query
 from defi_services.constants.time_constant import TimeConstants
 from defi_services.constants.token_constant import Token
 from defi_services.jobs.state_querier import StateQuerier
+from defi_services.services.lending.lending_info.avalanche.aave_v2_avalanche import AAVE_V2_AVALANCHE
 from defi_services.services.lending.lending_info.ethereum.aave_v2_eth import AAVE_V2_ETH
 from defi_services.services.lending.lending_info.polygon.aave_v2_polygon import AAVE_V2_POLYGON
 from defi_services.services.protocol_services import ProtocolServices
@@ -23,12 +24,13 @@ class AaveInfo:
     mapping = {
         Chain.ethereum: AAVE_V2_ETH,
         Chain.polygon: AAVE_V2_POLYGON,
+        Chain.avalanche: AAVE_V2_AVALANCHE
     }
 
 
 class AaveV2StateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
-        self.name = f"{chain_id}_aave_v2"
+        self.name = f"{chain_id}_aave-v2"
         self.chain_id = chain_id
         self.pool_info = AaveInfo.mapping.get(chain_id)
         self.lending_abi = LENDING_POOL_ABI
@@ -402,7 +404,6 @@ class AaveV2StateService(ProtocolServices):
         return data
 
     # REWARDS BALANCE
-
     def get_all_rewards_balance_function_info(
             self,
             wallet_address,

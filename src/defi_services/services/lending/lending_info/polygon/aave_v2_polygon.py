@@ -5,6 +5,8 @@ AAVE_V2_POLYGON = {
     "stakedIncentiveAddress": '0x2c901a65071c077c78209b06ab2b5d8ec285ab84',
     "oracleAddress": "0x0229f777b0fab107f9591a41d5f02e4e98db6f2d",
     "type": "LENDING_POOL",
+    "poolToken": "0xd6df932a45c0f255f85145f286ea0b292b21c90b",
+    "forked": "aave-v2",
     "reservesList": {
         "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063": {
             "tToken": "0x27f8d03b3a2196956ed754badc28d73be8830a6e",

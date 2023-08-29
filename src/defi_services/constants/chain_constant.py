@@ -5,3 +5,4 @@ class Chain:
     polygon = "0x89"
     arbitrum = "0xa4b1"
     optimism = "0xa"
+    avalanche = "0xa86a"
