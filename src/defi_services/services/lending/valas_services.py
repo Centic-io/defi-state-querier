@@ -28,7 +28,7 @@ class ValasInfo:
 
 class ValasStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x38"):
-        self.name = f"{chain_id}_valas"
+        self.name = f"{chain_id}_valas-finance"
         self.chain_id = chain_id
         self.pool_info = ValasInfo.mapping.get(chain_id)
         self.lending_abi = LENDING_POOL_ABI
@@ -40,7 +40,7 @@ class ValasStateService(ProtocolServices):
     # BASIC FUNCTION
     def get_service_info(self):
         info = {
-            "valas": {
+            "valas-finance": {
                 "chain_id": self.chain_id,
                 "type": "lending",
                 "protocol_info": self.pool_info

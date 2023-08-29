@@ -1,11 +1,12 @@
 CREAM_BSC = {
-    "chainId": "0x38",
     "comptrollerAddress": "0x589de0f0ccf905477646599bb3e5c622c84cc0ba",
     "comptrollerImplementationAddress": "0x49a08f9f445af5734cf15a1deab3b1c6a7988fb4",
     "name": "Cream Lending Pool",
     "rewardToken": "0xd4cb328a82bdf5f03eb737f37fa6b370aef3e888",
     "lensAddress": "0x1a014ffe0cd187a298a7e79ba5ab05538686ea4a",
     "type": "LENDING_POOL",
+    "poolToken": "0xd4cb328a82bdf5f03eb737f37fa6b370aef3e888",
+    "forked": "compound",
     "reservesList": {
         "0x0000000000000000000000000000000000000000": {
             "cToken": "0x1ffe17b99b439be0afc831239ddecda2a790ff3a",
