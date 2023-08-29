@@ -8,6 +8,7 @@ job = StateProcessor(
     chain_id="0x1"
 )
 
+
 queries = [
     {
         "query_id": 4,
@@ -32,4 +33,5 @@ queries = [
 ]
 info = job.get_service_info()
 data = job.run('0x916D6Fd3CfBaE5A88053899eE561569C19101BFD', queries, 17983787)
+
 print(data)

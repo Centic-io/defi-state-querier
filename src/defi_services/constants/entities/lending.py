@@ -8,6 +8,7 @@ from defi_services.services.lending.geist_services import GeistStateService
 from defi_services.services.lending.radiant_v2_services import RadiantStateService
 from defi_services.services.lending.trava_services import TravaStateService
 from defi_services.services.lending.valas_services import ValasStateService
+from defi_services.services.lending.iron_bank_service import IronBankStateService
 from defi_services.services.lending.venus_services import VenusStateService
 from defi_services.services.lending.strike_service import StrikeStateService
 
@@ -18,18 +19,22 @@ class Lending:
     aave_v3 = "aave-v3"
     radiant_v2 = "radiant-v2"
     compound = "compound"
+    iron_bank = "iron_bank"
     trava = "trava-finance"
     valas = "valas-finance"
     geist = "geist-finance"
     cream = "cream-lending"
     venus = "venus"
     strike = "strike"
+    uwu = "uwu"
     all = [strike]
 
     # chain
     ethereum = {
         aave_v2: AaveV2StateService,
         compound: CompoundStateService,
+        trava: TravaStateService,
+        iron_bank: IronBankStateService
         uwu: UwuStateService
         trava: TravaStateService,
         aave_v3: AaveV3StateService,
