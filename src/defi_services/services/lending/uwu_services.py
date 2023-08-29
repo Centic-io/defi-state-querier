@@ -26,7 +26,7 @@ class UwuInfo:
 
 class UwuStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
-        self.name = f"{chain_id}_aave_v2"
+        self.name = f"{chain_id}_uwu-lend"
         self.chain_id = chain_id
         self.uwu_info = UwuInfo.mapping.get(chain_id)
         self.lending_abi = LENDING_POOL_ABI
@@ -37,7 +37,7 @@ class UwuStateService(ProtocolServices):
     # BASIC FUNCTION
     def get_service_info(self):
         info = {
-            "uwu": {
+            "uwu-lend": {
                 "chain_id": self.chain_id,
                 "type": "lending",
                 "protocol_info": self.uwu_info
