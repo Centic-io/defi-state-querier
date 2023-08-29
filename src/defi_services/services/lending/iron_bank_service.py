@@ -26,7 +26,7 @@ class IronBankInfo:
 
 class IronBankStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
-        self.name = f"{chain_id}_iron_bank"
+        self.name = f"{chain_id}_iron-bank"
         self.chain_id = chain_id
         self.iron_bank_info = IronBankInfo.mapping.get(chain_id)
         self.state_service = state_service
@@ -36,7 +36,7 @@ class IronBankStateService(ProtocolServices):
     # BASIC FUNCTIONS
     def get_service_info(self):
         info = {
-            "compound": {
+            "iron-bank": {
                 "chain_id": self.chain_id,
                 "type": "lending",
                 "protocol_info": self.iron_bank_info
