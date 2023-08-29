@@ -56,7 +56,7 @@ Return the asset list of an address in a blockchain. These assets are native tok
       "<reward_address>": {
         "amount": 1.4
      }
-  }
+    }
   }
 ]
 ```

@@ -1,12 +1,14 @@
 AAVE_V3_OPTIMISM = {
     "address": "0x794a61358d6845594f94dc1db02a252b5b4814ad",
     "name": "AAVE V3 Lending Pool",
-    "incentiveAddress": '0x929ec64c34a17401f460460d4b9390518e5b473e',
+    "stakedIncentiveAddress": '0x929ec64c34a17401f460460d4b9390518e5b473e',
     "oracleAddress": "0xd81eb3728a631871a7ebbad631b5f424909f0c77",
     "rewardTokensList": [
         "0x4200000000000000000000000000000000000042"
     ],
     "type": "LENDING_POOL",
+    "poolToken": "0x76fb31fb4af56892a25e32cfc43de717950c9278",
+    "forked": "aave-v3",
     "reservesList": {
         "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1": {
             "tToken": "0x82e64f49ed5ec1bc6e43dad4fc8af9bb3a2312ee",

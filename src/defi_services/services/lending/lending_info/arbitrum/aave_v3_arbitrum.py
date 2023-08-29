@@ -5,6 +5,8 @@ AAVE_V3_ARB = {
     "oracleAddress": "0xb56c2F0B653B2e0b10C9b928C8580Ac5Df02C7C7",
     "rewardTokensList": [],
     "type": "LENDING_POOL",
+    "poolToken": "0xba5ddd1f9d7f570dc94a51479a000e3bce967196",
+    "forked": "aave-v3",
     "reservesList": {
         "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1": {
             "tToken": "0x82e64f49ed5ec1bc6e43dad4fc8af9bb3a2312ee",

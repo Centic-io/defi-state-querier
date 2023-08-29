@@ -1,6 +1,5 @@
 import sys
 import os
-
 from defi_services.constants.token_constant import Token
 from defi_services.jobs.state_processor import StateProcessor
 
@@ -27,7 +26,7 @@ queries = [
     },
     {
         "query_id": 3,
-        "entity_id": "uwu",
+        "entity_id": "strike",
         "query_type": "protocol_reward"
     },
 ]
