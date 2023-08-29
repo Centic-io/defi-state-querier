@@ -1,5 +1,6 @@
 from defi_services.constants.chain_constant import Chain
 from defi_services.services.lending.aave_v2_services import AaveV2StateService
+from defi_services.services.lending.uwu_services import UwuStateService
 from defi_services.services.lending.aave_v3_services import AaveV3StateService
 from defi_services.services.lending.compound_service import CompoundStateService
 from defi_services.services.lending.cream_services import CreamStateService
@@ -29,6 +30,7 @@ class Lending:
     ethereum = {
         aave_v2: AaveV2StateService,
         compound: CompoundStateService,
+        uwu: UwuStateService
         trava: TravaStateService,
         aave_v3: AaveV3StateService,
         strike: StrikeStateService
