@@ -26,7 +26,7 @@ class FluxInfo:
 
 class FluxStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
-        self.name = f"{chain_id}_flux"
+        self.name = f"{chain_id}_flux-finance"
         self.chain_id = chain_id
         self.flux_info = FluxInfo.mapping.get(chain_id)
         self.state_service = state_service
@@ -36,7 +36,7 @@ class FluxStateService(ProtocolServices):
     # BASIC FUNCTIONS
     def get_service_info(self):
         info = {
-            "compound": {
+            "flux-finance": {
                 "chain_id": self.chain_id,
                 "type": "lending",
                 "protocol_info": self.flux_info
