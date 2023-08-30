@@ -282,5 +282,5 @@ class AaveV3StateService(AaveV2StateService):
         for key, value in result.items():
             decimals_call_id = f"decimals_{key}_{block_number}".lower()
             value /= 10**decoded_data.get(decimals_call_id)
-            result[key] = value
+            result[key] = {"amount": value}
         return result

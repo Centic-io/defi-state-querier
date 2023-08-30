@@ -58,7 +58,7 @@ class UwuStateService(ProtocolServices):
             reserves_info[key] = {}
             reserves_info[key]["tToken"] = value[7].lower()
             reserves_info[key]["dToken"] = value[9].lower()
-            # reserves_info[key]["sdToken"] = value[8].lower()
+            reserves_info[key]["sdToken"] = value[8].lower()
             risk_param = bin(value[0][0])[2:]
             reserves_info[key]["liquidationThreshold"] = int(risk_param[-31:-16], 2) / 10 ** 4
         logger.info(f"Get reserves information in {time.time() - begin}s")
@@ -97,8 +97,8 @@ class UwuStateService(ProtocolServices):
             ))
 
         if Query.protocol_reward in query_types and wallet:
-            result.update(self.calculate_rewards_balance(
-                decoded_data, wallet, reserves_info, block_number
+            result.update(self.calculate_all_rewards_balance(
+                decoded_data, wallet, block_number
             ))
 
 
@@ -132,7 +132,7 @@ class UwuStateService(ProtocolServices):
             rpc_calls.update(self.get_apy_lending_pool_function_info(reserves_info, block_number, is_oracle_price))
 
         if Query.protocol_reward in query_types and wallet:
-            rpc_calls.update(self.get_rewards_balance_function_info(wallet, reserves_info, block_number))
+            rpc_calls.update(self.get_all_rewards_balance_function_info(wallet, reserves_info, block_number))
         logger.info(f"Get encoded rpc calls in {time.time() - begin}s")
         return rpc_calls
 
@@ -422,7 +422,7 @@ class UwuStateService(ProtocolServices):
             self, decoded_data: dict, wallet_address: str, block_number: int = "latest"):
         reward_token = self.uwu_info['rewardToken']
         key = f"claimableReward_{wallet_address}_{block_number}".lower()
-        rewards = decoded_data.get(key) / 10 ** 18
+        rewards = sum(decoded_data.get(key))/ 10 ** 18
         result = {
             reward_token: {"amount": rewards}
         }
