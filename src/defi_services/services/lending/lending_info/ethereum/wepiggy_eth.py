@@ -1,4 +1,4 @@
-COMPOUND_ETH = {
+WEPIGGY_ETH = {
     "name": "Wepiggy Lending Pool",
     "rewardToken": "0x6f620ec89b8479e97a6985792d0c64f237566746",
     "comptrollerAddress": "0x0c8c1ab017c3c0c8a48dd9f1db2f59022d190f0b",
@@ -24,7 +24,7 @@ COMPOUND_ETH = {
             "cToken": "0xf8e5b9738bf63adfff36a849f9b9c9617c8d8c1f",
             "liquidationThreshold": 0.8
         },
-        "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599":{
+        "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
             "cToken": "0xc12b9d620bfcb48be3e0ccbf0ea80c717333b46f",
             "liquidationThreshold": 0.7
         },

@@ -13,20 +13,20 @@ queries = [
     },
     {
         "query_id": 1,
-        "entity_id": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "entity_id": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
         "query_type": "token_balance"
     },
     {
         "query_id": 2,
-        "entity_id": "aave-v2",
+        "entity_id": "wepiggy",
         "query_type": "deposit_borrow"
     },
     {
         "query_id": 3,
-        "entity_id": "aave-v2",
+        "entity_id": "wepiggy",
         "query_type": "protocol_reward"
     },
 ]
 info = job.get_service_info()
-data = job.run('0x4838b106fce9647bdf1e7877bf73ce8b0bad5f97', queries, 17983787)
+data = job.run('0x3d4D6dA344D7629cB0899fbEC79a60F47955E6C7', queries, 18024932)
 print(data)
