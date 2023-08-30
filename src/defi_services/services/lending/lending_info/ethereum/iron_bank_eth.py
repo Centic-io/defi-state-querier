@@ -1,7 +1,8 @@
 IRON_BANK_ETH = {
     "name": "Iron Bank Lending Pool",
     "rewardToken": "0x00a35fd824c717879bf370e70ac6868b95870dfb",
-    "comptrollerAddress": "0xc358d3ea954e39caeabc9c2fd80dce21a920387b",
+    # "comptrollerAddress": "0xc358d3ea954e39caeabc9c2fd80dce21a920387b",
+    "comptrollerAddress": "0xab1c342c7bf5ec5f02adea1c2270670bca144cbb",
     "lensAddress": "0x328a7b4d538a2b3942653a9983fda3c12c571141",
     "poolToken": "0x00a35fd824c717879bf370e70ac6868b95870dfb",
     "type": "LENDING_POOL",

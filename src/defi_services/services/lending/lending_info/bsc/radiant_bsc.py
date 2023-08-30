@@ -3,7 +3,7 @@ RADIANT_BSC = {
     "name": "Radiant Lending Pool",
     "rewardToken": "0xf7de7e8a6bd59ed41a4b5fe50278b3b7f31384df",
     "multiFeeAddress": "0x4fd9f7c5ca0829a656561486bada018505dfcb5e",
-    "chefIncentiveAddress": '0x7c16abb090d3fb266e9d17f60174b632f4229933',
+    "stakedIncentiveAddress": '0x7c16abb090d3fb266e9d17f60174b632f4229933',
     "oracleAddress": "0x0bb5c1bc173b207cbf47cdf013617087776f3782",
     "poolToken": "0xf7de7e8a6bd59ed41a4b5fe50278b3b7f31384df",
     "forked": "aave-v2",

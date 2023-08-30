@@ -1,5 +1,6 @@
 from defi_services.constants.chain_constant import Chain
 from defi_services.services.lending.aave_v2_services import AaveV2StateService
+from defi_services.services.lending.granary_v1_services import GranaryV1StateService
 from defi_services.services.lending.uwu_services import UwuStateService
 from defi_services.services.lending.aave_v3_services import AaveV3StateService
 from defi_services.services.lending.compound_service import CompoundStateService
@@ -33,9 +34,10 @@ class Lending:
     strike = "strike"
     uwu = "uwu-lend"
     onyx = "onyx-protocol"
-    all = [strike, aave_v2, aave_v3, radiant_v2, compound, flux, onyx,
+    granary = "granary-finance"
+    all = [strike, aave_v2, aave_v3, radiant_v2, compound, flux, onyx, granary,
            iron_bank, trava, valas, geist, cream, venus, liqee, strike, uwu]
-
+    # all = [aave_v2, trava]
     # chain
     ethereum = {
         aave_v2: AaveV2StateService,
@@ -47,7 +49,8 @@ class Lending:
         aave_v3: AaveV3StateService,
         liqee: LiqeeStateService,
         strike: StrikeStateService,
-        onyx: OnyxStateService
+        onyx: OnyxStateService,
+        granary: GranaryV1StateService
     }
     fantom = {
         trava: TravaStateService,
