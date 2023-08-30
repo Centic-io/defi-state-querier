@@ -3,8 +3,8 @@ import time
 
 from web3 import Web3
 
-from defi_services.abis.lending.cream.cream_comptroller_abi import CREAM_COMPTROLLER_ABI
-from defi_services.abis.lending.cream.cream_lens_abi import CREAM_LENS_ABI
+from defi_services.abis.lending.strike.strike_comptroller_abi import STRIKE_COMPTROLLER_ABI
+from defi_services.abis.lending.strike.strike_lens_abi import STRIKE_LENS_ABI
 from defi_services.abis.token.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
@@ -30,8 +30,8 @@ class StrikeStateService(ProtocolServices):
         self.chain_id = chain_id
         self.pool_info = StrikeInfo.mapping.get(chain_id)
         self.state_service = state_service
-        self.lens_abi = CREAM_LENS_ABI
-        self.comptroller_abi = CREAM_COMPTROLLER_ABI
+        self.lens_abi = STRIKE_LENS_ABI
+        self.comptroller_abi = STRIKE_COMPTROLLER_ABI
 
     # BASIC FUNCTIONS
     def get_service_info(self):
@@ -61,7 +61,7 @@ class StrikeStateService(ProtocolServices):
             address=Web3.toChecksumAddress(self.pool_info.get("lensAddress")), abi=self.lens_abi
         )
         tokens = [Web3.toChecksumAddress(i) for i in ctokens]
-        metadata = lens_contract.functions.cTokenMetadataAll(tokens).call(block_identifier=block_number)
+        metadata = lens_contract.functions.sTokenMetadataAll(tokens).call(block_identifier=block_number)
         reserves_info = {}
         for data in metadata:
             underlying = data[11].lower()

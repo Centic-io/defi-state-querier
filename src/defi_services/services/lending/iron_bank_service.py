@@ -5,6 +5,7 @@ from web3 import Web3
 
 from defi_services.abis.lending.cream.cream_comptroller_abi import CREAM_COMPTROLLER_ABI
 from defi_services.abis.lending.cream.cream_lens_abi import CREAM_LENS_ABI
+from defi_services.abis.lending.iron_bank.iron_lens_abi import IRON_LENS_ABI
 from defi_services.abis.token.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
@@ -30,7 +31,7 @@ class IronBankStateService(ProtocolServices):
         self.chain_id = chain_id
         self.iron_bank_info = IronBankInfo.mapping.get(chain_id)
         self.state_service = state_service
-        self.lens_abi = CREAM_LENS_ABI
+        self.lens_abi = IRON_LENS_ABI
         self.comptroller_abi = CREAM_COMPTROLLER_ABI
 
     # BASIC FUNCTIONS
@@ -65,9 +66,9 @@ class IronBankStateService(ProtocolServices):
 
         reserves_info = {}
         for data in metadata:
-            underlying = data[11].lower()
+            underlying = data[12].lower()
             ctoken = data[0].lower()
-            lt = data[10] / 10 ** 18
+            lt = data[11] / 10 ** 18
             reserves_info[underlying] = {
                 "cToken": ctoken,
                 "liquidationThreshold": lt
@@ -139,7 +140,7 @@ class IronBankStateService(ProtocolServices):
             rpc_calls.update(self.get_apy_lending_pool_function_info(reserves_info, block_number, is_oracle_price))
 
         if Query.protocol_reward in query_types and wallet:
-            rpc_calls.update(self.get_rewards_balance_function_info(wallet, block_number))
+            rpc_calls.update(self.get_rewards_balance_function_info(wallet, reserves_info, block_number))
 
         logger.info(f"Get encoded rpc calls in {time.time() - begin}s")
         return rpc_calls
@@ -307,18 +308,19 @@ class IronBankStateService(ProtocolServices):
     def get_rewards_balance_function_info(
             self,
             wallet_address: str,
+            reserves_info: dict,
             block_number: int = "latest",
     ):
-        token = self.iron_bank_info.get("poolToken")
-        fn_paras = [Web3.toChecksumAddress(token),
+        tokens = [Web3.toChecksumAddress(value.get('cToken')) for key, value in reserves_info.items()]
+        fn_paras = [tokens,
                     Web3.toChecksumAddress(self.iron_bank_info.get("comptrollerAddress")),
                     Web3.toChecksumAddress(wallet_address)]
-        rpc_call = self.get_lens_function_info("getCompBalanceMetadataExt", fn_paras, block_number)
-        get_reward_id = f"getCompBalanceMetadataExt_{wallet_address}_{block_number}".lower()
+        rpc_call = self.get_lens_function_info("getClaimableCompRewards", fn_paras, block_number)
+        get_reward_id = f"getClaimableCompRewards_{wallet_address}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
     def calculate_rewards_balance(self, wallet_address: str, decoded_data: dict, block_number: int = "latest"):
-        get_reward_id = f"getCompBalanceMetadataExt_{wallet_address}_{block_number}".lower()
+        get_reward_id = f"getClaimableCompRewards_{wallet_address}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id)[-1] / 10 ** 18
         reward_token = self.iron_bank_info.get("rewardToken")
         result = {

@@ -26,7 +26,7 @@ class GranaryV1Info:
 
 class GranaryV1StateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
-        self.name = f"{chain_id}_granary_v1"
+        self.name = f"{chain_id}_granary-finance"
         self.chain_id = chain_id
         self.pool_info = GranaryV1Info.mapping.get(chain_id)
         self.lending_abi = LENDING_POOL_ABI
@@ -37,7 +37,7 @@ class GranaryV1StateService(ProtocolServices):
     # BASIC FUNCTION
     def get_service_info(self):
         info = {
-            "aave-v2": {
+            "granary-finance": {
                 "chain_id": self.chain_id,
                 "type": "lending",
                 "protocol_info": self.pool_info

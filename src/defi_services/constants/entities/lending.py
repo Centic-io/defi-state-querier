@@ -22,8 +22,8 @@ class Lending:
     aave_v3 = "aave-v3"
     radiant_v2 = "radiant-v2"
     compound = "compound"
-    flux = "flux"
-    iron_bank = "iron_bank"
+    flux = "flux-finance"
+    iron_bank = "iron-bank"
     trava = "trava-finance"
     valas = "valas-finance"
     geist = "geist-finance"
@@ -31,9 +31,9 @@ class Lending:
     venus = "venus"
     liqee = "liqee"
     strike = "strike"
-    uwu = "uwu"
-    onyx = "onyx"
-    all = [strike, aave_v2, aave_v3, radiant_v2, compound, flux, onyx
+    uwu = "uwu-lend"
+    onyx = "onyx-protocol"
+    all = [strike, aave_v2, aave_v3, radiant_v2, compound, flux, onyx,
            iron_bank, trava, valas, geist, cream, venus, liqee, strike, uwu]
 
     # chain
@@ -41,13 +41,12 @@ class Lending:
         aave_v2: AaveV2StateService,
         compound: CompoundStateService,
         trava: TravaStateService,
-        flux: FluxStateService
-        iron_bank: IronBankStateService
-        uwu: UwuStateService
-        trava: TravaStateService,
+        flux: FluxStateService,
+        iron_bank: IronBankStateService,
+        uwu: UwuStateService,
         aave_v3: AaveV3StateService,
-        liqee: LiqeeStateService
-        strike: StrikeStateService
+        liqee: LiqeeStateService,
+        strike: StrikeStateService,
         onyx: OnyxStateService
     }
     fantom = {
