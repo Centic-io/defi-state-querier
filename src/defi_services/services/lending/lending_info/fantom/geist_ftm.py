@@ -3,7 +3,7 @@ GEIST_ETH = {
     "name": "Geist Lending Pool",
     "rewardToken": "0xd8321aa83fb0a4ecd6348d4577431310a6e0814d",
     "multiFeeAddress": "0x49c93a95dbcc9a6a4d8f77e59c038ce5020e82f8",
-    "chefIncentiveAddress": '0x297fddc5c33ef988dd03bd13e162ae084ea1fe57',
+    "stakedIncentiveAddress": '0x297fddc5c33ef988dd03bd13e162ae084ea1fe57',
     "oracleAddress": "0xc466e3fee82c6bdc2e17f2eaf2c6f1e91ad10fd3",
     "poolToken": "0xd8321aa83fb0a4ecd6348d4577431310a6e0814d",
     "forked": "aave-v2",

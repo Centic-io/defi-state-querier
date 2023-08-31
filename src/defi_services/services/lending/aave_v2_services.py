@@ -8,6 +8,7 @@ from defi_services.abis.lending.aave_v2_and_forlks.oracle_abi import ORACLE_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.db_constant import DBConst
+from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.query_constant import Query
 from defi_services.constants.time_constant import TimeConstants
 from defi_services.constants.token_constant import Token
@@ -30,7 +31,7 @@ class AaveInfo:
 
 class AaveV2StateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
-        self.name = f"{chain_id}_aave-v2"
+        self.name = f"{chain_id}_{Lending.aave_v2}"
         self.chain_id = chain_id
         self.pool_info = AaveInfo.mapping.get(chain_id)
         self.lending_abi = LENDING_POOL_ABI
@@ -41,7 +42,7 @@ class AaveV2StateService(ProtocolServices):
     # BASIC FUNCTION
     def get_service_info(self):
         info = {
-            "aave-v2": {
+            Lending.aave_v2: {
                 "chain_id": self.chain_id,
                 "type": "lending",
                 "protocol_info": self.pool_info

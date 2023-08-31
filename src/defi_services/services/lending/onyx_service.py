@@ -3,17 +3,16 @@ import time
 
 from web3 import Web3
 
+from defi_services.abis.lending.onyx.onyx_comptroller_abi import ONYX_COMPTROLLER_ABI
 from defi_services.abis.lending.onyx.onyx_lens_abi import ONYX_LENS_ABI
 from defi_services.abis.lending.onyx.onyx_token_abi import ONYX_TOKEN_ABI
-from defi_services.abis.token.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
-from defi_services.constants.db_constant import DBConst
+from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import ContractAddresses, Token
 from defi_services.jobs.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.ethereum.onyx_eth import ONYX_ETH
-from defi_services.abis.lending.onyx.onyx_comptroller_abi import ONYX_COMPTROLLER_ABI
 from defi_services.services.protocol_services import ProtocolServices
 
 logger = logging.getLogger("Onyx Lending Pool State Service")
@@ -27,7 +26,7 @@ class OnyxInfo:
 
 class OnyxStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
-        self.name = f"{chain_id}_onyx-protocol"
+        self.name = f"{chain_id}_{Lending.onyx}"
         self.chain_id = chain_id
         self.pool_info = OnyxInfo.mapping.get(chain_id)
         self.state_service = state_service
@@ -38,7 +37,7 @@ class OnyxStateService(ProtocolServices):
     # BASIC FUNCTIONS
     def get_service_info(self):
         info = {
-            "onyx-protocol": {
+            Lending.onyx: {
                 "chain_id": self.chain_id,
                 "type": "lending",
                 "protocol_info": self.pool_info

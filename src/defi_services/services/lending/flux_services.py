@@ -9,6 +9,7 @@ from defi_services.abis.token.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.db_constant import DBConst
+from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import ContractAddresses, Token
 from defi_services.jobs.state_querier import StateQuerier
@@ -26,8 +27,7 @@ class FluxInfo:
 
 class FluxStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
-        self.name = f"{chain_id}_flux-finance"
-        self.name = f"{chain_id}_flux"
+        self.name = f"{chain_id}_{Lending.flux}"
         self.chain_id = chain_id
         self.flux_info = FluxInfo.mapping.get(chain_id)
         self.state_service = state_service
@@ -37,7 +37,7 @@ class FluxStateService(ProtocolServices):
     # BASIC FUNCTIONS
     def get_service_info(self):
         info = {
-            "flux-finance": {
+            Lending.flux: {
                 "chain_id": self.chain_id,
                 "type": "lending",
                 "protocol_info": self.flux_info
