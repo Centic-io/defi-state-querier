@@ -5,6 +5,7 @@ SPARK_ETH = {
     "rewardTokensList": [],
     "oracleAddress": "0x54586be62e3c3580375ae3723c145253060ca0c2",
     "type": "LENDING_POOL",
+    "forked": "aave_v3",
     "reservesList": {
         "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
             "tToken": "0x4d5f47fa6a74757f35c14fd3a6ef8e3c9bc514e8",

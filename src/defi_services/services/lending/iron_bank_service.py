@@ -4,12 +4,10 @@ import time
 from web3 import Web3
 
 from defi_services.abis.lending.cream.cream_comptroller_abi import CREAM_COMPTROLLER_ABI
-from defi_services.abis.lending.cream.cream_lens_abi import CREAM_LENS_ABI
 from defi_services.abis.lending.iron_bank.iron_lens_abi import IRON_LENS_ABI
 from defi_services.abis.token.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
-from defi_services.constants.db_constant import DBConst
 from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import ContractAddresses, Token
 from defi_services.jobs.state_querier import StateQuerier

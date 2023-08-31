@@ -1,7 +1,7 @@
 AAVE_V3_POLYGON = {
     "address": "0x794a61358d6845594f94dc1db02a252b5b4814ad",
     "name": "AAVE V3 Lending Pool",
-    "incentiveAddress": '0x929ec64c34a17401f460460d4b9390518e5b473e',
+    "stakedIncentiveAddress": '0x929ec64c34a17401f460460d4b9390518e5b473e',
     "oracleAddress": "0xb023e699f5a33916ea823a16485e259257ca8bd1",
     "rewardTokensList": [
         "0x1d734a02ef1e1f5886e66b0673b71af5b53ffa94",

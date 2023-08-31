@@ -1,4 +1,5 @@
 from defi_services.constants.chain_constant import Chain
+from defi_services.constants.entities.lending_constant import Lending
 from defi_services.services.lending.aave_v2_services import AaveV2StateService
 from defi_services.services.lending.granary_v1_services import GranaryV1StateService
 from defi_services.services.lending.uwu_services import UwuStateService
@@ -17,72 +18,52 @@ from defi_services.services.lending.strike_service import StrikeStateService
 from defi_services.services.lending.onyx_service import OnyxStateService
 
 
-class Lending:
-    # service
-    aave_v2 = "aave-v2"
-    aave_v3 = "aave-v3"
-    radiant_v2 = "radiant-v2"
-    compound = "compound"
-    flux = "flux-finance"
-    iron_bank = "iron-bank"
-    trava = "trava-finance"
-    valas = "valas-finance"
-    geist = "geist-finance"
-    cream = "cream-lending"
-    venus = "venus"
-    liqee = "liqee"
-    strike = "strike"
-    uwu = "uwu-lend"
-    onyx = "onyx-protocol"
-    granary = "granary-finance"
-    all = [strike, aave_v2, aave_v3, radiant_v2, compound, flux, onyx, granary,
-           iron_bank, trava, valas, geist, cream, venus, liqee, strike, uwu]
-    # all = [aave_v2, trava]
+class LendingServices:
     # chain
     ethereum = {
-        aave_v2: AaveV2StateService,
-        compound: CompoundStateService,
-        trava: TravaStateService,
-        flux: FluxStateService,
-        iron_bank: IronBankStateService,
-        uwu: UwuStateService,
-        aave_v3: AaveV3StateService,
-        liqee: LiqeeStateService,
-        strike: StrikeStateService,
-        onyx: OnyxStateService,
-        granary: GranaryV1StateService
+        Lending.aave_v2: AaveV2StateService,
+        Lending.compound: CompoundStateService,
+        Lending.trava: TravaStateService,
+        Lending.flux: FluxStateService,
+        Lending.iron_bank: IronBankStateService,
+        Lending.uwu: UwuStateService,
+        Lending.aave_v3: AaveV3StateService,
+        Lending.liqee: LiqeeStateService,
+        Lending.strike: StrikeStateService,
+        Lending.onyx: OnyxStateService,
+        Lending.granary: GranaryV1StateService
     }
     fantom = {
-        trava: TravaStateService,
-        geist: GeistStateService,
-        aave_v3: AaveV3StateService,
+        Lending.trava: TravaStateService,
+        Lending.geist: GeistStateService,
+        Lending.aave_v3: AaveV3StateService,
     }
 
     bsc = {
-        trava: TravaStateService,
-        valas: ValasStateService,
-        cream: CreamStateService,
-        venus: VenusStateService,
-        radiant_v2: RadiantStateService
+        Lending.trava: TravaStateService,
+        Lending.valas: ValasStateService,
+        Lending.cream: CreamStateService,
+        Lending.venus: VenusStateService,
+        Lending.radiant_v2: RadiantStateService
     }
 
     avalanche = {
-        aave_v3: AaveV3StateService,
-        aave_v2: AaveV2StateService
+        Lending.aave_v3: AaveV3StateService,
+        Lending.aave_v2: AaveV2StateService
     }
 
     polygon = {
-        aave_v2: AaveV2StateService,
-        aave_v3: AaveV3StateService
+        Lending.aave_v2: AaveV2StateService,
+        Lending.aave_v3: AaveV3StateService
     }
 
     optimism = {
-        aave_v3: AaveV3StateService
+        Lending.aave_v3: AaveV3StateService
     }
 
     arbitrum = {
-        radiant_v2: RadiantStateService,
-        aave_v3: AaveV3StateService
+        Lending.radiant_v2: RadiantStateService,
+        Lending.aave_v3: AaveV3StateService
     }
     # mapping
     mapping = {
@@ -94,4 +75,3 @@ class Lending:
         Chain.arbitrum: arbitrum,
         Chain.optimism: optimism
     }
-

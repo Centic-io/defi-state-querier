@@ -6,6 +6,7 @@ from defi_services.abis.lending.venus.venus_comptroller_abi import VENUS_COMPTRO
 from defi_services.abis.lending.venus.venus_lens_abi import VENUS_LENS_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
+from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.token_constant import ContractAddresses, Token
 from defi_services.jobs.state_querier import StateQuerier
 from defi_services.services.lending.compound_service import CompoundStateService
@@ -23,7 +24,7 @@ class VenusInfo:
 class VenusStateService(CompoundStateService):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x38"):
         super().__init__(state_service, chain_id)
-        self.name = f"{chain_id}_venus"
+        self.name = f"{chain_id}_{Lending.venus}"
         self.chain_id = chain_id
         self.pool_info = VenusInfo.mapping.get(chain_id)
         self.state_service = state_service
@@ -34,7 +35,7 @@ class VenusStateService(CompoundStateService):
 
     def get_service_info(self):
         info = {
-            "venus": {
+            Lending.venus: {
                 "chain_id": self.chain_id,
                 "type": "lending",
                 "protocol_info": self.pool_info

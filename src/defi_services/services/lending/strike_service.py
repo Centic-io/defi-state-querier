@@ -9,6 +9,7 @@ from defi_services.abis.token.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.db_constant import DBConst
+from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import ContractAddresses, Token
 from defi_services.jobs.state_querier import StateQuerier
@@ -26,7 +27,7 @@ class StrikeInfo:
 
 class StrikeStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
-        self.name = f"{chain_id}_strike"
+        self.name = f"{chain_id}_{Lending.strike}"
         self.chain_id = chain_id
         self.pool_info = StrikeInfo.mapping.get(chain_id)
         self.state_service = state_service
@@ -36,7 +37,7 @@ class StrikeStateService(ProtocolServices):
     # BASIC FUNCTIONS
     def get_service_info(self):
         info = {
-            "compound": {
+            {Lending.strike}: {
                 "chain_id": self.chain_id,
                 "type": "lending",
                 "protocol_info": self.pool_info
