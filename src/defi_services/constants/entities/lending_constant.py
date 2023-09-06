@@ -16,5 +16,6 @@ class Lending:
     uwu = "uwu-lend"
     onyx = "onyx-protocol"
     granary = "granary-finance"
+    wepiggy = "wepiggy"
     all = [strike, aave_v2, aave_v3, radiant_v2, compound, flux, onyx, granary,
-           iron_bank, trava, valas, geist, cream, venus, liqee, strike, uwu]
+           iron_bank, trava, valas, geist, cream, venus, liqee, strike, uwu, wepiggy]
