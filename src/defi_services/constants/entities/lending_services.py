@@ -16,6 +16,7 @@ from defi_services.services.lending.venus_services import VenusStateService
 from defi_services.services.lending.liqee_service import LiqeeStateService
 from defi_services.services.lending.strike_service import StrikeStateService
 from defi_services.services.lending.onyx_service import OnyxStateService
+from defi_services.services.lending.wepiggy_services import WepiggyStateService
 
 
 class LendingServices:
@@ -31,7 +32,8 @@ class LendingServices:
         Lending.liqee: LiqeeStateService,
         Lending.strike: StrikeStateService,
         Lending.onyx: OnyxStateService,
-        Lending.granary: GranaryV1StateService
+        Lending.granary: GranaryV1StateService,
+        Lending.wepiggy: WepiggyStateService
     }
     fantom = {
         Lending.trava: TravaStateService,
