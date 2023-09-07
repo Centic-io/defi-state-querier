@@ -8,6 +8,7 @@ from defi_services.abis.lending.iron_bank.iron_lens_abi import IRON_LENS_ABI
 from defi_services.abis.token.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
+from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import ContractAddresses, Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
@@ -25,7 +26,7 @@ class IronBankInfo:
 
 class IronBankStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
-        self.name = f"{chain_id}_iron-bank"
+        self.name = f"{chain_id}_{Lending.iron_bank}"
         self.chain_id = chain_id
         self.iron_bank_info = IronBankInfo.mapping.get(chain_id)
         self.state_service = state_service
@@ -35,7 +36,7 @@ class IronBankStateService(ProtocolServices):
     # BASIC FUNCTIONS
     def get_service_info(self):
         info = {
-            "iron-bank": {
+            Lending.iron_bank: {
                 "chain_id": self.chain_id,
                 "type": "lending",
                 "protocol_info": self.iron_bank_info
@@ -105,7 +106,7 @@ class IronBankStateService(ProtocolServices):
             ))
 
         if Query.protocol_reward in query_types and wallet:
-            result.update(self.calculate_rewards_balance(
+            result.update(self.calculate_claimable_rewards_balance(
                 wallet, decoded_data, block_number
             ))
 
@@ -138,22 +139,30 @@ class IronBankStateService(ProtocolServices):
         #     rpc_calls.update(self.get_apy_lending_pool_function_info(reserves_info, block_number, is_oracle_price))
 
         if Query.protocol_reward in query_types and wallet:
-            rpc_calls.update(self.get_rewards_balance_function_info(wallet, reserves_info, block_number))
+            rpc_calls.update(self.get_claimable_rewards_balance_function_info(wallet, block_number))
 
         logger.info(f"Get encoded rpc calls in {time.time() - begin}s")
         return rpc_calls
 
     # REWARDS BALANCE
-    def get_rewards_balance_function_info(
+    def get_claimable_rewards_balance_function_info(
             self,
             wallet_address: str,
-            reserves_info: dict,
             block_number: int = "latest",
     ):
-        return {}
+        rpc_call = self.get_comptroller_function_info("compAccrued", [wallet_address], block_number)
+        get_reward_id = f"compAccrued_{self.name}_{wallet_address}_{block_number}".lower()
+        return {get_reward_id: rpc_call}
 
-    def calculate_rewards_balance(self, wallet_address: str, decoded_data: dict, block_number: int = "latest"):
-        return {}
+    def calculate_claimable_rewards_balance(self, wallet_address: str, decoded_data: dict,
+                                            block_number: int = "latest"):
+        get_reward_id = f"compAccrued_{self.name}_{wallet_address}_{block_number}".lower()
+        rewards = decoded_data.get(get_reward_id) / 10 ** 18
+        reward_token = self.iron_bank_info.get("rewardToken")
+        result = {
+            reward_token: {"amount": rewards}
+        }
+        return result
 
     # WALLET DEPOSIT BORROW BALANCE
     def get_wallet_deposit_borrow_balance_function_info(
