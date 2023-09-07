@@ -1,13 +1,17 @@
+import logging
+
 from web3 import Web3
 
 from defi_services.constants.entities.lending_services import LendingServices
 from defi_services.constants.query_constant import Query
 from defi_services.database.mongodb import MongoDB
-from defi_services.jobs.state_querier import StateQuerier
+from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.nft_services import NFTServices
 from defi_services.services.protocol_services import ProtocolServices
 from defi_services.services.token_services import TokenServices
 from defi_services.utils.init_services import init_services
+
+logger = logging.getLogger("StateProcessor")
 
 
 class StateProcessor:

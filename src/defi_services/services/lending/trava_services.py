@@ -13,7 +13,7 @@ from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.query_constant import Query
 from defi_services.constants.time_constant import TimeConstants
 from defi_services.constants.token_constant import Token
-from defi_services.jobs.state_querier import StateQuerier
+from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.bsc.trava_bsc import TRAVA_BSC
 from defi_services.services.lending.lending_info.ethereum.trava_eth import TRAVA_ETH
 from defi_services.services.lending.lending_info.fantom.trava_ftm import TRAVA_FTM
@@ -151,7 +151,7 @@ class TravaStateService(ProtocolServices):
                 "getAssetsPrices", list(reserves_info.keys()), block_number)
 
         for token_address, value in reserves_info.items():
-            reserve_key = f"getReserveData_{token_address}_{block_number}".lower()
+            reserve_key = f"getReserveData_{self.name}_{token_address}_{block_number}".lower()
             atoken_assets_key = f"assets_{value['tToken']}_{block_number}".lower()
             debt_token_assets_key = f"assets_{value['dToken']}_{block_number}".lower()
             atoken_total_supply_key = f'totalSupply_{value["tToken"]}_{block_number}'.lower()
@@ -237,7 +237,7 @@ class TravaStateService(ProtocolServices):
     ):
         reserves_data = {}
         for token in reserves_info:
-            get_reserve_data_call_id = f'getReserveData_{token}_{block_number}'.lower()
+            get_reserve_data_call_id = f'getReserveData_{self.name}_{token}_{block_number}'.lower()
             reserves_data[token.lower()] = decoded_data.get(get_reserve_data_call_id)
 
         interest_rate, atokens, debt_tokens, decimals, asset_data_tokens = {}, {}, {}, {}, {}
@@ -379,7 +379,7 @@ class TravaStateService(ProtocolServices):
         for token, value in reserves_info.items():
             atoken, debt_token = Web3.toChecksumAddress(value['tToken']), Web3.toChecksumAddress(value['dToken'])
             tokens += [atoken, debt_token]
-        key = f"getRewardsBalance_{wallet_address}_{block_number}".lower()
+        key = f"getRewardsBalance_{self.name}_{wallet_address}_{block_number}".lower()
         rpc_calls[key] = self.get_function_incentive_info(
             "getRewardsBalance", [tokens, wallet_address], block_number)
 
@@ -388,7 +388,7 @@ class TravaStateService(ProtocolServices):
     def calculate_all_rewards_balance(
             self, decoded_data: dict, wallet_address: str, block_number: int = "latest"):
         reward_token = self.pool_info['rewardToken']
-        key = f"getRewardsBalance_{wallet_address}_{block_number}".lower()
+        key = f"getRewardsBalance_{self.name}_{wallet_address}_{block_number}".lower()
         rewards = decoded_data.get(key) / 10 ** 18
         result = {
             reward_token: {"amount": rewards}

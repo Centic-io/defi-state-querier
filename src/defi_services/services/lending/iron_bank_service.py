@@ -10,7 +10,7 @@ from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import ContractAddresses, Token
-from defi_services.jobs.state_querier import StateQuerier
+from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.ethereum.iron_bank_eth import IRON_BANK_ETH
 from defi_services.services.protocol_services import ProtocolServices
 

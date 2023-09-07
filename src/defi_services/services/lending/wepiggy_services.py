@@ -13,7 +13,7 @@ from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import ContractAddresses, Token
-from defi_services.jobs.state_querier import StateQuerier
+from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.ethereum.wepiggy_eth import WEPIGGY_ETH
 from defi_services.services.protocol_services import ProtocolServices
 
@@ -158,9 +158,9 @@ class WepiggyStateService(ProtocolServices):
             speed_key = f"compSpeeds_{ctoken}_{block_number}".lower()
             mint_key = f"mintGuardianPaused_{ctoken}_{block_number}".lower()
             borrow_key = f"borrowGuardianPaused_{token}_{block_number}".lower()
-            metadata_key = f"cTokenMetadata_{token}_{block_number}".lower()
+            metadata_key = f"cTokenMetadata_{ctoken}_{block_number}".lower()
             if is_price_oracle:
-                price_key = f"cTokenUnderlyingPrice_{token}_{block_number}".lower()
+                price_key = f"cTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
                 rpc_calls[price_key] = self.get_comptroller_function_info('cTokenUnderlyingPrice', [ctoken],
                                                                           block_number)
             rpc_calls[speed_key] = self.get_comptroller_function_info('compSpeeds', [ctoken], block_number)
@@ -315,11 +315,11 @@ class WepiggyStateService(ProtocolServices):
                     False,
                     True]
         rpc_call = self.get_distribution_function_info("pendingWpcAccrued", fn_paras, block_number)
-        get_reward_id = f"pendingWpcAccrued_{wallet_address}_{block_number}".lower()
+        get_reward_id = f"pendingWpcAccrued_{self.name}_{wallet_address}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
     def calculate_rewards_balance(self, wallet_address: str, decoded_data: dict, block_number: int = "latest"):
-        get_reward_id = f"pendingWpcAccrued_{wallet_address}_{block_number}".lower()
+        get_reward_id = f"pendingWpcAccrued_{self.name}_{wallet_address}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
         result = {

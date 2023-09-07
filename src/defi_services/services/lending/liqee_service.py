@@ -3,19 +3,16 @@ import time
 
 from web3 import Web3
 
-from defi_services.abis.lending.cream.cream_comptroller_abi import CREAM_COMPTROLLER_ABI
-from defi_services.abis.lending.cream.cream_lens_abi import CREAM_LENS_ABI
 from defi_services.abis.lending.liqee.liqee_comptroller_abi import LIQEE_CONTROLLER_ABI
 from defi_services.abis.lending.liqee.liqee_lending_data_abi import LIQEE_LENDING_DATA_ABI
 from defi_services.abis.lending.liqee.liqee_token_abi import LIQEE_TOKEN_ABI
 from defi_services.abis.token.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
-from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.query_constant import Query
-from defi_services.constants.token_constant import ContractAddresses, Token
-from defi_services.jobs.state_querier import StateQuerier
+from defi_services.constants.token_constant import Token
+from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.ethereum.liqee_eth import LIQEE_ETH
 from defi_services.services.protocol_services import ProtocolServices
 
@@ -300,25 +297,6 @@ class LiqeeStateService(ProtocolServices):
         return self.state_service.get_function_info(
             ctoken, CTOKEN_ABI, fn_name, fn_paras, block_number
         )
-
-    def get_ctoken_metadata_all(
-            self,
-            reserves_info: dict = None,
-            block_number: int = "latest"
-    ):
-        tokens = [Web3.toChecksumAddress(value['cToken']) for key, value in reserves_info.items()]
-        key = f"cTokenMetadataAll_{self.pool_info.get('lensAddress')}_{block_number}".lower()
-        return {
-            key: self.get_lens_function_info("cTokenMetadataAll", tokens, block_number)
-        }
-
-    def ctoken_underlying_price_all(
-            self, reserves_info, block_number: int = 'latest'):
-        tokens = [Web3.toChecksumAddress(value['cToken']) for key, value in reserves_info.items()]
-        key = f"cTokenUnderlyingPriceAll_{self.pool_info.get('lensAddress')}_{block_number}".lower()
-        return {
-            key: self.get_lens_function_info("cTokenUnderlyingPriceAll", tokens, block_number)
-        }
 
     def get_all_markets(
             self, block_number: int = 'latest'):

@@ -10,7 +10,7 @@ from web3.middleware import geth_poa_middleware
 from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import Token
 
-logger = logging.getLogger("StateService")
+logger = logging.getLogger("StateQuerier")
 
 
 class StateQuerier:
@@ -94,8 +94,9 @@ class StateQuerier:
         decoded_data = self.decode_response_data(response_data, list_call_id, ignore_error=ignore_error)
         return decoded_data
 
+    @staticmethod
     def add_native_token_balance_rpc_call(
-            self, fn_paras: str = None, call_id: str = None, block_number: int = "latest"):
+            fn_paras: str = None, call_id: str = None, block_number: int = "latest"):
         eth_call = GetBalance(Web3.toChecksumAddress(fn_paras), block_number, call_id)
         return eth_call
 

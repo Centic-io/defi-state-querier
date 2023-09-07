@@ -1,5 +1,5 @@
 from defi_services.constants.token_constant import Token
-from defi_services.jobs.state_processor import StateProcessor
+from defi_services.jobs.processors.state_processor import StateProcessor
 
 job = StateProcessor(
     provider_uri="https://rpc.ankr.com/eth",

@@ -11,7 +11,7 @@ from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import ContractAddresses, Token
-from defi_services.jobs.state_querier import StateQuerier
+from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.ethereum.onyx_eth import ONYX_ETH
 from defi_services.services.protocol_services import ProtocolServices
 
@@ -147,11 +147,11 @@ class OnyxStateService(ProtocolServices):
                     Web3.toChecksumAddress(self.pool_info.get("comptrollerAddress")),
                     Web3.toChecksumAddress(wallet_address)]
         rpc_call = self.get_lens_function_info("getXcnBalanceMetadataExt", fn_paras, block_number)
-        get_reward_id = f"getXcnBalanceMetadataExt_{wallet_address}_{block_number}".lower()
+        get_reward_id = f"getXcnBalanceMetadataExt_{self.name}_{wallet_address}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
     def calculate_rewards_balance(self, wallet_address: str, decoded_data: dict, block_number: int = "latest"):
-        get_reward_id = f"getXcnBalanceMetadataExt_{wallet_address}_{block_number}".lower()
+        get_reward_id = f"getXcnBalanceMetadataExt_{self.name}_{wallet_address}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id)[-1] / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
         result = {
@@ -183,7 +183,7 @@ class OnyxStateService(ProtocolServices):
             rpc_calls[underlying_decimals_key] = self.state_service.get_function_info(
                 underlying, ERC20_ABI, "decimals", [], block_number
             )
-        key = f"oTokenBalancesAll_{wallet_address}_{block_number}".lower()
+        key = f"oTokenBalancesAll_{self.name}_{wallet_address}_{block_number}".lower()
         rpc_calls[key] = self.get_lens_function_info("oTokenBalancesAll", [ctokens, Web3.toChecksumAddress(wallet_address)])
         return rpc_calls
 
@@ -193,7 +193,7 @@ class OnyxStateService(ProtocolServices):
         if token_prices is None:
             token_prices = {}
         result = {}
-        key = f"oTokenBalancesAll_{wallet_address}_{block_number}".lower()
+        key = f"oTokenBalancesAll_{self.name}_{wallet_address}_{block_number}".lower()
         ctoken_balance = {}
         for item in decoded_data.get(key):
             ctoken_balance[item[0]] = {

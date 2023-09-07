@@ -11,7 +11,7 @@ from defi_services.constants.db_constant import DBConst
 from defi_services.constants.query_constant import Query
 from defi_services.constants.time_constant import TimeConstants
 from defi_services.constants.token_constant import Token
-from defi_services.jobs.state_querier import StateQuerier
+from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.ethereum.aave_v2_eth import AAVE_V2_ETH
 from defi_services.services.lending.lending_info.polygon.aave_v2_polygon import AAVE_V2_POLYGON
 from defi_services.services.protocol_services import ProtocolServices

@@ -8,7 +8,7 @@ from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.token_constant import ContractAddresses, Token
-from defi_services.jobs.state_querier import StateQuerier
+from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.compound_service import CompoundStateService
 from defi_services.services.lending.lending_info.bsc.venus_bsc import VENUS_BSC
 
@@ -84,10 +84,10 @@ class VenusStateService(CompoundStateService):
             ctoken = value.get("ctoken")
             speed_key = f"venusSpeeds_{ctoken}_{block_number}".lower()
             mint_key = f"mintGuardianPaused_{ctoken}_{block_number}".lower()
-            borrow_key = f"borrowGuardianPaused_{token}_{block_number}".lower()
-            metadata_key = f"vTokenMetadata_{token}_{block_number}".lower()
+            borrow_key = f"borrowGuardianPaused_{ctoken}_{block_number}".lower()
+            metadata_key = f"vTokenMetadata_{ctoken}_{block_number}".lower()
             if is_price_oracle:
-                price_key = f"vTokenUnderlyingPrice_{token}_{block_number}".lower()
+                price_key = f"vTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
                 rpc_calls[price_key] = self.get_comptroller_function_info(
                     'vTokenUnderlyingPrice', [ctoken], block_number)
             rpc_calls[speed_key] = self.get_comptroller_function_info('venusSpeeds', [ctoken], block_number)
@@ -147,11 +147,11 @@ class VenusStateService(CompoundStateService):
             Web3.toChecksumAddress(self.pool_info.get("comptrollerAddress"))
         ]
         rpc_call = self.get_lens_function_info("pendingVenus", fn_paras, block_number)
-        get_reward_id = f"pendingVenus_{wallet_address}_{block_number}".lower()
+        get_reward_id = f"pendingVenus_{self.name}_{wallet_address}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
     def calculate_rewards_balance(self, wallet_address: str, decoded_data: dict, block_number: int = "latest"):
-        get_reward_id = f"pendingVenus_{wallet_address}_{block_number}".lower()
+        get_reward_id = f"pendingVenus_{self.name}_{wallet_address}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
         result = {

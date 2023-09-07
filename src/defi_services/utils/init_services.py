@@ -1,5 +1,5 @@
 from defi_services.constants.entities.lending_services import LendingServices
-from defi_services.jobs.state_querier import StateQuerier
+from defi_services.jobs.queriers.state_querier import StateQuerier
 
 
 def init_services(state_querier: StateQuerier, chain_id: str):

@@ -8,12 +8,10 @@ from defi_services.abis.lending.aave_v2_and_forlks.oracle_abi import ORACLE_ABI
 from defi_services.abis.lending.granary.granary_rewarder_abi import GRANARY_REWARDER_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
-from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.query_constant import Query
-from defi_services.constants.time_constant import TimeConstants
 from defi_services.constants.token_constant import Token
-from defi_services.jobs.state_querier import StateQuerier
+from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.ethereum.granary_v1_eth import GRANARY_V1_ETH
 from defi_services.services.protocol_services import ProtocolServices
 
@@ -245,7 +243,7 @@ class GranaryV1StateService(ProtocolServices):
         for token, value in reserves_info.items():
             atoken, debt_token = Web3.toChecksumAddress(value['tToken']), Web3.toChecksumAddress(value['dToken'])
             tokens += [atoken, debt_token]
-        key = f"getAllUserRewardsBalance_{wallet_address}_{block_number}".lower()
+        key = f"getAllUserRewardsBalance_{self.name}_{wallet_address}_{block_number}".lower()
         rpc_calls[key] = self.get_function_rewarder_info(
             "getAllUserRewardsBalance", [tokens, wallet_address], block_number)
 
@@ -254,7 +252,7 @@ class GranaryV1StateService(ProtocolServices):
     def calculate_all_rewards_balance(
             self, decoded_data: dict, wallet_address: str, block_number: int = "latest"):
 
-        key = f"getAllUserRewardsBalance_{wallet_address}_{block_number}".lower()
+        key = f"getAllUserRewardsBalance_{self.name}_{wallet_address}_{block_number}".lower()
         reward_token = decoded_data.get(key)[0][0]
         rewards = decoded_data.get(key)[-1][0] / 10 ** 18
         result = {

@@ -14,7 +14,7 @@ from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.query_constant import Query
 from defi_services.constants.time_constant import TimeConstants
 from defi_services.constants.token_constant import Token
-from defi_services.jobs.state_querier import StateQuerier
+from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.bsc.valas_bsc import VALAS_BSC
 from defi_services.services.protocol_services import ProtocolServices
 
@@ -388,7 +388,7 @@ class ValasStateService(ProtocolServices):
             block_number: int = "latest"
     ):
         rpc_calls = {}
-        key = f"earnedBalances_{wallet_address}_{block_number}".lower()
+        key = f"earnedBalances_{self.name}_{wallet_address}_{block_number}".lower()
         rpc_calls[key] = self.get_function_multi_fee_distribution_info(
             "earnedBalances", [wallet_address], block_number)
 
@@ -397,7 +397,7 @@ class ValasStateService(ProtocolServices):
     def calculate_all_rewards_balance(
             self, decoded_data: dict, wallet_address: str, block_number: int = "latest"):
         reward_token = self.pool_info['rewardToken']
-        key = f"earnedBalances_{wallet_address}_{block_number}".lower()
+        key = f"earnedBalances_{self.name}_{wallet_address}_{block_number}".lower()
         rewards = decoded_data.get(key)[0] / 10 ** 18
         result = {
             reward_token: {"amount": rewards}

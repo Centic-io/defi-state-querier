@@ -10,7 +10,7 @@ from defi_services.constants.chain_constant import Chain
 from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.time_constant import TimeConstants
-from defi_services.jobs.state_querier import StateQuerier
+from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.aave_v2_services import AaveV2StateService
 from defi_services.services.lending.lending_info.arbitrum.aave_v3_arbitrum import AAVE_V3_ARB
 from defi_services.services.lending.lending_info.avalanche.aave_v3_avalanche import AAVE_V3_AVALANCHE
@@ -90,7 +90,7 @@ class AaveV3StateService(AaveV2StateService):
                 "getAssetsPrices", list(reserves_info.keys()), block_number)
         reward_tokens = self.pool_info.get("rewardTokensList")
         for token_address, value in reserves_info.items():
-            reserve_key = f"getReserveData_{token_address}_{block_number}".lower()
+            reserve_key = f"getReserveData_{self.name}_{token_address}_{block_number}".lower()
             atoken_total_supply_key = f'totalSupply_{value["tToken"]}_{block_number}'.lower()
             debt_token_total_supply_key = f'totalSupply_{value["dToken"]}_{block_number}'.lower()
             sdebt_token_total_supply_key = f'totalSupply_{value["sdToken"]}_{block_number}'.lower()
@@ -201,7 +201,7 @@ class AaveV3StateService(AaveV2StateService):
     ):
         reserves_data = {}
         for token in reserves_info:
-            get_reserve_data_call_id = f'getReserveData_{token}_{block_number}'.lower()
+            get_reserve_data_call_id = f'getReserveData_{self.name}_{token}_{block_number}'.lower()
             reserves_data[token.lower()] = decoded_data.get(get_reserve_data_call_id)
         reward_tokens = self.pool_info.get("rewardTokensList")
         interest_rate, atokens, debt_tokens, sdebt_tokens, decimals, asset_data_tokens = {}, {}, {}, {}, {}, {}
@@ -271,13 +271,13 @@ class AaveV3StateService(AaveV2StateService):
         tokens = []
         for key, value in reserves_info.items():
             tokens += [Web3.toChecksumAddress(value["tToken"]), Web3.toChecksumAddress(value["dToken"])]
-        key = f"getAllUserRewards_{wallet_address}_{block_number}".lower()
+        key = f"getAllUserRewards_{self.name}_{wallet_address}_{block_number}".lower()
         rpc_calls[key] = self.get_function_incentive_info("getAllUserRewards", [tokens, Web3.toChecksumAddress(wallet_address)], block_number)
         return rpc_calls
 
     def calculate_all_rewards_balance(
             self, decoded_data: dict, wallet_address: str, block_number: int = "latest"):
-        key = f"getAllUserRewards_{wallet_address}_{block_number}".lower()
+        key = f"getAllUserRewards_{self.name}_{wallet_address}_{block_number}".lower()
         rewards = decoded_data.get(key)
         result = dict(zip(*rewards))
         for key, value in result.items():

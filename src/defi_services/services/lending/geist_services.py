@@ -2,7 +2,7 @@ import logging
 
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
-from defi_services.jobs.state_querier import StateQuerier
+from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.fantom.geist_ftm import GEIST_ETH
 from defi_services.services.lending.valas_services import ValasStateService
 
