@@ -137,6 +137,25 @@ class VenusStateService(CompoundStateService):
         }
 
     # REWARDS BALANCE
+    def get_claimable_rewards_balance_function_info(
+            self,
+            wallet_address: str,
+            block_number: int = "latest",
+    ):
+        rpc_call = self.get_comptroller_function_info("venusAccrued", [wallet_address], block_number)
+        get_reward_id = f"venusAccrued_{self.name}_{wallet_address}_{block_number}".lower()
+        return {get_reward_id: rpc_call}
+
+    def calculate_claimable_rewards_balance(self, wallet_address: str, decoded_data: dict,
+                                            block_number: int = "latest"):
+        get_reward_id = f"venusAccrued_{self.name}_{wallet_address}_{block_number}".lower()
+        rewards = decoded_data.get(get_reward_id) / 10 ** 18
+        reward_token = self.pool_info.get("rewardToken")
+        result = {
+            reward_token: {"amount": rewards}
+        }
+        return result
+
     def get_rewards_balance_function_info(
             self,
             wallet_address: str,

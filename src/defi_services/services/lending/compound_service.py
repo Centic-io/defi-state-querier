@@ -106,7 +106,7 @@ class CompoundStateService(ProtocolServices):
             ))
 
         if Query.protocol_reward in query_types and wallet:
-            result.update(self.calculate_rewards_balance(
+            result.update(self.calculate_claimable_rewards_balance(
                 wallet, decoded_data, block_number
             ))
 
@@ -139,7 +139,7 @@ class CompoundStateService(ProtocolServices):
             rpc_calls.update(self.get_apy_lending_pool_function_info(reserves_info, block_number, is_oracle_price))
 
         if Query.protocol_reward in query_types and wallet:
-            rpc_calls.update(self.get_rewards_balance_function_info(wallet, block_number))
+            rpc_calls.update(self.get_claimable_rewards_balance_function_info(wallet, block_number))
 
         logger.info(f"Get encoded rpc calls in {time.time() - begin}s")
         return rpc_calls
@@ -304,6 +304,24 @@ class CompoundStateService(ProtocolServices):
         }
 
     # REWARDS BALANCE
+    def get_claimable_rewards_balance_function_info(
+            self,
+            wallet_address: str,
+            block_number: int = "latest",
+    ):
+        rpc_call = self.get_comptroller_function_info("compAccrued", [wallet_address], block_number)
+        get_reward_id = f"compAccrued_{self.name}_{wallet_address}_{block_number}".lower()
+        return {get_reward_id: rpc_call}
+
+    def calculate_claimable_rewards_balance(self, wallet_address: str, decoded_data: dict, block_number: int = "latest"):
+        get_reward_id = f"compAccrued_{self.name}_{wallet_address}_{block_number}".lower()
+        rewards = decoded_data.get(get_reward_id) / 10 ** 18
+        reward_token = self.pool_info.get("rewardToken")
+        result = {
+            reward_token: {"amount": rewards}
+        }
+        return result
+
     def get_rewards_balance_function_info(
             self,
             wallet_address: str,
