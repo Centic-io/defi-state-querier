@@ -17,5 +17,10 @@ class Lending:
     onyx = "onyx-protocol"
     granary = "granary-finance"
     wepiggy = "wepiggy"
+    morpho_compound = 'morpho-compound'
+    morpho_aave_v2 = 'morpho-aave'
+    morpho_aave_v3 = 'morpho-aavev3'
     all = [strike, aave_v2, aave_v3, radiant_v2, compound, flux, onyx, granary,
-           iron_bank, trava, valas, geist, cream, venus, liqee, strike, uwu, wepiggy]
+           iron_bank, trava, valas, geist, cream, venus, liqee, strike, uwu, wepiggy,
+           morpho_compound, morpho_aave_v2, morpho_aave_v3
+           ]

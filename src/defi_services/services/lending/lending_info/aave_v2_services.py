@@ -75,7 +75,7 @@ class AaveV2StateService(ProtocolServices):
         logger.info(f"Get token list related in {time.time()-begin}s")
         return tokens
 
-    def ≈(
+    def get_data(
             self,
             query_types: list,
             wallet: str,
