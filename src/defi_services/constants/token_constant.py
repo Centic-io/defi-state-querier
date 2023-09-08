@@ -10,7 +10,9 @@ class Token:
     wrapped_eth_optimism = "0x4200000000000000000000000000000000000006"
     wrapped_eth_arbitrum = "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
     wrapped_matic = '0x0000000000000000000000000000000000001010'
+    wrapped_sol = 'So11111111111111111111111111111111111111112'
     wrapped_token = {
+        Chain.solana: wrapped_sol,
         Chain.ethereum: wrapped_ethereum,
         Chain.bsc: wrapped_bsc,
         Chain.fantom: wrapped_ftm,

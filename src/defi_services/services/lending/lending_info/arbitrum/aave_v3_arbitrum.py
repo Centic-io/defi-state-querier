@@ -1,7 +1,7 @@
 AAVE_V3_ARB = {
     "address": "0x794a61358d6845594f94dc1db02a252b5b4814ad",
     "name": "Radiant Lending Pool",
-    "incentiveAddress": '0x929ec64c34a17401f460460d4b9390518e5b473e',
+    "stakedIncentiveAddress": '0x929ec64c34a17401f460460d4b9390518e5b473e',
     "oracleAddress": "0xb56c2F0B653B2e0b10C9b928C8580Ac5Df02C7C7",
     "rewardTokensList": [],
     "type": "LENDING_POOL",

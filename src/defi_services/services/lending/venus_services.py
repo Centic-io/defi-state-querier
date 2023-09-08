@@ -6,8 +6,9 @@ from defi_services.abis.lending.venus.venus_comptroller_abi import VENUS_COMPTRO
 from defi_services.abis.lending.venus.venus_lens_abi import VENUS_LENS_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
+from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.token_constant import ContractAddresses, Token
-from defi_services.jobs.state_querier import StateQuerier
+from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.compound_service import CompoundStateService
 from defi_services.services.lending.lending_info.bsc.venus_bsc import VENUS_BSC
 
@@ -23,7 +24,7 @@ class VenusInfo:
 class VenusStateService(CompoundStateService):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x38"):
         super().__init__(state_service, chain_id)
-        self.name = f"{chain_id}_venus"
+        self.name = f"{chain_id}_{Lending.venus}"
         self.chain_id = chain_id
         self.pool_info = VenusInfo.mapping.get(chain_id)
         self.state_service = state_service
@@ -34,7 +35,7 @@ class VenusStateService(CompoundStateService):
 
     def get_service_info(self):
         info = {
-            "venus": {
+            Lending.venus: {
                 "chain_id": self.chain_id,
                 "type": "lending",
                 "protocol_info": self.pool_info
@@ -83,10 +84,10 @@ class VenusStateService(CompoundStateService):
             ctoken = value.get("ctoken")
             speed_key = f"venusSpeeds_{ctoken}_{block_number}".lower()
             mint_key = f"mintGuardianPaused_{ctoken}_{block_number}".lower()
-            borrow_key = f"borrowGuardianPaused_{token}_{block_number}".lower()
-            metadata_key = f"vTokenMetadata_{token}_{block_number}".lower()
+            borrow_key = f"borrowGuardianPaused_{ctoken}_{block_number}".lower()
+            metadata_key = f"vTokenMetadata_{ctoken}_{block_number}".lower()
             if is_price_oracle:
-                price_key = f"vTokenUnderlyingPrice_{token}_{block_number}".lower()
+                price_key = f"vTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
                 rpc_calls[price_key] = self.get_comptroller_function_info(
                     'vTokenUnderlyingPrice', [ctoken], block_number)
             rpc_calls[speed_key] = self.get_comptroller_function_info('venusSpeeds', [ctoken], block_number)
@@ -136,6 +137,25 @@ class VenusStateService(CompoundStateService):
         }
 
     # REWARDS BALANCE
+    def get_claimable_rewards_balance_function_info(
+            self,
+            wallet_address: str,
+            block_number: int = "latest",
+    ):
+        rpc_call = self.get_comptroller_function_info("venusAccrued", [wallet_address], block_number)
+        get_reward_id = f"venusAccrued_{self.name}_{wallet_address}_{block_number}".lower()
+        return {get_reward_id: rpc_call}
+
+    def calculate_claimable_rewards_balance(self, wallet_address: str, decoded_data: dict,
+                                            block_number: int = "latest"):
+        get_reward_id = f"venusAccrued_{self.name}_{wallet_address}_{block_number}".lower()
+        rewards = decoded_data.get(get_reward_id) / 10 ** 18
+        reward_token = self.pool_info.get("rewardToken")
+        result = {
+            reward_token: {"amount": rewards}
+        }
+        return result
+
     def get_rewards_balance_function_info(
             self,
             wallet_address: str,
@@ -146,11 +166,11 @@ class VenusStateService(CompoundStateService):
             Web3.toChecksumAddress(self.pool_info.get("comptrollerAddress"))
         ]
         rpc_call = self.get_lens_function_info("pendingVenus", fn_paras, block_number)
-        get_reward_id = f"pendingVenus_{wallet_address}_{block_number}".lower()
+        get_reward_id = f"pendingVenus_{self.name}_{wallet_address}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
     def calculate_rewards_balance(self, wallet_address: str, decoded_data: dict, block_number: int = "latest"):
-        get_reward_id = f"pendingVenus_{wallet_address}_{block_number}".lower()
+        get_reward_id = f"pendingVenus_{self.name}_{wallet_address}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
         result = {

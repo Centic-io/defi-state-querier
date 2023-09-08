@@ -74,9 +74,9 @@ Get some information of protocols in their github or documents.
 
 ### Important files
 
-[1] [state_querier.py](src/defi_services/jobs/state_querier.py) - create function information, encode function calls, push function calls, and decode response data.
+[1] [state_querier.py](src/defi_services/jobs/queriers/state_querier.py) - create function information, encode function calls, push function calls, and decode response data.
 
-[2] [state_processor.py](src/defi_services/jobs/state_processor.py) - receive [input](#input), combine all encoded function calls in a batch, execute function call batch, process response data, and return [output](#output).
+[2] [state_processor.py](src/defi_services/jobs/processors/state_processor.py) - receive [input](#input), combine all encoded function calls in a batch, execute function call batch, process response data, and return [output](#output).
 
 [3] [protocol_services.py](src/defi_services/services/protocol_services.py) - protocol service pattern file, all protocols should follow this file like [aave_v2_services.py](src/defi_services/services/lending/aave_v2_services.py). There are 4 main functions of a service: get service info, get token list related to protocol, get asset information supported by protocol (dapp), get all information of function calls, and process response data.
 

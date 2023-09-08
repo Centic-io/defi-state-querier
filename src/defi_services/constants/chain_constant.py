@@ -1,4 +1,5 @@
 class Chain:
+    solana = "solana"
     bsc = "0x38"
     ethereum = "0x1"
     fantom = "0xfa"

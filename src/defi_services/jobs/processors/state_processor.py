@@ -1,13 +1,17 @@
+import logging
+
 from web3 import Web3
 
-from defi_services.constants.entities.lending import Lending
+from defi_services.constants.entities.lending_services import LendingServices
 from defi_services.constants.query_constant import Query
 from defi_services.database.mongodb import MongoDB
-from defi_services.jobs.state_querier import StateQuerier
+from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.nft_services import NFTServices
 from defi_services.services.protocol_services import ProtocolServices
 from defi_services.services.token_services import TokenServices
 from defi_services.utils.init_services import init_services
+
+logger = logging.getLogger("StateProcessor")
 
 
 class StateProcessor:
@@ -18,7 +22,7 @@ class StateProcessor:
         self.services = init_services(self.state_querier, chain_id)
         self.token_service = TokenServices(self.state_querier, chain_id)
         self.nft_service = NFTServices(self.state_querier, chain_id)
-        self.lending_services = Lending.mapping.get(chain_id)
+        self.lending_services = LendingServices.mapping.get(chain_id)
 
     def get_service_info(self):
         info = self.nft_service.get_service_info()
@@ -113,7 +117,8 @@ class StateProcessor:
 
         return result
 
-    def run(self, wallet: str, queries: list, block_number: int = 'latest', batch_size: int = 100, max_workers: int = 8, ignore_error=False):
+    def run(self, wallet: str, queries: list, block_number: int = 'latest',
+            batch_size: int = 100, max_workers: int = 8, ignore_error=False):
         all_rpc_calls, all_tokens = {}, []
         for query in queries:
             query_id = query.get("query_id")

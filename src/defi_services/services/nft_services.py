@@ -1,6 +1,6 @@
 from defi_services.abis.token.erc721_abi import ERC721_ABI
 from defi_services.constants.token_constant import Token
-from defi_services.jobs.state_querier import StateQuerier
+from defi_services.jobs.queriers.state_querier import StateQuerier
 
 
 class NFTServices:

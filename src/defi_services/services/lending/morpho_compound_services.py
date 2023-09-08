@@ -1,0 +1,233 @@
+import logging
+import time
+
+from web3 import Web3
+
+from defi_services.abis.lending.cream.cream_comptroller_abi import CREAM_COMPTROLLER_ABI
+from defi_services.abis.lending.cream.cream_lens_abi import CREAM_LENS_ABI
+from defi_services.abis.lending.morpho.morpho_compound_comptroller_abi import MORPHO_COMPOUND_COMPTROLLER_ABI
+from defi_services.abis.lending.morpho.morpho_compound_lens_abi import MORPHO_COMPOUND_LENS_ABI
+from defi_services.abis.token.erc20_abi import ERC20_ABI
+from defi_services.constants.chain_constant import Chain
+from defi_services.constants.entities.lending_constant import Lending
+from defi_services.constants.query_constant import Query
+from defi_services.constants.token_constant import ContractAddresses, Token
+from defi_services.jobs.queriers.state_querier import StateQuerier
+from defi_services.services.lending.compound_service import CompoundInfo
+from defi_services.services.lending.lending_info.ethereum.morpho_compound_eth import MORPHO_COMPOUND_ETH
+from defi_services.services.protocol_services import ProtocolServices
+
+logger = logging.getLogger("Compound Lending Pool State Service")
+
+
+class MorphoCompoundInfo:
+    mapping = {
+        Chain.ethereum: MORPHO_COMPOUND_ETH
+    }
+
+
+class MorphoCompoundStateService(ProtocolServices):
+    def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
+        self.name = f"{chain_id}_{Lending.morpho_compound}"
+        self.chain_id = chain_id
+        self.compound_info = CompoundInfo.mapping.get(chain_id)
+        self.pool_info = MorphoCompoundInfo.mapping.get(chain_id)
+        self.state_service = state_service
+        self.compound_lens_abi = CREAM_LENS_ABI
+        self.compound_comptroller_abi = CREAM_COMPTROLLER_ABI
+        self.lens_abi = MORPHO_COMPOUND_LENS_ABI
+        self.comptroller_abi = MORPHO_COMPOUND_COMPTROLLER_ABI
+        self.market_key = 'cToken'
+
+    # BASIC FUNCTIONS
+    def get_service_info(self):
+        info = {
+            Lending.morpho_compound: {
+                "chain_id": self.chain_id,
+                "type": "lending",
+                "protocol_info": self.pool_info
+            }
+        }
+        return info
+
+    def get_dapp_asset_info(
+            self,
+            block_number: int = "latest"):
+        _w3 = self.state_service.get_w3()
+        comptroller_contract = _w3.eth.contract(
+            address=_w3.toChecksumAddress(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
+        ctokens = []
+        for token in comptroller_contract.functions.getAllMarkets().call(block_identifier=block_number):
+            if token in [ContractAddresses.LUNA.lower(), ContractAddresses.UST.lower(), ContractAddresses.LUNA,
+                         ContractAddresses.UST]:
+                continue
+            ctokens.append(token)
+
+        compound_lens_contract = _w3.eth.contract(
+            address=Web3.toChecksumAddress(self.compound_info.get("lensAddress")), abi=self.compound_lens_abi
+        )
+        tokens = [Web3.toChecksumAddress(i) for i in ctokens]
+        metadata = compound_lens_contract.functions.cTokenMetadataAll(tokens).call(block_identifier=block_number)
+        reserves_info = {}
+        for data in metadata:
+            underlying = data[11].lower()
+            ctoken = data[0].lower()
+            lt = data[10] / 10 ** 18
+            reserves_info[underlying] = {
+                "cToken": ctoken,
+                "liquidationThreshold": lt
+            }
+
+        return reserves_info
+
+    def get_token_list(self):
+        begin = time.time()
+        tokens = [self.pool_info.get('rewardToken'), self.pool_info.get("poolToken")]
+        for token in self.pool_info.get("reservesList"):
+            if token == Token.native_token:
+                tokens.append(Token.wrapped_token.get(self.chain_id))
+                continue
+            tokens.append(token)
+        logger.info(f"Get token list related in {time.time() - begin}s")
+        return tokens
+
+    def get_data(
+            self,
+            query_types: list,
+            wallet: str,
+            decoded_data: dict,
+            block_number: int = 'latest',
+            **kwargs
+    ):
+        begin = time.time()
+        reserves_info = kwargs.get("reserves_info", self.pool_info.get("reservesList"))
+        token_prices = kwargs.get("token_prices", {})
+        result = {}
+        if Query.deposit_borrow in query_types and wallet:
+            result.update(self.calculate_wallet_deposit_borrow_balance(
+                wallet, reserves_info, decoded_data, token_prices, block_number
+            ))
+
+        if Query.protocol_reward in query_types and wallet:
+            result.update(self.calculate_claimable_rewards_balance(
+                wallet, decoded_data, block_number
+            ))
+        logger.info(f"Process protocol data in {time.time() - begin}")
+        return result
+
+    def get_function_info(
+            self,
+            query_types: list,
+            wallet: str = None,
+            block_number: int = "latest",
+            **kwargs
+    ):
+        begin = time.time()
+        reserves_info = kwargs.get("reserves_info", {})
+        if not reserves_info:
+            reserves_info = self.pool_info['reservesList']
+        rpc_calls = {}
+        if Query.deposit_borrow in query_types and wallet:
+            rpc_calls.update(self.get_wallet_deposit_borrow_balance_function_info(
+                wallet, reserves_info, block_number
+            ))
+
+        if Query.protocol_reward in query_types and wallet:
+            rpc_calls.update(self.get_claimable_rewards_balance_function_info(wallet, block_number))
+
+        logger.info(f"Get encoded rpc calls in {time.time() - begin}s")
+        return rpc_calls
+
+    # REWARDS BALANCE
+    def get_claimable_rewards_balance_function_info(
+            self,
+            wallet_address: str,
+            block_number: int = "latest",
+    ):
+        reserves_info = self.pool_info.get("reservesList")
+        params = [
+            [Web3.toChecksumAddress(value.get(self.market_key)) for key, value in reserves_info.items()],
+            Web3.toChecksumAddress(wallet_address)
+        ]
+        rpc_call = self.get_lens_function_info("getUserUnclaimedRewards", params, block_number)
+        get_reward_id = f"getUserUnclaimedRewards_{self.name}_{wallet_address}_{block_number}".lower()
+        return {get_reward_id: rpc_call}
+
+    def calculate_claimable_rewards_balance(self, wallet_address: str, decoded_data: dict,
+                                            block_number: int = "latest"):
+        get_reward_id = f"getUserUnclaimedRewards_{self.name}_{wallet_address}_{block_number}".lower()
+        rewards = decoded_data.get(get_reward_id) / 10 ** 18
+        reward_token = self.pool_info.get("rewardToken")
+        result = {
+            reward_token: {"amount": rewards}
+        }
+        return result
+
+    # WALLET DEPOSIT BORROW BALANCE
+    def get_wallet_deposit_borrow_balance_function_info(
+            self,
+            wallet_address: str,
+            reserves_info: dict,
+            block_number: int = "latest"
+    ):
+
+        rpc_calls = {}
+        for token, value in reserves_info.items():
+            underlying = token
+            ctoken = value.get(self.market_key)
+            if token == Token.native_token:
+                underlying = Token.wrapped_token.get(self.chain_id)
+            underlying_borrow_key = f"getCurrentBorrowBalanceInOf_{self.name}_{ctoken}_{wallet_address}_{block_number}".lower()
+            underlying_balance_key = f"getCurrentSupplyBalanceInOf_{self.name}_{ctoken}_{wallet_address}_{block_number}".lower()
+            underlying_decimals_key = f"decimals_{underlying}_{block_number}".lower()
+            rpc_calls[underlying_borrow_key] = self.get_lens_function_info(
+                "getCurrentBorrowBalanceInOf", [ctoken, wallet_address], block_number)
+            rpc_calls[underlying_balance_key] = self.get_lens_function_info(
+                "getCurrentSupplyBalanceInOf", [ctoken, wallet_address], block_number)
+            rpc_calls[underlying_decimals_key] = self.state_service.get_function_info(
+                underlying, ERC20_ABI, "decimals", [], block_number
+            )
+
+        return rpc_calls
+
+    def calculate_wallet_deposit_borrow_balance(
+            self, wallet_address: str, reserves_info: dict, decoded_data: dict, token_prices: dict = None,
+            block_number: int = "latest"):
+        if token_prices is None:
+            token_prices = {}
+        result = {}
+        for token, value in reserves_info.items():
+            underlying = token
+            ctoken = value.get(self.market_key)
+            if token == Token.native_token:
+                underlying = Token.wrapped_token.get(self.chain_id)
+            get_total_deposit_id = f"getCurrentSupplyBalanceInOf_{self.name}_{ctoken}_{wallet_address}_{block_number}".lower()
+            get_total_borrow_id = f"getCurrentBorrowBalanceInOf_{self.name}_{ctoken}_{wallet_address}_{block_number}".lower()
+            get_decimals_id = f"decimals_{underlying}_{block_number}".lower()
+            decimals = decoded_data[get_decimals_id]
+            deposit_amount = decoded_data[get_total_deposit_id][-1] / 10 ** decimals
+            borrow_amount = decoded_data[get_total_borrow_id][-1] / 10 ** decimals
+            result[token] = {
+                "borrow_amount": borrow_amount,
+                "deposit_amount": deposit_amount,
+            }
+            if token_prices:
+                token_price = token_prices.get(underlying)
+            else:
+                token_price = None
+            if token_price is not None:
+                deposit_amount_in_usd = deposit_amount * token_price
+                borrow_amount_in_usd = borrow_amount * token_price
+                result[token]['borrow_amount_in_usd'] += borrow_amount_in_usd
+                result[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
+        return result
+
+    def get_lens_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
+        return self.state_service.get_function_info(
+            self.pool_info['lensAddress'], self.lens_abi, fn_name, fn_paras, block_number
+        )
+
+    def get_comptroller_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
+        return self.state_service.get_function_info(
+            self.pool_info['comptrollerAddress'], self.comptroller_abi, fn_name, fn_paras, block_number
+        )
