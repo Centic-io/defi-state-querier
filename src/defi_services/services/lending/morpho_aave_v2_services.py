@@ -13,7 +13,7 @@ from defi_services.constants.entities.lending_constant import Lending
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.aave_v2_services import AaveInfo
 from defi_services.services.lending.lending_info.ethereum.morpho_aave_v2_eth import MORPHO_AAVE_V2_ETH
-from defi_services.services.lending.morpho_compound_services import MorphoCompoundServices
+from defi_services.services.lending.morpho_compound_services import MorphoCompoundStateService
 
 logger = logging.getLogger("Compound Lending Pool State Service")
 
@@ -24,7 +24,7 @@ class MorphoAaveV2Info:
     }
 
 
-class MorphoAaveV2Services(MorphoCompoundServices):
+class MorphoAaveV2StateService(MorphoCompoundStateService):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
         super().__init__(state_service, chain_id)
         self.name = f"{chain_id}_{Lending.morpho_aave_v2}"

@@ -26,7 +26,7 @@ class MorphoCompoundInfo:
     }
 
 
-class MorphoCompoundServices(ProtocolServices):
+class MorphoCompoundStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
         self.name = f"{chain_id}_{Lending.morpho_compound}"
         self.chain_id = chain_id
