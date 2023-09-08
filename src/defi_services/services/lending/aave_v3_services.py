@@ -5,6 +5,7 @@ from web3 import Web3
 from defi_services.abis.lending.aave_v3.aave_v3_incentives_abi import AAVE_V3_INCENTIVES_ABI
 from defi_services.abis.lending.aave_v3.aave_v3_lending_pool_abi import AAVE_V3_LENDING_POOL_ABI
 from defi_services.abis.lending.aave_v3.aave_v3_oracle_abi import AAVE_V3_ORACLE_ABI
+from defi_services.abis.lending.morpho.morpho_aave_v3_comptroller_abi import MORPHO_AAVE_V3_COMPTROLLER_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.db_constant import DBConst
@@ -22,7 +23,7 @@ from defi_services.services.lending.lending_info.polygon.aave_v3_polygon import 
 logger = logging.getLogger("Aave V3 Lending Pool State Service")
 
 
-class AaveInfo:
+class AaveV3Info:
     mapping = {
         Chain.ethereum: AAVE_V3_ETH,
         Chain.polygon: AAVE_V3_POLYGON,
@@ -38,10 +39,11 @@ class AaveV3StateService(AaveV2StateService):
         super().__init__(state_service, chain_id)
         self.name = f"{chain_id}_{Lending.aave_v3}"
         self.chain_id = chain_id
-        self.pool_info = AaveInfo.mapping.get(chain_id)
+        self.pool_info = AaveV3Info.mapping.get(chain_id)
         self.lending_abi = AAVE_V3_LENDING_POOL_ABI
         self.incentive_abi = AAVE_V3_INCENTIVES_ABI
         self.oracle_abi = AAVE_V3_ORACLE_ABI
+        self.comptroller_abi = MORPHO_AAVE_V3_COMPTROLLER_ABI
         self.state_service = state_service
 
     def get_service_info(self):
