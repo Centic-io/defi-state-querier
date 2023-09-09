@@ -4,6 +4,7 @@ class Query:
     function = "function"
     params = "params"
     block_number = "block_number"
+    module = "module"
 
     # query types
     token_balance = 'token_balance'

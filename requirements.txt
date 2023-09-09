@@ -3,4 +3,4 @@ QueryStateLib==1.1.4
 python-dotenv==0.21.0
 pymongo==4.3.3
 requests==2.26.0
-solana
+substrate-interface==1.7.4
