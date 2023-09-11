@@ -1,6 +1,7 @@
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.services.lending.aave_v2_services import AaveV2StateService
+from defi_services.services.lending.apeswap_services import ApeSwapStateService
 from defi_services.services.lending.granary_v1_services import GranaryV1StateService
 from defi_services.services.lending.morpho_aave_v2_services import MorphoAaveV2StateService
 from defi_services.services.lending.morpho_aave_v3_services import MorphoAaveV3StateService
@@ -54,7 +55,11 @@ class LendingServices:
         Lending.valas: ValasStateService,
         Lending.cream: CreamStateService,
         Lending.venus: VenusStateService,
-        Lending.radiant_v2: RadiantStateService
+        Lending.radiant_v2: RadiantStateService,
+        Lending.liqee: LiqeeStateService,
+        Lending.wepiggy: WepiggyStateService,
+        Lending.granary: GranaryV1StateService,
+        Lending.ape_swap: ApeSwapStateService
     }
 
     avalanche = {

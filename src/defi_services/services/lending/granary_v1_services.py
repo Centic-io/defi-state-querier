@@ -12,6 +12,7 @@ from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
+from defi_services.services.lending.lending_info.bsc.granary_bsc import GRANARY_BSC
 from defi_services.services.lending.lending_info.ethereum.granary_v1_eth import GRANARY_V1_ETH
 from defi_services.services.protocol_services import ProtocolServices
 
@@ -21,6 +22,7 @@ logger = logging.getLogger("Granary V1 Lending Pool State Service")
 class GranaryV1Info:
     mapping = {
         Chain.ethereum: GRANARY_V1_ETH,
+        Chain.bsc: GRANARY_BSC
     }
 
 
@@ -253,6 +255,8 @@ class GranaryV1StateService(ProtocolServices):
             self, decoded_data: dict, wallet_address: str, block_number: int = "latest"):
 
         key = f"getAllUserRewardsBalance_{self.name}_{wallet_address}_{block_number}".lower()
+        if not decoded_data.get(key)[0]:
+            return {}
         reward_token = decoded_data.get(key)[0][0]
         rewards = decoded_data.get(key)[-1][0] / 10 ** 18
         result = {
