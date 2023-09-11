@@ -12,8 +12,12 @@ from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
+from defi_services.services.lending.lending_info.arbitrum.granary_arbitrum import GRANARY_ARBITRUM
+from defi_services.services.lending.lending_info.avalanche.granary_avalanche import GRANARY_AVALANCHE
 from defi_services.services.lending.lending_info.bsc.granary_bsc import GRANARY_BSC
-from defi_services.services.lending.lending_info.ethereum.granary_v1_eth import GRANARY_V1_ETH
+from defi_services.services.lending.lending_info.ethereum.granary_eth import GRANARY_V1_ETH
+from defi_services.services.lending.lending_info.fantom.granary_ftm import GRANARY_FTM
+from defi_services.services.lending.lending_info.optimism.granary_optimism import GRANARY_OPTIMISM
 from defi_services.services.protocol_services import ProtocolServices
 
 logger = logging.getLogger("Granary V1 Lending Pool State Service")
@@ -22,11 +26,15 @@ logger = logging.getLogger("Granary V1 Lending Pool State Service")
 class GranaryV1Info:
     mapping = {
         Chain.ethereum: GRANARY_V1_ETH,
-        Chain.bsc: GRANARY_BSC
+        Chain.bsc: GRANARY_BSC,
+        Chain.optimism: GRANARY_OPTIMISM,
+        Chain.fantom: GRANARY_FTM,
+        Chain.avalanche: GRANARY_AVALANCHE,
+        Chain.arbitrum: GRANARY_ARBITRUM
     }
 
 
-class GranaryV1StateService(ProtocolServices):
+class GranaryStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
         self.name = f"{chain_id}_{Lending.granary}"
         self.chain_id = chain_id
@@ -69,7 +77,7 @@ class GranaryV1StateService(ProtocolServices):
 
     def get_token_list(self):
         begin = time.time()
-        tokens = [self.pool_info.get('rewardToken'), self.pool_info.get("poolToken")]
+        tokens = self.pool_info.get('rewardToken') + [self.pool_info.get("poolToken")]
         for token in self.pool_info.get("reservesList"):
             if token == Token.native_token:
                 tokens.append(Token.wrapped_token.get(self.chain_id))
@@ -89,7 +97,6 @@ class GranaryV1StateService(ProtocolServices):
         begin = time.time()
         reserves_info = kwargs.get("reserves_info", self.pool_info.get("reservesList"))
         token_prices = kwargs.get("token_prices", {})
-        pool_token_price = token_prices.get(self.pool_info.get('poolToken'), 1)
         wrapped_native_token_price = token_prices.get(Token.wrapped_token.get(self.chain_id), 1)
         pool_decimals = kwargs.get("pool_decimals", 18)
         result = {}
@@ -240,28 +247,37 @@ class GranaryV1StateService(ProtocolServices):
             reserves_info: dict = None,
             block_number: int = "latest"
     ):
+        reward_tokens = self.pool_info.get("rewardToken")
+        if not reward_tokens:
+            return {}
         rpc_calls = {}
-        tokens = []
-        for token, value in reserves_info.items():
-            atoken, debt_token = Web3.toChecksumAddress(value['tToken']), Web3.toChecksumAddress(value['dToken'])
-            tokens += [atoken, debt_token]
-        key = f"getAllUserRewardsBalance_{self.name}_{wallet_address}_{block_number}".lower()
-        rpc_calls[key] = self.get_function_rewarder_info(
-            "getAllUserRewardsBalance", [tokens, wallet_address], block_number)
+        for token in reward_tokens:
+            decimals_key = f"decimals_{token}_{block_number}".lower()
+            key = f"getUserUnclaimedRewardsFromStorage_{self.name}_{wallet_address}_{token}_{block_number}".lower()
+            rpc_calls[key] = self.get_function_rewarder_info(
+                "getUserUnclaimedRewardsFromStorage", [wallet_address, token], block_number)
+            rpc_calls[decimals_key] = self.state_service.get_function_info(
+                token, ERC20_ABI, "decimals", [], block_number
+            )
 
         return rpc_calls
 
     def calculate_all_rewards_balance(
             self, decoded_data: dict, wallet_address: str, block_number: int = "latest"):
-
-        key = f"getAllUserRewardsBalance_{self.name}_{wallet_address}_{block_number}".lower()
-        if not decoded_data.get(key)[0]:
+        reward_tokens = self.pool_info.get("rewardToken")
+        if not reward_tokens:
             return {}
-        reward_token = decoded_data.get(key)[0][0]
-        rewards = decoded_data.get(key)[-1][0] / 10 ** 18
-        result = {
-            reward_token.lower(): {"amount": rewards}
-        }
+        result = {}
+        for token in reward_tokens:
+            decimals_key = f"decimals_{token}_{block_number}".lower()
+            key = f"getUserUnclaimedRewardsFromStorage_{self.name}_{wallet_address}_{token}_{block_number}".lower()
+            if decoded_data.get(key) is None:
+                continue
+            decimals = decoded_data.get(decimals_key)
+            rewards = decoded_data.get(key) / 10 ** decimals
+            result.update({
+                token.lower(): {"amount": rewards}
+            })
 
         return result
 
