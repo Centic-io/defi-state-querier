@@ -13,8 +13,11 @@ from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import ContractAddresses, Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
+from defi_services.services.lending.lending_info.arbitrum.wepiggy_arbitrum import WEPIGGY_ARB
 from defi_services.services.lending.lending_info.bsc.wepiggy_bsc import WEPIGGY_BSC
 from defi_services.services.lending.lending_info.ethereum.wepiggy_eth import WEPIGGY_ETH
+from defi_services.services.lending.lending_info.optimism.wepiggy_optimism import WEPIGGY_OPTIMISM
+from defi_services.services.lending.lending_info.polygon.wepiggy_polygon import WEPIGGY_POLYGON
 from defi_services.services.protocol_services import ProtocolServices
 
 logger = logging.getLogger("Compound Lending Pool State Service")
@@ -23,7 +26,10 @@ logger = logging.getLogger("Compound Lending Pool State Service")
 class WepiggyInfo:
     mapping = {
         Chain.ethereum: WEPIGGY_ETH,
-        Chain.bsc: WEPIGGY_BSC
+        Chain.bsc: WEPIGGY_BSC,
+        Chain.arbitrum: WEPIGGY_ARB,
+        Chain.polygon: WEPIGGY_POLYGON,
+        Chain.optimism: WEPIGGY_OPTIMISM
     }
 
 
