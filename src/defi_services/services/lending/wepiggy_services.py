@@ -3,15 +3,12 @@ import time
 
 from web3 import Web3
 
-from defi_services.abis.lending.cream.cream_comptroller_abi import CREAM_COMPTROLLER_ABI
-from defi_services.abis.lending.cream.cream_lens_abi import CREAM_LENS_ABI
 from defi_services.abis.lending.wepiggy.wepiggy_comptroller_abi import WEPIGGY_COMPTROLLER_ABI
 from defi_services.abis.lending.wepiggy.wepiggy_distribution_abi import WEPIGGY_DISTRIBUTION_ABI
 from defi_services.abis.lending.wepiggy.wepiggy_lens_abi import WEPIGGY_LENS_ABI
 from defi_services.abis.token.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
-from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import ContractAddresses, Token
@@ -36,8 +33,8 @@ class WepiggyStateService(ProtocolServices):
         self.chain_id = chain_id
         self.pool_info = WepiggyInfo.mapping.get(chain_id)
         self.state_service = state_service
-        self.lens_abi = CREAM_LENS_ABI
-        self.distribution_abi = WEPIGGY_LENS_ABI
+        self.lens_abi = WEPIGGY_LENS_ABI
+        self.distribution_abi = WEPIGGY_DISTRIBUTION_ABI
         self.comptroller_abi = WEPIGGY_COMPTROLLER_ABI
 
     def get_service_info(self):
@@ -67,10 +64,10 @@ class WepiggyStateService(ProtocolServices):
             address=Web3.toChecksumAddress(self.pool_info.get("lensAddress")), abi=self.lens_abi
         )
         tokens = [Web3.toChecksumAddress(i) for i in ctokens]
-        metadata = lens_contract.functions.cTokenMetadataAll(tokens).call(block_identifier=block_number)
+        metadata = lens_contract.functions.pTokenMetadataAll(tokens).call(block_identifier=block_number)
         reserves_info = {}
         for data in metadata:
-            underlying = data[11].lower()
+            underlying = data[2].lower()
             ctoken = data[0].lower()
             lt = data[10] / 10 ** 18
             reserves_info[underlying] = {
@@ -102,12 +99,10 @@ class WepiggyStateService(ProtocolServices):
         begin = time.time()
         reserves_info = kwargs.get("reserves_info", self.pool_info.get("reservesList"))
         token_prices = kwargs.get("token_prices", {})
-        wrapped_native_token_price = token_prices.get(Token.wrapped_token.get(self.chain_id), 1)
-        pool_decimals = kwargs.get("pool_decimals", 18)
         result = {}
         if Query.deposit_borrow in query_types and wallet:
             result.update(self.calculate_wallet_deposit_borrow_balance(
-                wallet, reserves_info, decoded_data, token_prices, wrapped_native_token_price, block_number
+                wallet, reserves_info, decoded_data, token_prices, block_number
             ))
 
         if Query.protocol_reward in query_types and wallet:
@@ -147,15 +142,12 @@ class WepiggyStateService(ProtocolServices):
             wallet_address: str,
             block_number: int = "latest",
     ):
-        fn_paras = [Web3.toChecksumAddress(wallet_address),
-                    False,
-                    True]
-        rpc_call = self.get_distribution_function_info("pendingWpcAccrued", fn_paras, block_number)
-        get_reward_id = f"pendingWpcAccrued_{self.name}_{wallet_address}_{block_number}".lower()
+        rpc_call = self.get_distribution_function_info("wpcAccrued", [wallet_address], block_number)
+        get_reward_id = f"wpcAccrued_{self.name}_{wallet_address}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
     def calculate_rewards_balance(self, wallet_address: str, decoded_data: dict, block_number: int = "latest"):
-        get_reward_id = f"pendingWpcAccrued_{self.name}_{wallet_address}_{block_number}".lower()
+        get_reward_id = f"wpcAccrued_{self.name}_{wallet_address}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
         result = {
@@ -256,7 +248,7 @@ class WepiggyStateService(ProtocolServices):
 
     def calculate_token_deposit_borrow_balance(
             self, decoded_data: dict, reserves_info: dict, token_prices: dict = None,
-            block_number: int = "latest", is_oracle_price: bool = False, wrapped_native_token_price: int = 310
+            block_number: int = "latest"
     ):
         result = {}
         for token, value in reserves_info.items():
@@ -278,12 +270,7 @@ class WepiggyStateService(ProtocolServices):
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount
             }
-            if is_oracle_price:
-                get_underlying_token_price = f"cTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
-                token_price = decoded_data.get(get_underlying_token_price)[1] / 10 ** (36 - decimals)
-                if wrapped_native_token_price:
-                    token_price *= wrapped_native_token_price
-            elif token_prices:
+            if token_prices:
                 token_price = token_prices.get(underlying)
             else:
                 token_price = None
