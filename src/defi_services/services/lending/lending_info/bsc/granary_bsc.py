@@ -1,13 +1,13 @@
 GRANARY_BSC = {
     "address": "0x7171054f8d148fe1097948923c91a6596fc29032",
     "name": "Granary Lending Pool",
-    "rewardToken": "0x8f87a7d376821c7b2658a005aaf190ec778bf37a",
+    "rewardToken": [],
     "rewarder": '0xc043ba54f34c9fb3a0b45d22e2ef1f171272bc9d',
     "stakedIncentiveAddress": "",
     "poolToken": "0x8f87a7d376821c7b2658a005aaf190ec778bf37a",
     "oracleAddress": "0x417ca1091fa4c329cee19452851dff46902440a5",
     "type": "LENDING_POOL",
-    "forked": "aave-v2",
+    "forked": "aave-v3",
     "reservesList": {
         "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3": {
             "tToken": "0x6055558d88dde78df51bf9e90bdd225d525cf80b",

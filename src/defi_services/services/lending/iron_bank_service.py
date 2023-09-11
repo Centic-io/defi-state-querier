@@ -12,7 +12,9 @@ from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import ContractAddresses, Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
+from defi_services.services.lending.lending_info.avalanche.iron_bank_avalanche import IRON_BANK_AVALANCHE
 from defi_services.services.lending.lending_info.ethereum.iron_bank_eth import IRON_BANK_ETH
+from defi_services.services.lending.lending_info.optimism.iron_bank_optimism import IRON_BANK_OPTIMISM
 from defi_services.services.protocol_services import ProtocolServices
 
 logger = logging.getLogger("Iron Bank Lending Pool State Service")
@@ -20,7 +22,9 @@ logger = logging.getLogger("Iron Bank Lending Pool State Service")
 
 class IronBankInfo:
     mapping = {
-        Chain.ethereum: IRON_BANK_ETH
+        Chain.ethereum: IRON_BANK_ETH,
+        Chain.optimism: IRON_BANK_OPTIMISM,
+        Chain.avalanche: IRON_BANK_AVALANCHE
     }
 
 

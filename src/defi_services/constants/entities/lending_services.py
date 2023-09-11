@@ -2,7 +2,7 @@ from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.services.lending.aave_v2_services import AaveV2StateService
 from defi_services.services.lending.apeswap_services import ApeSwapStateService
-from defi_services.services.lending.granary_v1_services import GranaryV1StateService
+from defi_services.services.lending.granary_services import GranaryStateService
 from defi_services.services.lending.morpho_aave_v2_services import MorphoAaveV2StateService
 from defi_services.services.lending.morpho_aave_v3_services import MorphoAaveV3StateService
 from defi_services.services.lending.morpho_compound_services import MorphoCompoundStateService
@@ -37,7 +37,7 @@ class LendingServices:
         Lending.liqee: LiqeeStateService,
         Lending.strike: StrikeStateService,
         Lending.onyx: OnyxStateService,
-        Lending.granary: GranaryV1StateService,
+        Lending.granary: GranaryStateService,
         Lending.wepiggy: WepiggyStateService,
         Lending.morpho_aave_v3: MorphoAaveV3StateService,
         Lending.morpho_aave_v2: MorphoAaveV2StateService,
@@ -48,6 +48,7 @@ class LendingServices:
         Lending.trava: TravaStateService,
         Lending.geist: GeistStateService,
         Lending.aave_v3: AaveV3StateService,
+        Lending.granary: GranaryStateService
     }
 
     bsc = {
@@ -58,27 +59,34 @@ class LendingServices:
         Lending.radiant_v2: RadiantStateService,
         Lending.liqee: LiqeeStateService,
         Lending.wepiggy: WepiggyStateService,
-        Lending.granary: GranaryV1StateService,
+        Lending.granary: GranaryStateService,
         Lending.ape_swap: ApeSwapStateService
     }
 
     avalanche = {
         Lending.aave_v3: AaveV3StateService,
-        Lending.aave_v2: AaveV2StateService
+        Lending.aave_v2: AaveV2StateService,
+        Lending.granary: GranaryStateService
     }
 
     polygon = {
         Lending.aave_v2: AaveV2StateService,
-        Lending.aave_v3: AaveV3StateService
+        Lending.aave_v3: AaveV3StateService,
+        Lending.wepiggy: WepiggyStateService
     }
 
     optimism = {
-        Lending.aave_v3: AaveV3StateService
+        Lending.aave_v3: AaveV3StateService,
+        Lending.granary: GranaryStateService,
+        Lending.wepiggy: WepiggyStateService,
+        Lending.iron_bank: IronBankStateService
     }
 
     arbitrum = {
         Lending.radiant_v2: RadiantStateService,
-        Lending.aave_v3: AaveV3StateService
+        Lending.aave_v3: AaveV3StateService,
+        Lending.wepiggy: WepiggyStateService,
+        Lending.granary: GranaryStateService
     }
     # mapping
     mapping = {
