@@ -13,6 +13,7 @@ from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
+from defi_services.services.lending.lending_info.bsc.liqee_bsc import LIQEE_BSC
 from defi_services.services.lending.lending_info.ethereum.liqee_eth import LIQEE_ETH
 from defi_services.services.protocol_services import ProtocolServices
 
@@ -21,7 +22,8 @@ logger = logging.getLogger("Liqee Lending Pool State Service")
 
 class LiqeeInfo:
     mapping = {
-        Chain.ethereum: LIQEE_ETH
+        Chain.ethereum: LIQEE_ETH,
+        Chain.bsc: LIQEE_BSC
     }
 
 
@@ -145,11 +147,11 @@ class LiqeeStateService(ProtocolServices):
     ):
         fn_paras = [Web3.toChecksumAddress(wallet_address)]
         rpc_call = self.get_lending_function_info("getAccountRewardAmount", fn_paras, block_number)
-        get_reward_id = f"getAccountRewardAmount_{wallet_address}_{block_number}".lower()
+        get_reward_id = f"getAccountRewardAmount_{self.name}_{wallet_address}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
     def calculate_rewards_balance(self, wallet_address: str, decoded_data: dict, block_number: int = "latest"):
-        get_reward_id = f"getAccountRewardAmount_{wallet_address}_{block_number}".lower()
+        get_reward_id = f"getAccountRewardAmount_{self.name}_{wallet_address}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
         result = {

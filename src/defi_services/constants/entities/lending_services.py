@@ -54,7 +54,9 @@ class LendingServices:
         Lending.valas: ValasStateService,
         Lending.cream: CreamStateService,
         Lending.venus: VenusStateService,
-        Lending.radiant_v2: RadiantStateService
+        Lending.radiant_v2: RadiantStateService,
+        Lending.liqee: LiqeeStateService,
+        Lending.wepiggy: WepiggyStateService
     }
 
     avalanche = {
