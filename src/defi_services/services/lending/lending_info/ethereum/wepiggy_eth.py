@@ -8,9 +8,9 @@ WEPIGGY_ETH = {
     "type": "LENDING_POOL",
     "forked": "compound",
     "reservesList": {
-        "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
-            "cToken": "0x82413f75f0da101e0fe7f6ff6cba3461f7e04f29",
-            "liquidationThreshold": 0.6
+        "0x0000000000000000000000000000000000000000": {
+            "cToken": "0x27a94869341838d5783368a8503fda5fbcd7987c",
+            "liquidationThreshold": 0.8
         },
         "0x6b175474e89094c44da98b954eedeac495271d0f": {
             "cToken": "0x85166b72c87697a6acff24101b43fd54fe28a179",
@@ -28,14 +28,25 @@ WEPIGGY_ETH = {
             "cToken": "0xc12b9d620bfcb48be3e0ccbf0ea80c717333b46f",
             "liquidationThreshold": 0.7
         },
-        "0x0000000000000000000000000000000000000000": {
-            "cToken": "0x27a94869341838d5783368a8503fda5fbcd7987c",
-            "liquidationThreshold": 0.8
+        "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
+            "cToken": "0x82413f75f0da101e0fe7f6ff6cba3461f7e04f29",
+            "liquidationThreshold": 0.6
+        },
+        "0xa1d0e215a23d7030842fc67ce582a6afa3ccab83": {
+            "cToken": "0x82de3959c09f665a82c794fafc1eb34cfcb555ee",
+            "liquidationThreshold": 0.0
         },
         "0xbbbbca6a901c926f240b89eacb641d8aec7aeafd": {
             "cToken": "0x690aa2591e57180cba5a6123e9d462907a5e1c95",
             "liquidationThreshold": 0.5
         },
-
+        "0xf88506b0f1d30056b9e5580668d5875b9cd30f23": {
+            "cToken": "0xef86384cf696929c3227428f539e740ee12fcdc7",
+            "liquidationThreshold": 0.0
+        },
+        "0x03ab458634910aad20ef5f1c8ee96f1d6ac54919": {
+            "cToken": "0x959f30f765a44273eccaa0fac094160aa7c238e2",
+            "liquidationThreshold": 0.0
+        }
     }
 }

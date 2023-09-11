@@ -83,6 +83,7 @@ class CompoundStateService(ProtocolServices):
                 tokens.append(Token.wrapped_token.get(self.chain_id))
                 continue
             tokens.append(token)
+
         logger.info(f"Get token list related in {time.time() - begin}s")
         return tokens
 
