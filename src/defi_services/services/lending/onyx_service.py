@@ -203,8 +203,8 @@ class OnyxStateService(ProtocolServices):
                 underlying, ERC20_ABI, "decimals", [], block_number
             )
         key = f"oTokenBalancesAll_{self.name}_{wallet_address}_{block_number}".lower()
-        rpc_calls[key] = self.get_lens_function_info("oTokenBalancesAll",
-                                                     [ctokens, Web3.toChecksumAddress(wallet_address)])
+        rpc_calls[key] = self.get_lens_function_info(
+            "oTokenBalancesAll", [ctokens, Web3.toChecksumAddress(wallet_address)])
         return rpc_calls
 
     def calculate_wallet_deposit_borrow_balance(
@@ -241,8 +241,8 @@ class OnyxStateService(ProtocolServices):
             if token_price is not None:
                 deposit_amount_in_usd = deposit_amount * token_price
                 borrow_amount_in_usd = borrow_amount * token_price
-                result[token]['borrow_amount_in_usd'] += borrow_amount_in_usd
-                result[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
+                result[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
+                result[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
         return result
 
     # TOKEN DEPOSIT BORROW BALANCE
@@ -308,8 +308,8 @@ class OnyxStateService(ProtocolServices):
             if token_price is not None:
                 deposit_amount_in_usd = deposit_amount * token_price
                 borrow_amount_in_usd = borrow_amount * token_price
-                result[token]['borrow_amount_in_usd'] += borrow_amount_in_usd
-                result[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
+                result[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
+                result[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
         return result
 
     def get_lens_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
