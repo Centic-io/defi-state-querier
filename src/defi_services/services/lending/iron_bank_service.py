@@ -154,12 +154,16 @@ class IronBankStateService(ProtocolServices):
             wallet_address: str,
             block_number: int = "latest",
     ):
+        if Chain.optimism == self.chain_id:
+            return {}
         rpc_call = self.get_comptroller_function_info("compAccrued", [wallet_address], block_number)
         get_reward_id = f"compAccrued_{self.name}_{wallet_address}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
     def calculate_claimable_rewards_balance(
             self, wallet_address: str, decoded_data: dict, block_number: int = "latest"):
+        if Chain.optimism == self.chain_id:
+            return {}
         get_reward_id = f"compAccrued_{self.name}_{wallet_address}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.iron_bank_info.get("rewardToken")
