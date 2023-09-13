@@ -41,7 +41,7 @@ def test_processor_job():
 
         error = False
         try:
-            result = job.run(address, queries, batch_size=2000, ignore_error=True)
+            result = job.run(address, queries, batch_size=100, ignore_error=True)
             data[chain_id] = result
         except Exception as ex:
             logger.exception(ex)
@@ -51,3 +51,7 @@ def test_processor_job():
 
     with open('tests/lib_service_data.json', 'w') as f:
         json.dump(data, f)
+
+
+if __name__ == "__main__":
+    test_processor_job()
