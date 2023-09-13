@@ -400,8 +400,7 @@ class CompoundStateService(ProtocolServices):
             }
             if is_oracle_price:
                 get_underlying_token_price = f"cTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
-                token_price = decoded_data.get(get_underlying_token_price)[
-                                  1] * wrapped_native_token_price / 10 ** decimals
+                token_price = decoded_data.get(get_underlying_token_price)[1] * wrapped_native_token_price / 10 ** decimals
             elif token_prices:
                 token_price = token_prices.get(underlying)
             else:
@@ -409,8 +408,8 @@ class CompoundStateService(ProtocolServices):
             if token_price is not None:
                 deposit_amount_in_usd = deposit_amount * token_price
                 borrow_amount_in_usd = borrow_amount * token_price
-                result[token]['borrow_amount_in_usd'] += borrow_amount_in_usd
-                result[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
+                result[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
+                result[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
         return result
 
     # TOKEN DEPOSIT BORROW BALANCE
@@ -486,8 +485,8 @@ class CompoundStateService(ProtocolServices):
             if token_price is not None:
                 deposit_amount_in_usd = deposit_amount * token_price
                 borrow_amount_in_usd = borrow_amount * token_price
-                result[token]['borrow_amount_in_usd'] += borrow_amount_in_usd
-                result[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
+                result[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
+                result[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
         return result
 
     def get_lens_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
@@ -504,29 +503,3 @@ class CompoundStateService(ProtocolServices):
         return self.state_service.get_function_info(
             ctoken, CTOKEN_ABI, fn_name, fn_paras, block_number
         )
-
-    def get_ctoken_metadata_all(
-            self,
-            reserves_info: dict = None,
-            block_number: int = "latest"
-    ):
-        tokens = [Web3.toChecksumAddress(value['cToken']) for key, value in reserves_info.items()]
-        key = f"cTokenMetadataAll_{self.pool_info.get('lensAddress')}_{block_number}".lower()
-        return {
-            key: self.get_lens_function_info("cTokenMetadataAll", tokens, block_number)
-        }
-
-    def ctoken_underlying_price_all(
-            self, reserves_info, block_number: int = 'latest'):
-        tokens = [Web3.toChecksumAddress(value['cToken']) for key, value in reserves_info.items()]
-        key = f"cTokenUnderlyingPriceAll_{self.pool_info.get('lensAddress')}_{block_number}".lower()
-        return {
-            key: self.get_lens_function_info("cTokenUnderlyingPriceAll", tokens, block_number)
-        }
-
-    def get_all_markets(
-            self, block_number: int = 'latest'):
-        key = f"getAllMarkets_{self.pool_info.get('comptrollerAddress')}_{block_number}".lower()
-        return {
-            key: self.get_comptroller_function_info("getAllMarkets", [], block_number)
-        }

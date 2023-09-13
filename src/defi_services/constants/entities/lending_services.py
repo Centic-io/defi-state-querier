@@ -2,10 +2,12 @@ from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.services.lending.aave_v2_services import AaveV2StateService
 from defi_services.services.lending.apeswap_services import ApeSwapStateService
+from defi_services.services.lending.compound_v3_services import CompoundV3StateService
 from defi_services.services.lending.granary_services import GranaryStateService
 from defi_services.services.lending.morpho_aave_v2_services import MorphoAaveV2StateService
 from defi_services.services.lending.morpho_aave_v3_services import MorphoAaveV3StateService
 from defi_services.services.lending.morpho_compound_services import MorphoCompoundStateService
+from defi_services.services.lending.silo_services import SiloStateService
 from defi_services.services.lending.spark_services import SparkStateService
 from defi_services.services.lending.uwu_services import UwuStateService
 from defi_services.services.lending.aave_v3_services import AaveV3StateService
@@ -42,7 +44,9 @@ class LendingServices:
         Lending.morpho_aave_v3: MorphoAaveV3StateService,
         Lending.morpho_aave_v2: MorphoAaveV2StateService,
         Lending.morpho_compound: MorphoCompoundStateService,
-        Lending.spark: SparkStateService
+        Lending.spark: SparkStateService,
+        Lending.silo: SiloStateService,
+        Lending.compound_v3: CompoundV3StateService
     }
     fantom = {
         Lending.trava: TravaStateService,
@@ -86,7 +90,8 @@ class LendingServices:
         Lending.radiant_v2: RadiantStateService,
         Lending.aave_v3: AaveV3StateService,
         Lending.wepiggy: WepiggyStateService,
-        Lending.granary: GranaryStateService
+        Lending.granary: GranaryStateService,
+        Lending.silo: SiloStateService
     }
     # mapping
     mapping = {

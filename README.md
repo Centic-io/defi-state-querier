@@ -36,15 +36,16 @@ Return the asset list of an address in a blockchain. These assets are native tok
     "query_id": "<query_id>",
     "entity_id": "<protocol_id>",
     "query_type": "deposit_borrow",
-    "deposit_borrow": 
- {
-      "<asset_address_1>": {
-        "borrow_amount": 184.4,
-        "deposit_amount": 331.5
-      },
-      "<asset_address_2>": {
-        "borrow_amount": 184.4,
-        "deposit_amount": 331.5
+    "deposit_borrow": {
+      "<protocol_address>": {
+        "<asset_address_1>": {
+          "borrow_amount": 184.4,
+          "deposit_amount": 331.5
+        },
+        "<asset_address_2>": {
+          "borrow_amount": 184.4,
+          "deposit_amount": 331.5
+        }
       }
     }
   },
@@ -55,7 +56,7 @@ Return the asset list of an address in a blockchain. These assets are native tok
     "protocol_reward": {
       "<reward_address>": {
         "amount": 1.4
-     }
+      }
     }
   }
 ]
