@@ -158,8 +158,8 @@ class IronBankStateService(ProtocolServices):
         get_reward_id = f"compAccrued_{self.name}_{wallet_address}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
-    def calculate_claimable_rewards_balance(self, wallet_address: str, decoded_data: dict,
-                                            block_number: int = "latest"):
+    def calculate_claimable_rewards_balance(
+            self, wallet_address: str, decoded_data: dict, block_number: int = "latest"):
         get_reward_id = f"compAccrued_{self.name}_{wallet_address}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.iron_bank_info.get("rewardToken")
@@ -232,8 +232,8 @@ class IronBankStateService(ProtocolServices):
             if token_price is not None:
                 deposit_amount_in_usd = deposit_amount * token_price
                 borrow_amount_in_usd = borrow_amount * token_price
-                result[token]['borrow_amount_in_usd'] += borrow_amount_in_usd
-                result[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
+                result[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
+                result[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
         return result
 
     # TOKEN DEPOSIT BORROW BALANCE
@@ -309,8 +309,8 @@ class IronBankStateService(ProtocolServices):
             if token_price is not None:
                 deposit_amount_in_usd = deposit_amount * token_price
                 borrow_amount_in_usd = borrow_amount * token_price
-                result[token]['borrow_amount_in_usd'] += borrow_amount_in_usd
-                result[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
+                result[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
+                result[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
         return result
 
 

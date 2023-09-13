@@ -214,8 +214,8 @@ class LiqeeStateService(ProtocolServices):
             if token_price is not None:
                 deposit_amount_in_usd = deposit_amount * token_price
                 borrow_amount_in_usd = borrow_amount * token_price
-                result[token]['borrow_amount_in_usd'] += borrow_amount_in_usd
-                result[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
+                result[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
+                result[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
         return result
 
     # TOKEN DEPOSIT BORROW BALANCE
@@ -281,8 +281,8 @@ class LiqeeStateService(ProtocolServices):
             if token_price is not None:
                 deposit_amount_in_usd = deposit_amount * token_price
                 borrow_amount_in_usd = borrow_amount * token_price
-                result[token]['borrow_amount_in_usd'] += borrow_amount_in_usd
-                result[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
+                result[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
+                result[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
         return result
 
     def get_lending_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):

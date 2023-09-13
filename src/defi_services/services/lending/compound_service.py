@@ -400,8 +400,7 @@ class CompoundStateService(ProtocolServices):
             }
             if is_oracle_price:
                 get_underlying_token_price = f"cTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
-                token_price = decoded_data.get(get_underlying_token_price)[
-                                  1] * wrapped_native_token_price / 10 ** decimals
+                token_price = decoded_data.get(get_underlying_token_price)[1] * wrapped_native_token_price / 10 ** decimals
             elif token_prices:
                 token_price = token_prices.get(underlying)
             else:
@@ -409,8 +408,8 @@ class CompoundStateService(ProtocolServices):
             if token_price is not None:
                 deposit_amount_in_usd = deposit_amount * token_price
                 borrow_amount_in_usd = borrow_amount * token_price
-                result[token]['borrow_amount_in_usd'] += borrow_amount_in_usd
-                result[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
+                result[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
+                result[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
         return result
 
     # TOKEN DEPOSIT BORROW BALANCE
@@ -486,8 +485,8 @@ class CompoundStateService(ProtocolServices):
             if token_price is not None:
                 deposit_amount_in_usd = deposit_amount * token_price
                 borrow_amount_in_usd = borrow_amount * token_price
-                result[token]['borrow_amount_in_usd'] += borrow_amount_in_usd
-                result[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
+                result[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
+                result[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
         return result
 
     def get_lens_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
