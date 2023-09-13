@@ -46,7 +46,7 @@ class LendingServices:
         Lending.morpho_compound: MorphoCompoundStateService,
         Lending.spark: SparkStateService,
         Lending.silo: SiloStateService,
-        Lending.compound_v3: CompoundV3StateService
+        # Lending.compound_v3: CompoundV3StateService
     }
     fantom = {
         Lending.trava: TravaStateService,
