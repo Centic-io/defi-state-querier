@@ -2,6 +2,7 @@ from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.services.lending.aave_v2_services import AaveV2StateService
 from defi_services.services.lending.apeswap_services import ApeSwapStateService
+from defi_services.services.lending.compound_v3_services import CompoundV3StateService
 from defi_services.services.lending.granary_services import GranaryStateService
 from defi_services.services.lending.morpho_aave_v2_services import MorphoAaveV2StateService
 from defi_services.services.lending.morpho_aave_v3_services import MorphoAaveV3StateService
@@ -44,7 +45,8 @@ class LendingServices:
         Lending.morpho_aave_v2: MorphoAaveV2StateService,
         Lending.morpho_compound: MorphoCompoundStateService,
         Lending.spark: SparkStateService,
-        Lending.silo: SiloStateService
+        Lending.silo: SiloStateService,
+        # Lending.compound_v3: CompoundV3StateService
     }
     fantom = {
         Lending.trava: TravaStateService,

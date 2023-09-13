@@ -503,29 +503,3 @@ class CompoundStateService(ProtocolServices):
         return self.state_service.get_function_info(
             ctoken, CTOKEN_ABI, fn_name, fn_paras, block_number
         )
-
-    def get_ctoken_metadata_all(
-            self,
-            reserves_info: dict = None,
-            block_number: int = "latest"
-    ):
-        tokens = [Web3.toChecksumAddress(value['cToken']) for key, value in reserves_info.items()]
-        key = f"cTokenMetadataAll_{self.pool_info.get('lensAddress')}_{block_number}".lower()
-        return {
-            key: self.get_lens_function_info("cTokenMetadataAll", tokens, block_number)
-        }
-
-    def ctoken_underlying_price_all(
-            self, reserves_info, block_number: int = 'latest'):
-        tokens = [Web3.toChecksumAddress(value['cToken']) for key, value in reserves_info.items()]
-        key = f"cTokenUnderlyingPriceAll_{self.pool_info.get('lensAddress')}_{block_number}".lower()
-        return {
-            key: self.get_lens_function_info("cTokenUnderlyingPriceAll", tokens, block_number)
-        }
-
-    def get_all_markets(
-            self, block_number: int = 'latest'):
-        key = f"getAllMarkets_{self.pool_info.get('comptrollerAddress')}_{block_number}".lower()
-        return {
-            key: self.get_comptroller_function_info("getAllMarkets", [], block_number)
-        }
