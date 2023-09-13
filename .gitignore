@@ -160,3 +160,5 @@ cython_debug/
 .idea/
 test
 **/.DS_Store
+
+tests/lib_service_data.json
