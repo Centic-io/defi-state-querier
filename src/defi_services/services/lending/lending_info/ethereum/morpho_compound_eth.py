@@ -1,5 +1,5 @@
 MORPHO_COMPOUND_ETH = {
-    "name": "Compound Lending Pool",
+    "name": "Morpho Lending Pool",
     "rewardToken": "0xc00e94cb662c3520282e6f5717214004a7f26888",
     "comptrollerAddress": "0x8888882f8f843896699869179fb6e4f7e3b58888",
     "lensAddress": "0x930f1b46e1d081ec1524efd95752be3ece51ef67",

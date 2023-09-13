@@ -1,5 +1,5 @@
 MORPHO_AAVE_V3_ETH = {
-    "name": "Compound Lending Pool",
+    "name": "Morpho Lending Pool",
     "comptrollerAddress": "0x33333aea097c193e66081e930c33020272b33333",
     "poolToken": "0x9994e35db50125e0df82e4c2dde62496ce330999",
     "type": "LENDING_POOL",

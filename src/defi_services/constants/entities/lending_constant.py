@@ -22,7 +22,7 @@ class Lending:
     morpho_aave_v3 = 'morpho-aavev3'
     spark = 'spark'
     ape_swap = "apeswap-lending"
+    silo = 'silo-finance'
     all = [strike, aave_v2, aave_v3, radiant_v2, compound, flux, onyx, granary,
            iron_bank, trava, valas, geist, cream, venus, liqee, strike, uwu, wepiggy,
-           morpho_compound, morpho_aave_v2, morpho_aave_v3, spark, ape_swap
-           ]
+           morpho_compound, morpho_aave_v2, morpho_aave_v3, spark, ape_swap, silo]
