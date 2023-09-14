@@ -83,13 +83,8 @@ class AaveV3StateService(AaveV2StateService):
             self,
             reserves_info: dict,
             block_number: int = "latest",
-            is_oracle_price: bool = False  # get price by oracle
     ):
         rpc_calls = {}
-        if is_oracle_price:
-            asset_price_key = f"getAssetsPrices_{self.name}_{block_number}".lower()
-            rpc_calls[asset_price_key] = self.get_function_oracle_info(
-                "getAssetsPrices", list(reserves_info.keys()), block_number)
         reward_tokens = self.pool_info.get("rewardTokensList")
         for token_address, value in reserves_info.items():
             reserve_key = f"getReserveData_{self.name}_{token_address}_{block_number}".lower()
@@ -131,12 +126,8 @@ class AaveV3StateService(AaveV2StateService):
             interest_rate: dict,
             token_prices: dict,
             pool_token_price: float,
-            wrapped_native_token_price: float = 1900,
             pool_decimals: int = 18,
-            is_oracle_price: bool = False  # get price by oracle
     ):
-        if not is_oracle_price:
-            wrapped_native_token_price = 1
         reward_tokens = self.pool_info.get("rewardTokensList")
         for token_address in reserves_info:
             atoken = atokens.get(token_address)
@@ -151,8 +142,8 @@ class AaveV3StateService(AaveV2StateService):
             interest_rate[token_address].update({
                 "utilization": total_supply_d / total_supply_t,
             })
-            total_supply_t_in_usd = total_supply_t * token_price * wrapped_native_token_price
-            total_supply_d_in_usd = total_supply_d * token_price * wrapped_native_token_price
+            total_supply_t_in_usd = total_supply_t * token_price
+            total_supply_d_in_usd = total_supply_d * token_price
             if reward_tokens:
                 interest_rate[token_address][DBConst.reward_deposit_apy] = {}
                 interest_rate[token_address][DBConst.reward_borrow_apy] = {}
@@ -197,7 +188,6 @@ class AaveV3StateService(AaveV2StateService):
             decoded_data: dict,
             token_prices: dict,
             pool_token_price: float,
-            wrapped_native_token_price: float = 1900,
             pool_decimals: int = 18,
             block_number: int = 'latest',
     ):
@@ -252,15 +242,15 @@ class AaveV3StateService(AaveV2StateService):
 
         data = self.get_apy_lending_pool(
             atokens, debt_tokens, decimals, reserves_info, asset_data_tokens, total_supply_tokens, interest_rate,
-            token_prices, pool_token_price, wrapped_native_token_price, pool_decimals
+            token_prices, pool_token_price, pool_decimals
         )
 
         return data
 
     # REWARDS BALANCE
-    def get_all_rewards_balance_function_info(
+    def get_rewards_balance_function_info(
             self,
-            wallet_address,
+            wallet,
             reserves_info: dict = None,
             block_number: int = "latest"
     ):
@@ -273,13 +263,13 @@ class AaveV3StateService(AaveV2StateService):
         tokens = []
         for key, value in reserves_info.items():
             tokens += [Web3.toChecksumAddress(value["tToken"]), Web3.toChecksumAddress(value["dToken"])]
-        key = f"getAllUserRewards_{self.name}_{wallet_address}_{block_number}".lower()
-        rpc_calls[key] = self.get_function_incentive_info("getAllUserRewards", [tokens, Web3.toChecksumAddress(wallet_address)], block_number)
+        key = f"getAllUserRewards_{self.name}_{wallet}_{block_number}".lower()
+        rpc_calls[key] = self.get_function_incentive_info("getAllUserRewards", [tokens, Web3.toChecksumAddress(wallet)], block_number)
         return rpc_calls
 
-    def calculate_all_rewards_balance(
-            self, decoded_data: dict, wallet_address: str, block_number: int = "latest"):
-        key = f"getAllUserRewards_{self.name}_{wallet_address}_{block_number}".lower()
+    def calculate_rewards_balance(
+            self, decoded_data: dict, wallet: str, block_number: int = "latest"):
+        key = f"getAllUserRewards_{self.name}_{wallet}_{block_number}".lower()
         rewards = decoded_data.get(key)
         result = dict(zip(*rewards))
         for key, value in result.items():

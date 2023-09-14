@@ -71,7 +71,8 @@ class StateQuerier:
         for key, value in queries.items():
             fn_paras = value.get(Query.params)
             block_number = value.get(Query.block_number)
-            if Token.native_token in key and "balanceof" in key:
+            items = key.split('_')
+            if Token.native_token == items[2] and "balanceof" == items[1]:
                 eth_call = self.add_native_token_balance_rpc_call(fn_paras, key, block_number)
             else:
                 abi = value.get(Query.abi)
@@ -110,8 +111,8 @@ class StateQuerier:
                 args.append(item)
 
         data_call = encode_eth_call_data(abi=abi, fn_name=fn_name, args=args)
-        eth_call = EthCall(to=self._w3.toChecksumAddress(contract_address), block_number=block_number, data=data_call,
-                           abi=abi, fn_name=fn_name, id=call_id)
+        eth_call = EthCall(to=self._w3.toChecksumAddress(contract_address), block_number=block_number,
+                           data=data_call, abi=abi, fn_name=fn_name, id=call_id)
         return eth_call
 
     @staticmethod

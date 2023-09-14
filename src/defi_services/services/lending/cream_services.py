@@ -37,6 +37,7 @@ class CreamStateService(CompoundStateService):
     def get_rewards_balance_function_info(
             self,
             wallet_address: str,
+            reserves_info: dict = None,
             block_number: int = "latest",
     ):
         token = self.pool_info.get("poolToken")

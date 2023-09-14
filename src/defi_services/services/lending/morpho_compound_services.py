@@ -28,6 +28,7 @@ class MorphoCompoundInfo:
 
 class MorphoCompoundStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
+        super().__init__()
         self.name = f"{chain_id}_{Lending.morpho_compound}"
         self.chain_id = chain_id
         self.compound_info = CompoundInfo.mapping.get(chain_id)
@@ -80,82 +81,28 @@ class MorphoCompoundStateService(ProtocolServices):
 
         return reserves_info
 
-    def get_token_list(self):
-        begin = time.time()
-        tokens = [self.pool_info.get('rewardToken'), self.pool_info.get("poolToken")]
-        for token in self.pool_info.get("reservesList"):
-            if token == Token.native_token:
-                tokens.append(Token.wrapped_token.get(self.chain_id))
-                continue
-            tokens.append(token)
-        logger.info(f"Get token list related in {time.time() - begin}s")
-        return tokens
-
-    def get_data(
-            self,
-            query_types: list,
-            wallet: str,
-            decoded_data: dict,
-            block_number: int = 'latest',
-            **kwargs
-    ):
-        begin = time.time()
-        reserves_info = kwargs.get("reserves_info", self.pool_info.get("reservesList"))
-        token_prices = kwargs.get("token_prices", {})
-        result = {}
-        if Query.deposit_borrow in query_types and wallet:
-            result.update(self.calculate_wallet_deposit_borrow_balance(
-                wallet, reserves_info, decoded_data, token_prices, block_number
-            ))
-
-        if Query.protocol_reward in query_types and wallet:
-            result.update(self.calculate_claimable_rewards_balance(
-                wallet, decoded_data, block_number
-            ))
-        logger.info(f"Process protocol data in {time.time() - begin}")
-        return result
-
-    def get_function_info(
-            self,
-            query_types: list,
-            wallet: str = None,
-            block_number: int = "latest",
-            **kwargs
-    ):
-        begin = time.time()
-        reserves_info = kwargs.get("reserves_info", {})
-        if not reserves_info:
-            reserves_info = self.pool_info['reservesList']
-        rpc_calls = {}
-        if Query.deposit_borrow in query_types and wallet:
-            rpc_calls.update(self.get_wallet_deposit_borrow_balance_function_info(
-                wallet, reserves_info, block_number
-            ))
-
-        if Query.protocol_reward in query_types and wallet:
-            rpc_calls.update(self.get_claimable_rewards_balance_function_info(wallet, block_number))
-
-        logger.info(f"Get encoded rpc calls in {time.time() - begin}s")
-        return rpc_calls
-
     # REWARDS BALANCE
-    def get_claimable_rewards_balance_function_info(
+    def get_rewards_balance_function_info(
             self,
-            wallet_address: str,
+            wallet: str,
+            reserves_info: dict = None,
             block_number: int = "latest",
     ):
         reserves_info = self.pool_info.get("reservesList")
         params = [
             [Web3.toChecksumAddress(value.get(self.market_key)) for key, value in reserves_info.items()],
-            Web3.toChecksumAddress(wallet_address)
+            Web3.toChecksumAddress(wallet)
         ]
         rpc_call = self.get_lens_function_info("getUserUnclaimedRewards", params, block_number)
-        get_reward_id = f"getUserUnclaimedRewards_{self.name}_{wallet_address}_{block_number}".lower()
+        get_reward_id = f"getUserUnclaimedRewards_{self.name}_{wallet}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
-    def calculate_claimable_rewards_balance(self, wallet_address: str, decoded_data: dict,
-                                            block_number: int = "latest"):
-        get_reward_id = f"getUserUnclaimedRewards_{self.name}_{wallet_address}_{block_number}".lower()
+    def calculate_rewards_balance(
+            self,
+            decoded_data: dict,
+            wallet: str,
+            block_number: int = "latest"):
+        get_reward_id = f"getUserUnclaimedRewards_{self.name}_{wallet}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
         result = {
@@ -166,7 +113,7 @@ class MorphoCompoundStateService(ProtocolServices):
     # WALLET DEPOSIT BORROW BALANCE
     def get_wallet_deposit_borrow_balance_function_info(
             self,
-            wallet_address: str,
+            wallet: str,
             reserves_info: dict,
             block_number: int = "latest"
     ):
@@ -177,13 +124,13 @@ class MorphoCompoundStateService(ProtocolServices):
             ctoken = value.get(self.market_key)
             if token == Token.native_token:
                 underlying = Token.wrapped_token.get(self.chain_id)
-            underlying_borrow_key = f"getCurrentBorrowBalanceInOf_{self.name}_{ctoken}_{wallet_address}_{block_number}".lower()
-            underlying_balance_key = f"getCurrentSupplyBalanceInOf_{self.name}_{ctoken}_{wallet_address}_{block_number}".lower()
+            underlying_borrow_key = f"getCurrentBorrowBalanceInOf_{self.name}_{ctoken}_{wallet}_{block_number}".lower()
+            underlying_balance_key = f"getCurrentSupplyBalanceInOf_{self.name}_{ctoken}_{wallet}_{block_number}".lower()
             underlying_decimals_key = f"decimals_{underlying}_{block_number}".lower()
             rpc_calls[underlying_borrow_key] = self.get_lens_function_info(
-                "getCurrentBorrowBalanceInOf", [ctoken, wallet_address], block_number)
+                "getCurrentBorrowBalanceInOf", [ctoken, wallet], block_number)
             rpc_calls[underlying_balance_key] = self.get_lens_function_info(
-                "getCurrentSupplyBalanceInOf", [ctoken, wallet_address], block_number)
+                "getCurrentSupplyBalanceInOf", [ctoken, wallet], block_number)
             rpc_calls[underlying_decimals_key] = self.state_service.get_function_info(
                 underlying, ERC20_ABI, "decimals", [], block_number
             )
@@ -191,7 +138,12 @@ class MorphoCompoundStateService(ProtocolServices):
         return rpc_calls
 
     def calculate_wallet_deposit_borrow_balance(
-            self, wallet_address: str, reserves_info: dict, decoded_data: dict, token_prices: dict = None,
+            self,
+            wallet: str,
+            reserves_info: dict,
+            decoded_data: dict,
+            token_prices: dict = None,
+            pool_decimals: int = 18,
             block_number: int = "latest"):
         if token_prices is None:
             token_prices = {}
@@ -201,8 +153,8 @@ class MorphoCompoundStateService(ProtocolServices):
             ctoken = value.get(self.market_key)
             if token == Token.native_token:
                 underlying = Token.wrapped_token.get(self.chain_id)
-            get_total_deposit_id = f"getCurrentSupplyBalanceInOf_{self.name}_{ctoken}_{wallet_address}_{block_number}".lower()
-            get_total_borrow_id = f"getCurrentBorrowBalanceInOf_{self.name}_{ctoken}_{wallet_address}_{block_number}".lower()
+            get_total_deposit_id = f"getCurrentSupplyBalanceInOf_{self.name}_{ctoken}_{wallet}_{block_number}".lower()
+            get_total_borrow_id = f"getCurrentBorrowBalanceInOf_{self.name}_{ctoken}_{wallet}_{block_number}".lower()
             get_decimals_id = f"decimals_{underlying}_{block_number}".lower()
             decimals = decoded_data[get_decimals_id]
             deposit_amount = decoded_data[get_total_deposit_id][-1] / 10 ** decimals

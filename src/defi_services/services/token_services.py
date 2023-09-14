@@ -49,12 +49,11 @@ class TokenServices:
         return result
 
     def get_function_balance_info(self, wallet: str, token: str, block_number: int = "latest"):
-        balance_token = token
-        key = f"balanceOf_{wallet}_{balance_token}_{block_number}".lower()
+        key = f"balanceOf_{wallet}_{token}_{block_number}".lower()
         if token == Token.native_token:
             return {key: self.state_service.get_native_token_balance_info(wallet, block_number)}
 
-        return {key: self.state_service.get_function_info(balance_token, ERC20_ABI, "balanceOf", [wallet], block_number)}
+        return {key: self.state_service.get_function_info(token, ERC20_ABI, "balanceOf", [wallet], block_number)}
 
     def get_decimals_info(self, token: str, block_number: int = "latest"):
         decimals_token = token
