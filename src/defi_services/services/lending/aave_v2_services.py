@@ -2,6 +2,7 @@ import logging
 import time
 
 from web3 import Web3
+
 from defi_services.abis.lending.aave_v2_and_forlks.aave_v2_incentives_abi import AAVE_V2_INCENTIVES_ABI
 from defi_services.abis.lending.aave_v2_and_forlks.lending_pool_abi import LENDING_POOL_ABI
 from defi_services.abis.lending.aave_v2_and_forlks.oracle_abi import ORACLE_ABI
@@ -9,9 +10,7 @@ from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
-from defi_services.constants.query_constant import Query
 from defi_services.constants.time_constant import TimeConstants
-from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.avalanche.aave_v2_avalanche import AAVE_V2_AVALANCHE
 from defi_services.services.lending.lending_info.ethereum.aave_v2_eth import AAVE_V2_ETH

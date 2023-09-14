@@ -112,7 +112,6 @@ class ValasStateService(ProtocolServices):
             token_prices: dict,
             pool_token_price: float,
             pool_decimals: int = 18,
-            is_oracle_price: bool = False,  # get price by oracle
             rewards_per_second: int = None,
             total_alloc_point: int = None
     ):

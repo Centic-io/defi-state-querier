@@ -100,8 +100,7 @@ class StrikeStateService(ProtocolServices):
             self,
             wallet: str,
             reserves_info: dict,
-            block_number: int = "latest",
-            is_oracle_price: bool = False
+            block_number: int = "latest"
     ):
 
         rpc_calls = {}
@@ -110,13 +109,9 @@ class StrikeStateService(ProtocolServices):
             ctoken = value.get('cToken')
             if token == Token.native_token:
                 underlying = Token.wrapped_token.get(self.chain_id)
-            underlying_price_key = f"cTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
             underlying_borrow_key = f"borrowBalanceCurrent_{ctoken}_{wallet}_{block_number}".lower()
             underlying_balance_key = f"balanceOfUnderlying_{ctoken}_{wallet}_{block_number}".lower()
             underlying_decimals_key = f"decimals_{underlying}_{block_number}".lower()
-            if is_oracle_price:
-                rpc_calls[underlying_price_key] = self.get_lens_function_info(
-                    "cTokenUnderlyingPrice", [ctoken], block_number)
             rpc_calls[underlying_borrow_key] = self.get_ctoken_function_info(
                 ctoken, "borrowBalanceCurrent", [wallet], block_number)
             rpc_calls[underlying_balance_key] = self.get_ctoken_function_info(

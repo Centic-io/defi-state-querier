@@ -11,7 +11,7 @@ from defi_services.abis.lending.morpho.morpho_aave_v2_lens_abi import MORPHO_AAV
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.jobs.queriers.state_querier import StateQuerier
-from defi_services.services.lending.lending_info.aave_v2_services import AaveInfo
+from defi_services.services.lending.aave_v2_services import AaveInfo
 from defi_services.services.lending.lending_info.ethereum.morpho_aave_v2_eth import MORPHO_AAVE_V2_ETH
 from defi_services.services.lending.morpho_compound_services import MorphoCompoundStateService
 
