@@ -68,86 +68,13 @@ class ValasStateService(ProtocolServices):
         logger.info(f"Get reserves information in {time.time() - begin}s")
         return reserves_info
 
-    def get_token_list(self):
-        begin = time.time()
-        tokens = [self.pool_info.get('rewardToken'), self.pool_info.get("poolToken")]
-        for token in self.pool_info.get("reservesList"):
-            if token == Token.native_token:
-                tokens.append(Token.wrapped_token.get(self.chain_id))
-                continue
-            tokens.append(token)
-        logger.info(f"Get token list related in {time.time() - begin}s")
-        return tokens
-
-    def get_data(
-            self,
-            query_types: list,
-            wallet: str,
-            decoded_data: dict,
-            block_number: int = 'latest',
-            **kwargs
-    ):
-        begin = time.time()
-        reserves_info = kwargs.get("reserves_info", self.pool_info.get("reservesList"))
-        token_prices = kwargs.get("token_prices", {})
-        pool_token_price = token_prices.get(self.pool_info.get('poolToken'), 1)
-        pool_decimals = kwargs.get("pool_decimals", 18)
-        result = {}
-        if Query.deposit_borrow in query_types and wallet:
-            result.update(self.calculate_wallet_deposit_borrow_balance(
-                wallet, reserves_info, decoded_data, token_prices, pool_decimals, block_number
-            ))
-
-        if Query.protocol_reward in query_types and wallet:
-            result.update(self.calculate_all_rewards_balance(
-                decoded_data, wallet, block_number
-            ))
-
-        if Query.protocol_apy in query_types and wallet:
-            result.update(self.calculate_apy_lending_pool_function_call(
-                reserves_info, decoded_data, token_prices, pool_token_price, pool_decimals, block_number
-            ))
-        logger.info(f"Process protocol data in {time.time() - begin}")
-        return result
-
-    def get_function_info(
-            self,
-            query_types: list,
-            wallet: str = None,
-            block_number: int = "latest",
-            **kwargs
-    ):
-        begin = time.time()
-        reserves_info = kwargs.get("reserves_info", {})
-        is_oracle_price = kwargs.get("is_oracle_price", False)  # get price by oracle
-        if not reserves_info:
-            reserves_info = self.pool_info['reservesList']
-        rpc_calls = {}
-        if Query.deposit_borrow in query_types and wallet:
-            rpc_calls.update(self.get_wallet_deposit_borrow_balance_function_info(
-                wallet, reserves_info, block_number, is_oracle_price
-            ))
-
-        if Query.protocol_apy in query_types:
-            rpc_calls.update(self.get_apy_lending_pool_function_info(reserves_info, block_number, is_oracle_price))
-
-        if Query.protocol_reward in query_types and wallet:
-            rpc_calls.update(self.get_all_rewards_balance_function_info(wallet, block_number))
-        logger.info(f"Get encoded rpc calls in {time.time() - begin}s")
-        return rpc_calls
-
     # CALCULATE APY LENDING POOL
     def get_apy_lending_pool_function_info(
             self,
             reserves_info: dict,
             block_number: int = "latest",
-            is_oracle_price: bool = False  # get price by oracle
     ):
         rpc_calls = {}
-        if is_oracle_price:
-            asset_price_key = f"getAssetsPrices_{self.name}_{block_number}".lower()
-            rpc_calls[asset_price_key] = self.get_function_oracle_info(
-                "getAssetsPrices", list(reserves_info.keys()), block_number)
         rewards_per_second_key = f"rewardsPerSecond_{self.name}_{block_number}".lower()
         total_alloc_point_key = f"totalAllocPoint_{self.name}_{block_number}".lower()
         rpc_calls[rewards_per_second_key] = self.get_function_incentive_info("rewardsPerSecond", [], block_number)
@@ -292,14 +219,8 @@ class ValasStateService(ProtocolServices):
             wallet: str,
             reserves_info: dict,
             block_number: int = "latest",
-            is_oracle_price: bool = False  # get price by oracle
     ):
         rpc_calls = {}
-        if is_oracle_price:
-            asset_price_key = f"getAssetsPrices_{self.name}_{block_number}".lower()
-            rpc_calls[asset_price_key] = self.get_function_oracle_info(
-                "getAssetsPrices", list(reserves_info.keys()), block_number)
-
         for token in reserves_info:
             value = reserves_info[token]
             atoken_balance_of_key = f'balanceOf_{value["tToken"]}_{wallet}_{block_number}'.lower()
@@ -382,22 +303,23 @@ class ValasStateService(ProtocolServices):
         return data
 
     # REWARDS BALANCE
-    def get_all_rewards_balance_function_info(
+    def get_rewards_balance_function_info(
             self,
-            wallet_address,
+            wallet,
+            reserves_info: dict = None,
             block_number: int = "latest"
     ):
         rpc_calls = {}
-        key = f"earnedBalances_{self.name}_{wallet_address}_{block_number}".lower()
+        key = f"earnedBalances_{self.name}_{wallet}_{block_number}".lower()
         rpc_calls[key] = self.get_function_multi_fee_distribution_info(
-            "earnedBalances", [wallet_address], block_number)
+            "earnedBalances", [wallet], block_number)
 
         return rpc_calls
 
-    def calculate_all_rewards_balance(
-            self, decoded_data: dict, wallet_address: str, block_number: int = "latest"):
+    def calculate_rewards_balance(
+            self, decoded_data: dict, wallet: str, block_number: int = "latest"):
         reward_token = self.pool_info['rewardToken']
-        key = f"earnedBalances_{self.name}_{wallet_address}_{block_number}".lower()
+        key = f"earnedBalances_{self.name}_{wallet}_{block_number}".lower()
         rewards = decoded_data.get(key)[0] / 10 ** 18
         result = {
             reward_token: {"amount": rewards}

@@ -2,16 +2,15 @@ import logging
 import time
 
 from web3 import Web3
-from defi_services.abis.lending.aave_v2_and_forlks.uwu_incentives_abi import UWU_INCENTIVES_ABI
+
 from defi_services.abis.lending.aave_v2_and_forlks.lending_pool_abi import LENDING_POOL_ABI
 from defi_services.abis.lending.aave_v2_and_forlks.oracle_abi import ORACLE_ABI
+from defi_services.abis.lending.aave_v2_and_forlks.uwu_incentives_abi import UWU_INCENTIVES_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
-from defi_services.constants.query_constant import Query
 from defi_services.constants.time_constant import TimeConstants
-from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.ethereum.uwu_eth import UWU_ETH
 from defi_services.services.protocol_services import ProtocolServices
@@ -27,9 +26,10 @@ class UwuInfo:
 
 class UwuStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
+        super().__init__()
         self.name = f"{chain_id}_{Lending.uwu}"
         self.chain_id = chain_id
-        self.uwu_info = UwuInfo.mapping.get(chain_id)
+        self.pool_info = UwuInfo.mapping.get(chain_id)
         self.lending_abi = LENDING_POOL_ABI
         self.incentive_abi = UWU_INCENTIVES_ABI
         self.oracle_abi = ORACLE_ABI
@@ -41,7 +41,7 @@ class UwuStateService(ProtocolServices):
             Lending.uwu: {
                 "chain_id": self.chain_id,
                 "type": "lending",
-                "protocol_info": self.uwu_info
+                "protocol_info": self.pool_info
             }
         }
         return info
@@ -49,7 +49,7 @@ class UwuStateService(ProtocolServices):
     def get_dapp_asset_info(self, block_number: int = 'latest'):
         begin = time.time()
         _w3 = self.state_service.get_w3()
-        pool_address = Web3.toChecksumAddress(self.uwu_info['address'])
+        pool_address = Web3.toChecksumAddress(self.pool_info['address'])
         contract = _w3.eth.contract(address=pool_address, abi=self.lending_abi)
         reserves_list = contract.functions.getReservesList().call(block_identifier=block_number)
         reserves_info = {}
@@ -65,91 +65,13 @@ class UwuStateService(ProtocolServices):
         logger.info(f"Get reserves information in {time.time() - begin}s")
         return reserves_info
 
-    def get_token_list(self):
-        begin = time.time()
-        tokens = [self.uwu_info.get('rewardToken'), self.uwu_info.get("poolToken")]
-        for token in self.uwu_info.get("reservesList"):
-            if token == Token.native_token:
-                tokens.append(Token.wrapped_token.get(self.chain_id))
-                continue
-            tokens.append(token)
-        logger.info(f"Get token list related in {time.time() - begin}s")
-        return tokens
-
-    def get_data(
-            self,
-            query_types: list,
-            wallet: str,
-            decoded_data: dict,
-            block_number: int = 'latest',
-            **kwargs
-    ):
-        begin = time.time()
-        reserves_info = kwargs.get("reserves_info", self.uwu_info.get("reservesList"))
-        token_prices = kwargs.get("token_prices", {})
-        pool_token_price = token_prices.get(self.uwu_info.get('poolToken'), 1)
-        wrapped_native_token_price = token_prices.get(Token.wrapped_token.get(self.chain_id), 1)
-        pool_decimals = kwargs.get("pool_decimals", 18)
-        result = {}
-        if Query.deposit_borrow in query_types and wallet:
-            result.update(self.calculate_wallet_deposit_borrow_balance(
-                wallet, reserves_info, decoded_data, token_prices, wrapped_native_token_price, pool_decimals,
-                block_number
-            ))
-
-        if Query.protocol_reward in query_types and wallet:
-            result.update(self.calculate_all_rewards_balance(
-                decoded_data, wallet, block_number
-            ))
-
-
-        if Query.protocol_apy in query_types and wallet:
-            result.update(self.calculate_apy_lending_pool_function_call(
-                reserves_info, decoded_data, token_prices, pool_token_price, wrapped_native_token_price, pool_decimals,
-                block_number
-            ))
-        logger.info(f"Process protocol data in {time.time() - begin}")
-        return result
-
-    def get_function_info(
-            self,
-            query_types: list,
-            wallet: str = None,
-            block_number: int = "latest",
-            **kwargs
-    ):
-        begin = time.time()
-        reserves_info = kwargs.get("reserves_info", {})
-        is_oracle_price = kwargs.get("is_oracle_price", False)  # get price by oracle
-        if not reserves_info:
-            reserves_info = self.uwu_info['reservesList']
-        rpc_calls = {}
-        if Query.deposit_borrow in query_types and wallet:
-            rpc_calls.update(self.get_wallet_deposit_borrow_balance_function_info(
-                wallet, reserves_info, block_number, is_oracle_price
-            ))
-
-        if Query.protocol_apy in query_types:
-            rpc_calls.update(self.get_apy_lending_pool_function_info(reserves_info, block_number, is_oracle_price))
-
-        if Query.protocol_reward in query_types and wallet:
-            rpc_calls.update(self.get_all_rewards_balance_function_info(wallet, reserves_info, block_number))
-        logger.info(f"Get encoded rpc calls in {time.time() - begin}s")
-        return rpc_calls
-
     # CALCULATE APY LENDING POOL
     def get_apy_lending_pool_function_info(
             self,
             reserves_info: dict,
-            block_number: int = "latest",
-            is_oracle_price: bool = False  # get price by oracle
+            block_number: int = "latest"
     ):
         rpc_calls = {}
-        if is_oracle_price:
-            asset_price_key = f"getAssetsPrices_{self.name}_{block_number}".lower()
-            rpc_calls[asset_price_key] = self.get_function_oracle_info(
-                "getAssetsPrices", list(reserves_info.keys()), block_number)
-
         for token_address, value in reserves_info.items():
             reserve_key = f"getReserveData_{self.name}_{token_address}_{block_number}".lower()
             atoken_assets_key = f"assets_{value['tToken']}_{block_number}".lower()
@@ -188,12 +110,8 @@ class UwuStateService(ProtocolServices):
             interest_rate: dict,
             token_prices: dict,
             pool_token_price: float,
-            wrapped_native_token_price: float = 1900,
             pool_decimals: int = 18,
-            is_oracle_price: bool = False  # get price by oracle
     ):
-        if not is_oracle_price:
-            wrapped_native_token_price = 1
         for token_address in reserves_info:
             atoken = atokens.get(token_address)
             debt_token = debt_tokens.get(token_address)
@@ -209,14 +127,14 @@ class UwuStateService(ProtocolServices):
             eps_d = asset_data_d[0] / 10 ** pool_decimals
             token_price = token_prices.get(token_address)
             if total_supply_t:
-                total_supply_t_in_usd = total_supply_t * token_price * wrapped_native_token_price
+                total_supply_t_in_usd = total_supply_t * token_price
                 deposit_apr = eps_t * TimeConstants.A_YEAR * pool_token_price / (
                     total_supply_t_in_usd)
             else:
                 total_supply_t_in_usd = 0
                 deposit_apr = 0
             if total_supply_d:
-                total_supply_d_in_usd = total_supply_d * token_price * wrapped_native_token_price
+                total_supply_d_in_usd = total_supply_d * token_price
                 borrow_apr = eps_d * TimeConstants.A_YEAR * pool_token_price / (
                     total_supply_d_in_usd)
             else:
@@ -245,7 +163,6 @@ class UwuStateService(ProtocolServices):
             decoded_data: dict,
             token_prices: dict,
             pool_token_price: float,
-            wrapped_native_token_price: float = 1900,
             pool_decimals: int = 18,
             block_number: int = 'latest',
     ):
@@ -294,7 +211,7 @@ class UwuStateService(ProtocolServices):
 
         data = self.get_apy_lending_pool(
             atokens, debt_tokens, decimals, reserves_info, asset_data_tokens, total_supply_tokens, interest_rate,
-            token_prices, pool_token_price, wrapped_native_token_price, pool_decimals
+            token_prices, pool_token_price, pool_decimals
         )
 
         return data
@@ -304,15 +221,9 @@ class UwuStateService(ProtocolServices):
             self,
             wallet: str,
             reserves_info: dict,
-            block_number: int = "latest",
-            is_oracle_price: bool = False  # get price by oracle
+            block_number: int = "latest"
     ):
         rpc_calls = {}
-        if is_oracle_price:
-            asset_price_key = f"getAssetsPrices_{self.name}_{block_number}".lower()
-            rpc_calls[asset_price_key] = self.get_function_oracle_info(
-                "getAssetsPrices", list(reserves_info.keys()), block_number)
-
         for token in reserves_info:
             value = reserves_info[token]
             atoken_balance_of_key = f'balanceOf_{value["tToken"]}_{wallet}_{block_number}'.lower()
@@ -339,8 +250,6 @@ class UwuStateService(ProtocolServices):
             decimals,
             deposit_amount,
             borrow_amount,
-            wrapped_native_token_price: float = 1900,
-            is_oracle_price: bool = False  # get price by oracle
     ):
         result = {}
         for token in reserves_info:
@@ -355,9 +264,6 @@ class UwuStateService(ProtocolServices):
             if token_prices:
                 deposit_amount_in_usd = deposit_amount_wallet * token_prices.get(token, 0)
                 borrow_amount_in_usd = borrow_amount_wallet * token_prices.get(token, 0)
-                if is_oracle_price:
-                    deposit_amount_wallet *= wrapped_native_token_price
-                    borrow_amount_wallet *= wrapped_native_token_price
                 result[token].update({
                     "borrow_amount_in_usd": borrow_amount_in_usd,
                     "deposit_amount_in_usd": deposit_amount_in_usd,
@@ -370,7 +276,6 @@ class UwuStateService(ProtocolServices):
             reserves_info: dict,
             decoded_data: dict,
             token_prices: dict,
-            wrapped_native_token_price: float = 1900,
             pool_decimals: int = 18,
             block_number: int = 'latest',
     ):
@@ -395,7 +300,7 @@ class UwuStateService(ProtocolServices):
 
         data = self.get_wallet_deposit_borrow_balance(
             reserves_info, token_prices, decimals, deposit_amount,
-            borrow_amount, wrapped_native_token_price
+            borrow_amount
         )
 
         return data
@@ -404,7 +309,7 @@ class UwuStateService(ProtocolServices):
 
     def get_all_rewards_balance_function_info(
             self,
-            wallet_address,
+            wallet,
             reserves_info: dict = None,
             block_number: int = "latest"
     ):
@@ -413,16 +318,16 @@ class UwuStateService(ProtocolServices):
         for token, value in reserves_info.items():
             atoken, debt_token = Web3.toChecksumAddress(value['tToken']), Web3.toChecksumAddress(value['dToken'])
             tokens += [atoken, debt_token]
-        key = f"claimableReward_{self.name}_{wallet_address}_{block_number}".lower()
+        key = f"claimableReward_{self.name}_{wallet}_{block_number}".lower()
         rpc_calls[key] = self.get_function_incentive_info(
-            "claimableReward", [wallet_address, tokens], block_number)
+            "claimableReward", [wallet, tokens], block_number)
 
         return rpc_calls
 
     def calculate_all_rewards_balance(
-            self, decoded_data: dict, wallet_address: str, block_number: int = "latest"):
-        reward_token = self.uwu_info['rewardToken']
-        key = f"claimableReward_{self.name}_{wallet_address}_{block_number}".lower()
+            self, decoded_data: dict, wallet: str, block_number: int = "latest"):
+        reward_token = self.pool_info['rewardToken']
+        key = f"claimableReward_{self.name}_{wallet}_{block_number}".lower()
         rewards = sum(decoded_data.get(key))/ 10 ** 18
         result = {
             reward_token: {"amount": rewards}
@@ -432,29 +337,33 @@ class UwuStateService(ProtocolServices):
 
     def get_rewards_balance_function_info(
             self,
-            wallet_address,
+            wallet,
             reserves_info: dict = None,
             block_number: int = "latest"
     ):
         rpc_calls = {}
         for token, value in reserves_info.items():
             atoken, debt_token = Web3.toChecksumAddress(value['tToken']), Web3.toChecksumAddress(value['dToken'])
-            akey = f"claimableReward_{atoken}_{wallet_address}_{block_number}".lower()
-            dkey = f"claimableReward_{debt_token}_{wallet_address}_{block_number}".lower()
+            akey = f"claimableReward_{atoken}_{wallet}_{block_number}".lower()
+            dkey = f"claimableReward_{debt_token}_{wallet}_{block_number}".lower()
             rpc_calls[akey] = self.get_function_incentive_info(
-                "claimableReward", [wallet_address, [atoken]], block_number)
+                "claimableReward", [wallet, [atoken]], block_number)
             rpc_calls[dkey] = self.get_function_incentive_info(
-                "claimableReward", [wallet_address, [debt_token]], block_number)
+                "claimableReward", [wallet, [debt_token]], block_number)
         return rpc_calls
 
     def calculate_rewards_balance(
-            self, decoded_data: dict, wallet_address: str, reserves_info: dict, block_number: int = "latest"):
+            self,
+            decoded_data: dict,
+            wallet: str,
+            block_number: int = "latest"):
         result = {}
-        reward_token = self.uwu_info['rewardToken']
+        reward_token = self.pool_info['rewardToken']
+        reserves_info = self.pool_info['reservesList']
         for token, value in reserves_info.items():
             atoken, debt_token = value['tToken'], value['dToken']
-            akey = f"claimableReward_{atoken}_{wallet_address}_{block_number}".lower()
-            dkey = f"claimableReward_{debt_token}_{wallet_address}_{block_number}".lower()
+            akey = f"claimableReward_{atoken}_{wallet}_{block_number}".lower()
+            dkey = f"claimableReward_{debt_token}_{wallet}_{block_number}".lower()
             deposit_reward = decoded_data.get(akey)[0] / 10 ** 18
             borrow_reward = decoded_data.get(dkey)[0] / 10 ** 18
             result[token] = {
@@ -478,15 +387,15 @@ class UwuStateService(ProtocolServices):
 
     def get_function_lending_pool_info(self, fn_name: str, fn_paras=None, block_number: int = 'latest'):
         return self.state_service.get_function_info(
-            self.uwu_info['address'], self.lending_abi, fn_name, fn_paras, block_number
+            self.pool_info['address'], self.lending_abi, fn_name, fn_paras, block_number
         )
 
     def get_function_incentive_info(self, fn_name: str, fn_paras=None, block_number: int = 'latest'):
         return self.state_service.get_function_info(
-            self.uwu_info['stakedIncentiveAddress'], self.incentive_abi, fn_name, fn_paras, block_number
+            self.pool_info['stakedIncentiveAddress'], self.incentive_abi, fn_name, fn_paras, block_number
         )
 
     def get_function_oracle_info(self, fn_name: str, fn_paras=None, block_number: int = 'latest'):
         return self.state_service.get_function_info(
-            self.uwu_info['oracleAddress'], self.oracle_abi, fn_name, fn_paras, block_number
+            self.pool_info['oracleAddress'], self.oracle_abi, fn_name, fn_paras, block_number
         )

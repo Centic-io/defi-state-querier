@@ -70,15 +70,16 @@ class ApeSwapStateService(CompoundStateService):
         return reserves_info
 
     # REWARDS BALANCE
-    def get_claimable_rewards_balance_function_info(
+    def get_rewards_balance_function_info(
             self,
-            wallet_address: str,
+            wallet: str,
+            reserves_info: dict = None,
             block_number: int = "latest",
     ):
         return {}
 
-    def calculate_claimable_rewards_balance(self, wallet_address: str, decoded_data: dict,
-                                            block_number: int = "latest"):
+    def calculate_rewards_balance(
+            self, wallet: str, decoded_data: dict, block_number: int = "latest"):
         return {}
 
     def get_ctoken_function_info(self, ctoken: str, fn_name: str, fn_paras: list, block_number: int = "latest"):

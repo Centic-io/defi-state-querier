@@ -26,6 +26,7 @@ class OnyxInfo:
 
 class OnyxStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
+        super().__init__()
         self.name = f"{chain_id}_{Lending.onyx}"
         self.chain_id = chain_id
         self.pool_info = OnyxInfo.mapping.get(chain_id)
@@ -75,103 +76,24 @@ class OnyxStateService(ProtocolServices):
 
         return reserves_info
 
-    def get_token_list(self):
-        begin = time.time()
-        tokens = [self.pool_info.get('rewardToken'), self.pool_info.get("poolToken")]
-        for token in self.pool_info.get("reservesList"):
-            if token == Token.native_token:
-                tokens.append(Token.wrapped_token.get(self.chain_id))
-                continue
-            tokens.append(token)
-        logger.info(f"Get token list related in {time.time() - begin}s")
-        return tokens
-
-    def get_data(
-            self,
-            query_types: list,
-            wallet: str,
-            decoded_data: dict,
-            block_number: int = 'latest',
-            **kwargs
-    ):
-        begin = time.time()
-        reserves_info = kwargs.get("reserves_info", self.pool_info.get("reservesList"))
-        token_prices = kwargs.get("token_prices", {})
-        pool_decimals = kwargs.get("pool_decimals", 18)
-        result = {}
-        if Query.deposit_borrow in query_types and wallet:
-            result.update(self.calculate_wallet_deposit_borrow_balance(
-                wallet, reserves_info, decoded_data, token_prices, block_number
-            ))
-
-        if Query.protocol_reward in query_types and wallet:
-            result.update(self.calculate_claimable_rewards_balance(
-                wallet, decoded_data, block_number
-            ))
-
-        logger.info(f"Process protocol data in {time.time() - begin}")
-        return result
-
-    def get_function_info(
-            self,
-            query_types: list,
-            wallet: str = None,
-            block_number: int = "latest",
-            **kwargs
-    ):
-        begin = time.time()
-        reserves_info = kwargs.get("reserves_info", {})
-        is_oracle_price = kwargs.get("is_oracle_price", False)  # get price by oracle
-        if not reserves_info:
-            reserves_info = self.pool_info['reservesList']
-        rpc_calls = {}
-        if Query.deposit_borrow in query_types and wallet:
-            rpc_calls.update(self.get_wallet_deposit_borrow_balance_function_info(
-                wallet, reserves_info, block_number
-            ))
-
-        if Query.protocol_reward in query_types and wallet:
-            rpc_calls.update(self.get_claimable_rewards_balance_function_info(wallet, block_number))
-
-        logger.info(f"Get encoded rpc calls in {time.time() - begin}s")
-        return rpc_calls
-
     # REWARDS BALANCE
-    def get_claimable_rewards_balance_function_info(
-            self,
-            wallet_address: str,
-            block_number: int = "latest",
-    ):
-        rpc_call = self.get_comptroller_function_info("xcnAccrued", [wallet_address], block_number)
-        get_reward_id = f"xcnAccrued_{self.name}_{wallet_address}_{block_number}".lower()
-        return {get_reward_id: rpc_call}
-
-    def calculate_claimable_rewards_balance(self, wallet_address: str, decoded_data: dict,
-                                            block_number: int = "latest"):
-        get_reward_id = f"xcnAccrued_{self.name}_{wallet_address}_{block_number}".lower()
-        rewards = decoded_data.get(get_reward_id) / 10 ** 18
-        reward_token = self.pool_info.get("rewardToken")
-        result = {
-            reward_token: {"amount": rewards}
-        }
-        return result
-
     def get_rewards_balance_function_info(
             self,
-            wallet_address: str,
+            wallet: str,
+            reserves_info: dict = None,
             block_number: int = "latest",
     ):
-        token = self.pool_info.get("poolToken")
-        fn_paras = [Web3.toChecksumAddress(token),
-                    Web3.toChecksumAddress(self.pool_info.get("comptrollerAddress")),
-                    Web3.toChecksumAddress(wallet_address)]
-        rpc_call = self.get_lens_function_info("getXcnBalanceMetadataExt", fn_paras, block_number)
-        get_reward_id = f"getXcnBalanceMetadataExt_{self.name}_{wallet_address}_{block_number}".lower()
+        rpc_call = self.get_comptroller_function_info("xcnAccrued", [wallet], block_number)
+        get_reward_id = f"xcnAccrued_{self.name}_{wallet}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
-    def calculate_rewards_balance(self, wallet_address: str, decoded_data: dict, block_number: int = "latest"):
-        get_reward_id = f"getXcnBalanceMetadataExt_{self.name}_{wallet_address}_{block_number}".lower()
-        rewards = decoded_data.get(get_reward_id)[-1] / 10 ** 18
+    def calculate_rewards_balance(
+            self,
+            decoded_data: dict,
+            wallet: str,
+            block_number: int = "latest"):
+        get_reward_id = f"xcnAccrued_{self.name}_{wallet}_{block_number}".lower()
+        rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
         result = {
             reward_token: {"amount": rewards}
@@ -181,7 +103,7 @@ class OnyxStateService(ProtocolServices):
     # WALLET DEPOSIT BORROW BALANCE
     def get_wallet_deposit_borrow_balance_function_info(
             self,
-            wallet_address: str,
+            wallet: str,
             reserves_info: dict,
             block_number: int = "latest",
     ):
@@ -202,18 +124,23 @@ class OnyxStateService(ProtocolServices):
             rpc_calls[underlying_decimals_key] = self.state_service.get_function_info(
                 underlying, ERC20_ABI, "decimals", [], block_number
             )
-        key = f"oTokenBalancesAll_{self.name}_{wallet_address}_{block_number}".lower()
+        key = f"oTokenBalancesAll_{self.name}_{wallet}_{block_number}".lower()
         rpc_calls[key] = self.get_lens_function_info(
-            "oTokenBalancesAll", [ctokens, Web3.toChecksumAddress(wallet_address)])
+            "oTokenBalancesAll", [ctokens, Web3.toChecksumAddress(wallet)])
         return rpc_calls
 
     def calculate_wallet_deposit_borrow_balance(
-            self, wallet_address: str, reserves_info: dict, decoded_data: dict, token_prices: dict = None,
+            self,
+            wallet: str,
+            reserves_info: dict,
+            decoded_data: dict,
+            token_prices: dict = None,
+            pool_decimals: int = 18,
             block_number: int = "latest"):
         if token_prices is None:
             token_prices = {}
         result = {}
-        key = f"oTokenBalancesAll_{self.name}_{wallet_address}_{block_number}".lower()
+        key = f"oTokenBalancesAll_{self.name}_{wallet}_{block_number}".lower()
         ctoken_balance = {}
         for item in decoded_data.get(key):
             ctoken_balance[item[0]] = {
@@ -326,29 +253,3 @@ class OnyxStateService(ProtocolServices):
         return self.state_service.get_function_info(
             ctoken, self.token_abi, fn_name, fn_paras, block_number
         )
-
-    def get_ctoken_metadata_all(
-            self,
-            reserves_info: dict = None,
-            block_number: int = "latest"
-    ):
-        tokens = [Web3.toChecksumAddress(value['cToken']) for key, value in reserves_info.items()]
-        key = f"cTokenMetadataAll_{self.pool_info.get('lensAddress')}_{block_number}".lower()
-        return {
-            key: self.get_lens_function_info("cTokenMetadataAll", tokens, block_number)
-        }
-
-    def ctoken_underlying_price_all(
-            self, reserves_info, block_number: int = 'latest'):
-        tokens = [Web3.toChecksumAddress(value['cToken']) for key, value in reserves_info.items()]
-        key = f"cTokenUnderlyingPriceAll_{self.pool_info.get('lensAddress')}_{block_number}".lower()
-        return {
-            key: self.get_lens_function_info("cTokenUnderlyingPriceAll", tokens, block_number)
-        }
-
-    def get_all_markets(
-            self, block_number: int = 'latest'):
-        key = f"getAllMarkets_{self.pool_info.get('comptrollerAddress')}_{block_number}".lower()
-        return {
-            key: self.get_comptroller_function_info("getAllMarkets", [], block_number)
-        }

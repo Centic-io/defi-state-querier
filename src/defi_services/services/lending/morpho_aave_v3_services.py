@@ -76,33 +76,26 @@ class MorphoAaveV3StateService(MorphoCompoundStateService):
         logger.info(f"Get reserves information in {time.time() - begin}s")
         return reserves_info
 
-    def get_token_list(self):
-        begin = time.time()
-        tokens = [self.aave_info.get("poolToken")]
-        for token in self.aave_info.get("reservesList"):
-            if token == Token.native_token:
-                tokens.append(Token.wrapped_token.get(self.chain_id))
-                continue
-            tokens.append(token)
-        logger.info(f"Get token list related in {time.time()-begin}s")
-        return tokens
-
     # REWARDS BALANCE
-    def get_claimable_rewards_balance_function_info(
+    def get_rewards_balance_function_info(
             self,
-            wallet_address: str,
+            wallet: str,
+            reserves_info: dict = None,
             block_number: int = "latest",
     ):
         return {}
 
-    def calculate_claimable_rewards_balance(self, wallet_address: str, decoded_data: dict,
-                                            block_number: int = "latest"):
+    def calculate_rewards_balance(
+            self,
+            decoded_data: dict,
+            wallet: str,
+            block_number: int = "latest"):
         return {}
 
     # WALLET DEPOSIT BORROW BALANCE
     def get_wallet_deposit_borrow_balance_function_info(
             self,
-            wallet_address: str,
+            wallet: str,
             reserves_info: dict,
             block_number: int = "latest"
     ):
@@ -113,13 +106,13 @@ class MorphoAaveV3StateService(MorphoCompoundStateService):
             ctoken = value.get(self.market_key)
             if token == Token.native_token:
                 underlying = Token.wrapped_token.get(self.chain_id)
-            underlying_borrow_key = f"borrowBalance_{self.name}_{ctoken}_{wallet_address}_{block_number}".lower()
-            underlying_balance_key = f"collateralBalance_{self.name}_{ctoken}_{wallet_address}_{block_number}".lower()
+            underlying_borrow_key = f"borrowBalance_{self.name}_{ctoken}_{wallet}_{block_number}".lower()
+            underlying_balance_key = f"collateralBalance_{self.name}_{ctoken}_{wallet}_{block_number}".lower()
             underlying_decimals_key = f"decimals_{underlying}_{block_number}".lower()
             rpc_calls[underlying_borrow_key] = self.get_comptroller_function_info(
-                "borrowBalance", [token, wallet_address], block_number)
+                "borrowBalance", [token, wallet], block_number)
             rpc_calls[underlying_balance_key] = self.get_comptroller_function_info(
-                "collateralBalance", [token, wallet_address], block_number)
+                "collateralBalance", [token, wallet], block_number)
             rpc_calls[underlying_decimals_key] = self.state_service.get_function_info(
                 underlying, ERC20_ABI, "decimals", [], block_number
             )
@@ -127,8 +120,14 @@ class MorphoAaveV3StateService(MorphoCompoundStateService):
         return rpc_calls
 
     def calculate_wallet_deposit_borrow_balance(
-            self, wallet_address: str, reserves_info: dict, decoded_data: dict, token_prices: dict = None,
-            block_number: int = "latest"):
+            self,
+            wallet: str,
+            reserves_info: dict,
+            decoded_data: dict,
+            token_prices: dict = None,
+            pool_decimals: int = 18,
+            block_number: int = "latest"
+    ):
         if token_prices is None:
             token_prices = {}
         result = {}
@@ -137,8 +136,8 @@ class MorphoAaveV3StateService(MorphoCompoundStateService):
             ctoken = value.get(self.market_key)
             if token == Token.native_token:
                 underlying = Token.wrapped_token.get(self.chain_id)
-            get_total_deposit_id = f"collateralBalance_{self.name}_{ctoken}_{wallet_address}_{block_number}".lower()
-            get_total_borrow_id = f"borrowBalance_{self.name}_{ctoken}_{wallet_address}_{block_number}".lower()
+            get_total_deposit_id = f"collateralBalance_{self.name}_{ctoken}_{wallet}_{block_number}".lower()
+            get_total_borrow_id = f"borrowBalance_{self.name}_{ctoken}_{wallet}_{block_number}".lower()
             get_decimals_id = f"decimals_{underlying}_{block_number}".lower()
             decimals = decoded_data[get_decimals_id]
             deposit_amount = decoded_data[get_total_deposit_id] / 10 ** decimals

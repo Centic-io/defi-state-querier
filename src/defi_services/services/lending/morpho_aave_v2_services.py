@@ -77,13 +77,13 @@ class MorphoAaveV2StateService(MorphoCompoundStateService):
         return reserves_info
 
     # REWARDS BALANCE
-    def get_claimable_rewards_balance_function_info(
+    def get_rewards_balance_function_info(
             self,
-            wallet_address: str,
+            wallet: str,
+            reserves_info: dict = None,
             block_number: int = "latest",
     ):
         return {}
 
-    def calculate_claimable_rewards_balance(self, wallet_address: str, decoded_data: dict,
-                                            block_number: int = "latest"):
+    def calculate_rewards_balance(self, decoded_data: dict, wallet: str, block_number: int = "latest"):
         return {}

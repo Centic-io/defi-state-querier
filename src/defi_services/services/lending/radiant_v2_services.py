@@ -36,22 +36,26 @@ class RadiantStateService(ValasStateService):
         return info
 
     # REWARDS BALANCE
-    def get_all_rewards_balance_function_info(
+    def get_rewards_balance_function_info(
             self,
-            wallet_address,
+            wallet,
+            reserves_info: dict = None,
             block_number: int = "latest"
     ):
         rpc_calls = {}
-        key = f"allPendingRewards_{self.name}_{wallet_address}_{block_number}".lower()
+        key = f"allPendingRewards_{self.name}_{wallet}_{block_number}".lower()
         rpc_calls[key] = self.get_function_incentive_info(
-            "allPendingRewards", [wallet_address], block_number)
+            "allPendingRewards", [wallet], block_number)
 
         return rpc_calls
 
-    def calculate_all_rewards_balance(
-            self, decoded_data: dict, wallet_address: str, block_number: int = "latest"):
+    def calculate_rewards_balance(
+            self,
+            decoded_data: dict,
+            wallet: str,
+            block_number: int = "latest"):
         reward_token = self.pool_info['rewardToken']
-        key = f"allPendingRewards_{self.name}_{wallet_address}_{block_number}".lower()
+        key = f"allPendingRewards_{self.name}_{wallet}_{block_number}".lower()
         rewards = decoded_data.get(key) / 10 ** 18
         result = {
             reward_token: {"amount": rewards}

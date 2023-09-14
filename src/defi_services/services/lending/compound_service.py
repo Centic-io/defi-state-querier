@@ -27,6 +27,7 @@ class CompoundInfo:
 
 class CompoundStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
+        super().__init__()
         self.name = f"{chain_id}_{Lending.compound}"
         self.chain_id = chain_id
         self.pool_info = CompoundInfo.mapping.get(chain_id)
@@ -75,82 +76,11 @@ class CompoundStateService(ProtocolServices):
 
         return reserves_info
 
-    def get_token_list(self):
-        begin = time.time()
-        tokens = [self.pool_info.get('rewardToken'), self.pool_info.get("poolToken")]
-        for token in self.pool_info.get("reservesList"):
-            if token == Token.native_token:
-                tokens.append(Token.wrapped_token.get(self.chain_id))
-                continue
-            tokens.append(token)
-
-        logger.info(f"Get token list related in {time.time() - begin}s")
-        return tokens
-
-    def get_data(
-            self,
-            query_types: list,
-            wallet: str,
-            decoded_data: dict,
-            block_number: int = 'latest',
-            **kwargs
-    ):
-        begin = time.time()
-        reserves_info = kwargs.get("reserves_info", self.pool_info.get("reservesList"))
-        token_prices = kwargs.get("token_prices", {})
-        wrapped_native_token_price = token_prices.get(Token.wrapped_token.get(self.chain_id), 1)
-        pool_decimals = kwargs.get("pool_decimals", 18)
-        result = {}
-        if Query.deposit_borrow in query_types and wallet:
-            result.update(self.calculate_wallet_deposit_borrow_balance(
-                wallet, reserves_info, decoded_data, token_prices, wrapped_native_token_price, block_number
-            ))
-
-        if Query.protocol_reward in query_types and wallet:
-            result.update(self.calculate_claimable_rewards_balance(
-                wallet, decoded_data, block_number
-            ))
-
-        if Query.protocol_apy in query_types and wallet:
-            result.update(self.calculate_apy_lending_pool_function_call(
-                reserves_info, decoded_data, token_prices, pool_decimals, block_number
-            ))
-        logger.info(f"Process protocol data in {time.time() - begin}")
-        return result
-
-    def get_function_info(
-            self,
-            query_types: list,
-            wallet: str = None,
-            block_number: int = "latest",
-            **kwargs
-    ):
-        begin = time.time()
-        reserves_info = kwargs.get("reserves_info", {})
-        is_oracle_price = kwargs.get("is_oracle_price", False)  # get price by oracle
-        if not reserves_info:
-            reserves_info = self.pool_info['reservesList']
-        rpc_calls = {}
-        if Query.deposit_borrow in query_types and wallet:
-            rpc_calls.update(self.get_wallet_deposit_borrow_balance_function_info(
-                wallet, reserves_info, block_number, is_oracle_price
-            ))
-
-        if Query.protocol_apy in query_types:
-            rpc_calls.update(self.get_apy_lending_pool_function_info(reserves_info, block_number, is_oracle_price))
-
-        if Query.protocol_reward in query_types and wallet:
-            rpc_calls.update(self.get_claimable_rewards_balance_function_info(wallet, block_number))
-
-        logger.info(f"Get encoded rpc calls in {time.time() - begin}s")
-        return rpc_calls
-
     # CALCULATE APY LENDING POOL
     def get_apy_lending_pool_function_info(
             self,
             reserves_info: dict,
-            block_number: int = "latest",
-            is_price_oracle: bool = False
+            block_number: int = "latest"
     ):
         rpc_calls = {}
         for token, value in reserves_info.items():
@@ -159,10 +89,6 @@ class CompoundStateService(ProtocolServices):
             mint_key = f"mintGuardianPaused_{ctoken}_{block_number}".lower()
             borrow_key = f"borrowGuardianPaused_{ctoken}_{block_number}".lower()
             metadata_key = f"cTokenMetadata_{ctoken}_{block_number}".lower()
-            if is_price_oracle:
-                price_key = f"cTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
-                rpc_calls[price_key] = self.get_comptroller_function_info('cTokenUnderlyingPrice', [ctoken],
-                                                                          block_number)
             rpc_calls[speed_key] = self.get_comptroller_function_info('compSpeeds', [ctoken], block_number)
             rpc_calls[mint_key] = self.get_comptroller_function_info('mintGuardianPaused', [ctoken], block_number)
             rpc_calls[borrow_key] = self.get_comptroller_function_info('borrowGuardianPaused', [ctoken], block_number)
@@ -175,9 +101,7 @@ class CompoundStateService(ProtocolServices):
             decoded_data: dict,
             reserves_info: dict,
             block_number: int = "latest",
-            wrapped_native_token_price: float = 310,
             underlying_price: dict = None,
-            is_oracle_price: bool = False
     ):
         underlying_prices, underlying_decimals, reserve_tokens_info = {}, {}, []
         ctoken_speeds, borrow_paused_tokens, mint_paused_tokens = {}, {}, {}
@@ -191,13 +115,7 @@ class CompoundStateService(ProtocolServices):
             mint_paused_tokens[ctoken] = decoded_data.get(mint_guardian_paused_call_id)
             metadata_id = f"cTokenMetadata_{ctoken}_{block_number}".lower()
             reserve_tokens_info.append(decoded_data.get(metadata_id))
-            if is_oracle_price:
-                underlying_id = f"cTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
-                price_token = decoded_data.get(underlying_id)
-                price_token = price_token[1] * wrapped_native_token_price
-            else:
-                price_token = underlying_price.get(token)
-
+            price_token = underlying_price.get(token)
             underlying_decimals[ctoken] = decoded_data.get(metadata_id)[-1]
             underlying_prices[ctoken] = price_token
         return {
@@ -214,16 +132,15 @@ class CompoundStateService(ProtocolServices):
             reserves_info: dict,
             decoded_data: dict,
             token_prices: dict,
+            pool_token_price: float = 1,
             pool_decimals: int = 18,
             block_number: int = "latest",
-            is_oracle_price: bool = False,
     ):
-        wrapped_native_token_price = token_prices.get(Token.wrapped_token.get(self.chain_id))
         pool_token_price = token_prices.get(self.pool_info.get("poolToken"))
         tokens_interest_rates = dict()
         decode_data = self.get_apy_lending_pool(
             decoded_data, reserves_info, block_number,
-            wrapped_native_token_price, token_prices, is_oracle_price)
+            token_prices)
 
         mint_paused_tokens = decode_data["mint_paused_tokens"]
         borrow_paused_tokens = decode_data["borrow_paused_tokens"]
@@ -232,8 +149,6 @@ class CompoundStateService(ProtocolServices):
         for data in reserve_tokens_info:
             address = data[0].lower()
             underlying_token_price = float(decode_data["underlying_prices"][address])
-            if is_oracle_price:
-                underlying_token_price = underlying_token_price / 10 ** int(data[13])
 
             token_info = {
                 "token": address,
@@ -257,15 +172,13 @@ class CompoundStateService(ProtocolServices):
         return tokens_interest_rates
 
     @staticmethod
-    def _calculate_interest_rates(token_info: dict, pool_decimals: int, pool_price: float,
-                                  is_oracle_price: bool = False):
+    def _calculate_interest_rates(
+            token_info: dict, pool_decimals: int, pool_price: float):
         apx_block_speed_in_seconds = 3
         exchange_rate = float(token_info["exchange_rate"]) / 10 ** (18 - 8 + token_info["underlying_decimals"])
         block_per_day = int(60 * 60 * 24 / apx_block_speed_in_seconds)
         venus_per_day = token_info["speed"] * block_per_day / 10 ** pool_decimals
         underlying_price = float(token_info["underlying_price"])
-        if is_oracle_price:
-            underlying_price /= 10 ** (36 - int(token_info["underlying_decimals"]))
         total_borrow = float(token_info["borrow"]) / 10 ** int(token_info["underlying_decimals"])
         total_supply = float(token_info["supply"]) * exchange_rate / 10 ** int(token_info["underlying_decimals"])
         total_borrow_usd = total_borrow * underlying_price
@@ -307,15 +220,15 @@ class CompoundStateService(ProtocolServices):
     # REWARDS BALANCE
     def get_claimable_rewards_balance_function_info(
             self,
-            wallet_address: str,
+            wallet: str,
             block_number: int = "latest",
     ):
-        rpc_call = self.get_comptroller_function_info("compAccrued", [wallet_address], block_number)
-        get_reward_id = f"compAccrued_{self.name}_{wallet_address}_{block_number}".lower()
+        rpc_call = self.get_comptroller_function_info("compAccrued", [wallet], block_number)
+        get_reward_id = f"compAccrued_{self.name}_{wallet}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
-    def calculate_claimable_rewards_balance(self, wallet_address: str, decoded_data: dict, block_number: int = "latest"):
-        get_reward_id = f"compAccrued_{self.name}_{wallet_address}_{block_number}".lower()
+    def calculate_claimable_rewards_balance(self, wallet: str, decoded_data: dict, block_number: int = "latest"):
+        get_reward_id = f"compAccrued_{self.name}_{wallet}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
         result = {
@@ -325,19 +238,24 @@ class CompoundStateService(ProtocolServices):
 
     def get_rewards_balance_function_info(
             self,
-            wallet_address: str,
+            wallet: str,
+            reserves_info: dict = None,
             block_number: int = "latest",
     ):
         token = self.pool_info.get("poolToken")
         fn_paras = [Web3.toChecksumAddress(token),
                     Web3.toChecksumAddress(self.pool_info.get("comptrollerAddress")),
-                    Web3.toChecksumAddress(wallet_address)]
+                    Web3.toChecksumAddress(wallet)]
         rpc_call = self.get_lens_function_info("getCompBalanceMetadataExt", fn_paras, block_number)
-        get_reward_id = f"getCompBalanceMetadataExt_{self.name}_{wallet_address}_{block_number}".lower()
+        get_reward_id = f"getCompBalanceMetadataExt_{self.name}_{wallet}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
-    def calculate_rewards_balance(self, wallet_address: str, decoded_data: dict, block_number: int = "latest"):
-        get_reward_id = f"getCompBalanceMetadataExt_{self.name}_{wallet_address}_{block_number}".lower()
+    def calculate_rewards_balance(
+            self,
+            decoded_data: dict,
+            wallet: str,
+            block_number: int = "latest"):
+        get_reward_id = f"getCompBalanceMetadataExt_{self.name}_{wallet}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id)[-1] / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
         result = {
@@ -348,10 +266,9 @@ class CompoundStateService(ProtocolServices):
     # WALLET DEPOSIT BORROW BALANCE
     def get_wallet_deposit_borrow_balance_function_info(
             self,
-            wallet_address: str,
+            wallet: str,
             reserves_info: dict,
-            block_number: int = "latest",
-            is_oracle_price: bool = False
+            block_number: int = "latest"
     ):
 
         rpc_calls = {}
@@ -360,17 +277,13 @@ class CompoundStateService(ProtocolServices):
             ctoken = value.get('cToken')
             if token == Token.native_token:
                 underlying = Token.wrapped_token.get(self.chain_id)
-            underlying_price_key = f"cTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
-            underlying_borrow_key = f"borrowBalanceCurrent_{ctoken}_{wallet_address}_{block_number}".lower()
-            underlying_balance_key = f"balanceOfUnderlying_{ctoken}_{wallet_address}_{block_number}".lower()
+            underlying_borrow_key = f"borrowBalanceCurrent_{ctoken}_{wallet}_{block_number}".lower()
+            underlying_balance_key = f"balanceOfUnderlying_{ctoken}_{wallet}_{block_number}".lower()
             underlying_decimals_key = f"decimals_{underlying}_{block_number}".lower()
-            if is_oracle_price:
-                rpc_calls[underlying_price_key] = self.get_lens_function_info(
-                    "cTokenUnderlyingPrice", [ctoken], block_number)
             rpc_calls[underlying_borrow_key] = self.get_ctoken_function_info(
-                ctoken, "borrowBalanceCurrent", [wallet_address], block_number)
+                ctoken, "borrowBalanceCurrent", [wallet], block_number)
             rpc_calls[underlying_balance_key] = self.get_ctoken_function_info(
-                ctoken, "balanceOfUnderlying", [wallet_address], block_number)
+                ctoken, "balanceOfUnderlying", [wallet], block_number)
             rpc_calls[underlying_decimals_key] = self.state_service.get_function_info(
                 underlying, ERC20_ABI, "decimals", [], block_number
             )
@@ -378,8 +291,13 @@ class CompoundStateService(ProtocolServices):
         return rpc_calls
 
     def calculate_wallet_deposit_borrow_balance(
-            self, wallet_address: str, reserves_info: dict, decoded_data: dict, token_prices: dict = None,
-            wrapped_native_token_price: int = 310, block_number: int = "latest", is_oracle_price: bool = False):
+            self,
+            wallet: str,
+            reserves_info: dict,
+            decoded_data: dict,
+            token_prices: dict = None,
+            pool_decimals: int = 18,
+         block_number: int = "latest"):
         if token_prices is None:
             token_prices = {}
         result = {}
@@ -388,8 +306,8 @@ class CompoundStateService(ProtocolServices):
             ctoken = value.get("cToken")
             if token == Token.native_token:
                 underlying = Token.wrapped_token.get(self.chain_id)
-            get_total_deposit_id = f"balanceOfUnderlying_{ctoken}_{wallet_address}_{block_number}".lower()
-            get_total_borrow_id = f"borrowBalanceCurrent_{ctoken}_{wallet_address}_{block_number}".lower()
+            get_total_deposit_id = f"balanceOfUnderlying_{ctoken}_{wallet}_{block_number}".lower()
+            get_total_borrow_id = f"borrowBalanceCurrent_{ctoken}_{wallet}_{block_number}".lower()
             get_decimals_id = f"decimals_{underlying}_{block_number}".lower()
             decimals = decoded_data[get_decimals_id]
             deposit_amount = decoded_data[get_total_deposit_id] / 10 ** decimals
@@ -398,10 +316,8 @@ class CompoundStateService(ProtocolServices):
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
             }
-            if is_oracle_price:
-                get_underlying_token_price = f"cTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
-                token_price = decoded_data.get(get_underlying_token_price)[1] * wrapped_native_token_price / 10 ** decimals
-            elif token_prices:
+
+            if token_prices:
                 token_price = token_prices.get(underlying)
             else:
                 token_price = None
@@ -416,8 +332,7 @@ class CompoundStateService(ProtocolServices):
     def get_token_deposit_borrow_balance_function_info(
             self,
             reserves_info: dict,
-            block_number: int = "latest",
-            is_oracle_price: bool = False
+            block_number: int = "latest"
     ):
         rpc_calls = {}
         for token, value in reserves_info.items():
@@ -425,15 +340,11 @@ class CompoundStateService(ProtocolServices):
             if token == Token.native_token:
                 underlying = Token.wrapped_token.get(self.chain_id)
             ctoken = value.get('cToken')
-            underlying_price_key = f"cTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
             underlying_borrow_key = f"totalBorrows_{ctoken}_{block_number}".lower()
             underlying_balance_key = f"totalSupply_{ctoken}_{block_number}".lower()
             underlying_decimals_key = f"decimals_{underlying}_{block_number}".lower()
             ctoken_decimals_key = f"decimals_{ctoken}_{block_number}".lower()
             exchange_rate_key = f"exchangeRateCurrent_{ctoken}_{block_number}".lower()
-            if is_oracle_price:
-                rpc_calls[underlying_price_key] = self.get_lens_function_info(
-                    "cTokenUnderlyingPrice", [ctoken], block_number)
             rpc_calls[underlying_borrow_key] = self.get_ctoken_function_info(
                 ctoken, "totalBorrows", [], block_number)
             rpc_calls[underlying_balance_key] = self.get_ctoken_function_info(
@@ -451,7 +362,7 @@ class CompoundStateService(ProtocolServices):
 
     def calculate_token_deposit_borrow_balance(
             self, decoded_data: dict, reserves_info: dict, token_prices: dict = None,
-            block_number: int = "latest", is_oracle_price: bool = False, wrapped_native_token_price: int = 310
+            block_number: int = "latest"
     ):
         result = {}
         for token, value in reserves_info.items():
@@ -473,12 +384,7 @@ class CompoundStateService(ProtocolServices):
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount
             }
-            if is_oracle_price:
-                get_underlying_token_price = f"cTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
-                token_price = decoded_data.get(get_underlying_token_price)[1] / 10 ** (36 - decimals)
-                if wrapped_native_token_price:
-                    token_price *= wrapped_native_token_price
-            elif token_prices:
+            if token_prices:
                 token_price = token_prices.get(underlying)
             else:
                 token_price = None

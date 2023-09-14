@@ -102,9 +102,7 @@ class VenusStateService(CompoundStateService):
             decoded_data: dict,
             reserves_info: dict,
             block_number: int = "latest",
-            wrapped_native_token_price: float = 310,
             underlying_price: dict = None,
-            is_oracle_price: bool = False
     ):
         underlying_prices, underlying_decimals, reserve_tokens_info = {}, {}, []
         ctoken_speeds, borrow_paused_tokens, mint_paused_tokens = {}, {}, {}
@@ -118,12 +116,7 @@ class VenusStateService(CompoundStateService):
             mint_paused_tokens[ctoken] = decoded_data.get(mint_guardian_paused_call_id)
             metadata_id = f"vTokenMetadata_{ctoken}_{block_number}".lower()
             reserve_tokens_info.append(decoded_data.get(metadata_id))
-            if is_oracle_price:
-                underlying_id = f"vTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
-                price_token = decoded_data.get(underlying_id)
-                price_token = price_token[1] * wrapped_native_token_price
-            else:
-                price_token = underlying_price.get(token)
+            price_token = underlying_price.get(token)
 
             underlying_decimals[ctoken] = decoded_data.get(metadata_id)[-1]
             underlying_prices[ctoken] = price_token
@@ -137,40 +130,19 @@ class VenusStateService(CompoundStateService):
         }
 
     # REWARDS BALANCE
-    def get_claimable_rewards_balance_function_info(
-            self,
-            wallet_address: str,
-            block_number: int = "latest",
-    ):
-        rpc_call = self.get_comptroller_function_info("venusAccrued", [wallet_address], block_number)
-        get_reward_id = f"venusAccrued_{self.name}_{wallet_address}_{block_number}".lower()
-        return {get_reward_id: rpc_call}
-
-    def calculate_claimable_rewards_balance(self, wallet_address: str, decoded_data: dict,
-                                            block_number: int = "latest"):
-        get_reward_id = f"venusAccrued_{self.name}_{wallet_address}_{block_number}".lower()
-        rewards = decoded_data.get(get_reward_id) / 10 ** 18
-        reward_token = self.pool_info.get("rewardToken")
-        result = {
-            reward_token: {"amount": rewards}
-        }
-        return result
-
     def get_rewards_balance_function_info(
             self,
-            wallet_address: str,
+            wallets: str,
+            reserves_info: dict = None,
             block_number: int = "latest",
     ):
-        fn_paras = [
-            Web3.toChecksumAddress(wallet_address),
-            Web3.toChecksumAddress(self.pool_info.get("comptrollerAddress"))
-        ]
-        rpc_call = self.get_lens_function_info("pendingVenus", fn_paras, block_number)
-        get_reward_id = f"pendingVenus_{self.name}_{wallet_address}_{block_number}".lower()
+        rpc_call = self.get_comptroller_function_info("venusAccrued", [wallets], block_number)
+        get_reward_id = f"venusAccrued_{self.name}_{wallets}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
-    def calculate_rewards_balance(self, wallet_address: str, decoded_data: dict, block_number: int = "latest"):
-        get_reward_id = f"pendingVenus_{self.name}_{wallet_address}_{block_number}".lower()
+    def calculate_rewards_balance(self, decoded_data: dict, wallets: str,
+                                  block_number: int = "latest"):
+        get_reward_id = f"venusAccrued_{self.name}_{wallets}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
         result = {
@@ -181,10 +153,9 @@ class VenusStateService(CompoundStateService):
     # WALLET DEPOSIT BORROW BALANCE
     def get_wallet_deposit_borrow_balance_function_info(
             self,
-            wallet_address: str,
+            wallets: str,
             reserves_info: dict,
             block_number: int = "latest",
-            is_oracle_price: bool = False
     ):
 
         rpc_calls = {}
@@ -193,17 +164,13 @@ class VenusStateService(CompoundStateService):
             ctoken = value.get('cToken')
             if token == Token.native_token:
                 underlying = Token.wrapped_token.get(self.chain_id)
-            underlying_price_key = f"vTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
-            underlying_borrow_key = f"borrowBalanceCurrent_{ctoken}_{wallet_address}_{block_number}".lower()
-            underlying_balance_key = f"balanceOfUnderlying_{ctoken}_{wallet_address}_{block_number}".lower()
+            underlying_borrow_key = f"borrowBalanceCurrent_{ctoken}_{wallets}_{block_number}".lower()
+            underlying_balance_key = f"balanceOfUnderlying_{ctoken}_{wallets}_{block_number}".lower()
             underlying_decimals_key = f"decimals_{underlying}_{block_number}".lower()
-            if is_oracle_price:
-                rpc_calls[underlying_price_key] = self.get_lens_function_info(
-                    "vTokenUnderlyingPrice", [ctoken], block_number)
             rpc_calls[underlying_borrow_key] = self.get_ctoken_function_info(
-                ctoken, "borrowBalanceCurrent", [wallet_address], block_number)
+                ctoken, "borrowBalanceCurrent", [wallets], block_number)
             rpc_calls[underlying_balance_key] = self.get_ctoken_function_info(
-                ctoken, "balanceOfUnderlying", [wallet_address], block_number)
+                ctoken, "balanceOfUnderlying", [wallets], block_number)
             rpc_calls[underlying_decimals_key] = self.state_service.get_function_info(
                 underlying, ERC20_ABI, "decimals", [], block_number
             )
@@ -211,8 +178,13 @@ class VenusStateService(CompoundStateService):
         return rpc_calls
 
     def calculate_wallet_deposit_borrow_balance(
-            self, wallet_address: str, reserves_info: dict, decoded_data: dict, token_prices: dict = None,
-            wrapped_native_token_price: int = 310, block_number: int = "latest", is_oracle_price: bool = False):
+            self,
+            wallets: str,
+            reserves_info: dict,
+            decoded_data: dict,
+            token_prices: dict = None,
+            pool_decimals: int = 18,
+            block_number: int = "latest"):
         if token_prices is None:
             token_prices = {}
         result = {}
@@ -221,8 +193,8 @@ class VenusStateService(CompoundStateService):
             ctoken = value.get("cToken")
             if token == Token.native_token:
                 underlying = Token.wrapped_token.get(self.chain_id)
-            get_total_deposit_id = f"balanceOfUnderlying_{ctoken}_{wallet_address}_{block_number}".lower()
-            get_total_borrow_id = f"borrowBalanceCurrent_{ctoken}_{wallet_address}_{block_number}".lower()
+            get_total_deposit_id = f"balanceOfUnderlying_{ctoken}_{wallets}_{block_number}".lower()
+            get_total_borrow_id = f"borrowBalanceCurrent_{ctoken}_{wallets}_{block_number}".lower()
             get_decimals_id = f"decimals_{underlying}_{block_number}".lower()
             decimals = decoded_data[get_decimals_id]
             deposit_amount = decoded_data[get_total_deposit_id] / 10 ** decimals
@@ -231,11 +203,7 @@ class VenusStateService(CompoundStateService):
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
             }
-            if is_oracle_price:
-                get_underlying_token_price = f"vTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
-                token_price = decoded_data.get(get_underlying_token_price)[
-                                  1] * wrapped_native_token_price / 10 ** decimals
-            elif token_prices:
+            if token_prices:
                 token_price = token_prices.get(underlying)
             else:
                 token_price = None
@@ -251,7 +219,6 @@ class VenusStateService(CompoundStateService):
             self,
             reserves_info: dict,
             block_number: int = "latest",
-            is_oracle_price: bool = False
     ):
         rpc_calls = {}
         for token, value in reserves_info.items():
@@ -265,9 +232,6 @@ class VenusStateService(CompoundStateService):
             underlying_decimals_key = f"decimals_{underlying}_{block_number}".lower()
             ctoken_decimals_key = f"decimals_{ctoken}_{block_number}".lower()
             exchange_rate_key = f"exchangeRateCurrent_{ctoken}_{block_number}".lower()
-            if is_oracle_price:
-                rpc_calls[underlying_price_key] = self.get_lens_function_info(
-                    "vTokenUnderlyingPrice", [ctoken], block_number)
             rpc_calls[underlying_borrow_key] = self.get_ctoken_function_info(
                 ctoken, "totalBorrows", [], block_number)
             rpc_calls[underlying_balance_key] = self.get_ctoken_function_info(
@@ -285,7 +249,7 @@ class VenusStateService(CompoundStateService):
 
     def calculate_token_deposit_borrow_balance(
             self, decoded_data: dict, reserves_info: dict, token_prices: dict = None,
-            block_number: int = "latest", is_oracle_price: bool = False, wrapped_native_token_price: int = 310
+            block_number: int = "latest"
     ):
         result = {}
         for token, value in reserves_info.items():
@@ -307,12 +271,8 @@ class VenusStateService(CompoundStateService):
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount
             }
-            if is_oracle_price:
-                get_underlying_token_price = f"vTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
-                token_price = decoded_data.get(get_underlying_token_price)[1] / 10 ** (36 - decimals)
-                if wrapped_native_token_price:
-                    token_price *= wrapped_native_token_price
-            elif token_prices:
+
+            if token_prices:
                 token_price = token_prices.get(underlying)
             else:
                 token_price = None
