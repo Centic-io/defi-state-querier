@@ -3,7 +3,6 @@ import logging
 from web3 import Web3
 
 from defi_services.constants.entities.lending_services import LendingServices
-from defi_services.database.mongodb import MongoDB
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.nft_services import NFTServices
 from defi_services.services.protocol_services import ProtocolServices
@@ -14,8 +13,7 @@ logger = logging.getLogger("StateProcessor")
 
 
 class MultiStateProcessor:
-    def __init__(self, provider_uri: str, chain_id: str, mongodb: MongoDB = None):
-        self.mongodb = mongodb
+    def __init__(self, provider_uri: str, chain_id: str):
         self.state_querier = StateQuerier(provider_uri)
         self.chain_id = chain_id
         self.services = init_services(self.state_querier, chain_id)
@@ -38,9 +36,6 @@ class MultiStateProcessor:
     @staticmethod
     def checksum_address(address):
         return Web3.toChecksumAddress(address)
-
-    def get_token_prices(self, tokens):
-        return self.mongodb.get_token_prices(tokens, self.chain_id)
 
     def init_rpc_call_information(
             self, wallet: str, query_id: str, entity_id: str, query_type: str, block_number: int = 'latest', **kwargs):
@@ -92,28 +87,26 @@ class MultiStateProcessor:
 
         return result
 
-    def run(self, wallet_queries: dict, batch_size: int = 100, max_workers: int = 8, ignore_error=False):
+    def run(self, queries: dict, batch_size: int = 100, max_workers: int = 8, ignore_error=False):
         all_rpc_calls = {}
-        for wallet, value in wallet_queries.items():
-            for query_id, query in value.items():
-                entity_id = query.get("entity_id")
-                query_type = query.get("query_type")
-                block_number = query.get("block_number", "latest")
-                reserves = query.get("reserves", None)
-                rpc_calls = self.init_rpc_call_information(
-                    wallet, query_id, entity_id, query_type, block_number, reserves=reserves)
-                all_rpc_calls.update(rpc_calls)
+        for query_id, query in queries.items():
+            wallet = query.get("wallet")
+            entity_id = query.get("entity_id")
+            query_type = query.get("query_type")
+            block_number = query.get("block_number", "latest")
+            reserves = query.get("reserves", None)
+            rpc_calls = self.init_rpc_call_information(
+                wallet, query_id, entity_id, query_type, block_number, reserves=reserves)
+            all_rpc_calls.update(rpc_calls)
         result = {}
         decoded_data = self.execute_rpc_calls(all_rpc_calls, batch_size, max_workers, ignore_error=ignore_error)
-        for wallet, value in wallet_queries.items():
-            wallet_data = {}
-            for query_id, query in value.items():
-                query_type = query.get("query_type")
-                block_number = query.get("block_number", "latest")
-                reserves = query.get("reserves", None)
-                processed_data = self.process_decoded_data(
-                    query_id, query_type, wallet, decoded_data, block_number, reserves=reserves)
-                wallet_data[query_id] = processed_data
-            result[wallet] = wallet_data
+        for query_id, query in queries.items():
+            wallet = query.get("wallet")
+            query_type = query.get("query_type")
+            block_number = query.get("block_number", "latest")
+            reserves = query.get("reserves", None)
+            processed_data = self.process_decoded_data(
+                query_id, query_type, wallet, decoded_data, block_number, reserves=reserves)
+            result[query_id] = processed_data
 
         return result

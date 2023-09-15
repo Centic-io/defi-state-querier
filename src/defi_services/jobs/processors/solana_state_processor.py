@@ -3,7 +3,6 @@ import logging
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.entities.lending_services import LendingServices
 from defi_services.constants.query_constant import Query
-from defi_services.database.mongodb import MongoDB
 from defi_services.jobs.queriers.solana_state_querier import SolanaStateQuerier
 from defi_services.services.solana_token_services import SolanaTokenServices
 
@@ -11,8 +10,7 @@ logger = logging.getLogger("SolanaStateProcessor")
 
 
 class SolanaStateProcessor:
-    def __init__(self, provider_uri: str, chain_id: str, mongodb: MongoDB = None):
-        self.mongodb = mongodb
+    def __init__(self, provider_uri: str, chain_id: str):
         self.state_querier = SolanaStateQuerier(provider_uri)
         self.chain_id = chain_id
         self.token_service = SolanaTokenServices(self.state_querier, chain_id)
@@ -21,9 +19,6 @@ class SolanaStateProcessor:
     def get_service_info(self):
         info = self.token_service.get_service_info()
         return info
-
-    def get_token_prices(self, tokens):
-        return self.mongodb.get_token_prices(tokens, self.chain_id)
 
     def init_rpc_call_information(
             self, wallet: str, query_id: str, entity_id: str, query_type: str):
@@ -76,21 +71,19 @@ class SolanaStateProcessor:
         return result
 
     def run(self, wallet: str, queries: list,
-            batch_size: int = 100, max_workers: int = 8, ignore_error=False):
-        all_rpc_calls, all_tokens = {}, []
+            batch_size: int = 100, max_workers: int = 8, ignore_error: bool = False, token_prices: dict = None):
+        all_rpc_calls = {}
         for query in queries:
             query_id = query.get("query_id")
             entity_id = query.get("entity_id")
             query_type = query.get("query_type")
-            rpc_calls, tokens = self.init_rpc_call_information(
+            rpc_calls, _ = self.init_rpc_call_information(
                 wallet, query_id, entity_id, query_type)
             all_rpc_calls.update(rpc_calls)
-            all_tokens += tokens
         result = []
         decoded_data = self.execute_rpc_calls(all_rpc_calls, batch_size, max_workers, ignore_error=ignore_error)
-        token_prices = {}
-        if self.mongodb:
-            token_prices = self.get_token_prices(all_tokens)
+        if token_prices is None:
+            token_prices = {}
         for query in queries:
             query_id = query.get("query_id")
             query_type = query.get("query_type")

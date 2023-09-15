@@ -2,7 +2,6 @@ import logging
 
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.query_constant import Query
-from defi_services.database.mongodb import MongoDB
 from defi_services.jobs.queriers.substrate_state_querier import SubstrateStateQuerier
 from defi_services.services.substrate_token_services import SubstrateTokenServices
 
@@ -10,8 +9,7 @@ logger = logging.getLogger("SubstrateStateProcessor")
 
 
 class SubstrateStateProcessor:
-    def __init__(self, provider_uri: str, chain_id: str, mongodb: MongoDB = None):
-        self.mongodb = mongodb
+    def __init__(self, provider_uri: str, chain_id: str):
         self.state_querier = SubstrateStateQuerier(provider_uri)
         self.chain_id = chain_id
         self.token_service = SubstrateTokenServices(self.state_querier, chain_id)
@@ -19,9 +17,6 @@ class SubstrateStateProcessor:
     def get_service_info(self):
         info = self.token_service.get_service_info()
         return info
-
-    def get_token_prices(self, tokens):
-        return self.mongodb.get_token_prices(tokens, self.chain_id)
 
     def init_rpc_call_information(
             self, wallet: str, query_id: str, entity_id: str, query_type: str, block_number: int = 'latest'):
@@ -72,21 +67,19 @@ class SubstrateStateProcessor:
 
         return result
 
-    def run(self, wallet: str, queries: list, block_number: int = 'latest'):
-        all_rpc_calls, all_tokens = {}, []
+    def run(self, wallet: str, queries: list, block_number: int = 'latest', token_prices=None):
+        all_rpc_calls = {}, []
         for query in queries:
             query_id = query.get("query_id")
             entity_id = query.get("entity_id")
             query_type = query.get("query_type")
-            rpc_calls, tokens = self.init_rpc_call_information(
+            rpc_calls, _ = self.init_rpc_call_information(
                 wallet, query_id, entity_id, query_type, block_number)
             all_rpc_calls.update(rpc_calls)
-            all_tokens += tokens
         result = []
         decoded_data = self.execute_rpc_calls(all_rpc_calls)
-        token_prices = {}
-        if self.mongodb:
-            token_prices = self.get_token_prices(all_tokens)
+        if token_prices is None:
+            token_prices = {}
         for query in queries:
             query_id = query.get("query_id")
             query_type = query.get("query_type")
