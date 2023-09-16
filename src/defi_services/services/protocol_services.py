@@ -46,14 +46,7 @@ class ProtocolServices:
             **kwargs
     ):
         begin = time.time()
-        reserves = kwargs.get("reserves", [])
-        if not reserves:
-            reserves_info = self.pool_info.get("reservesList")
-        else:
-            reserves_info = {}
-            for token in reserves:
-                if token in self.pool_info.get("reservesList"):
-                    reserves_info[token] = self.pool_info.get("reservesList")[token]
+        reserves_info = kwargs.get("reserves_info", self.pool_info.get("reservesList"))
         rpc_calls = {}
         if Query.deposit_borrow in query_types and wallet and wallet != Token.native_token:
             rpc_calls.update(self.get_wallet_deposit_borrow_balance_function_info(
@@ -77,14 +70,7 @@ class ProtocolServices:
             **kwargs
     ):
         begin = time.time()
-        reserves = kwargs.get("reserves", [])
-        if not reserves:
-            reserves_info = self.pool_info.get("reservesList")
-        else:
-            reserves_info = {}
-            for token in reserves:
-                if token in self.pool_info.get("reservesList"):
-                    reserves_info[token] = self.pool_info.get("reservesList")[token]
+        reserves_info = kwargs.get("reserves_info", self.pool_info.get("reservesList"))
         token_prices = kwargs.get("token_prices", {})
         pool_token_price = token_prices.get(self.pool_info.get('poolToken'), 1)
         pool_decimals = kwargs.get("pool_decimals", 18)

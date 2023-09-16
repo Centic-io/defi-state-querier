@@ -7,7 +7,7 @@ GRANARY_BSC = {
     "poolToken": "0x8f87a7d376821c7b2658a005aaf190ec778bf37a",
     "oracleAddress": "0x417ca1091fa4c329cee19452851dff46902440a5",
     "type": "LENDING_POOL",
-    "forked": "aave-v3",
+    "forked": "aave-v2",
     "reservesList": {
         "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3": {
             "tToken": "0x6055558d88dde78df51bf9e90bdd225d525cf80b",

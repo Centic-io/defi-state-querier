@@ -7,7 +7,7 @@ GRANARY_AVALANCHE = {
     "poolToken": "0x80bb30d62a16e1f2084deae84dc293531c3ac3a1",
     "oracleAddress": "0x5a3423210536d930150080f699248edebc65e2b4",
     "type": "LENDING_POOL",
-    "forked": "aave-v3",
+    "forked": "aave-v2",
     "reservesList": {
         "0xd586e7f844cea2f87f50152665bcbc2c279d8d70": {
             "tToken": "0xe7334ad0e325139329e747cf2fc24538dd564987",

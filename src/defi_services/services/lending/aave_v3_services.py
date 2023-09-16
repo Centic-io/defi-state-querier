@@ -76,7 +76,7 @@ class AaveV3StateService(AaveV2StateService):
             risk_param = bin(reserve_data[0][0])[2:]
             reserves_info[token]["liquidationThreshold"] = int(risk_param[-31:-16], 2) / 10 ** 4
 
-        return reward_tokens, reserves_info
+        return reserves_info
 
     # CALCULATE APY LENDING POOL
     def get_apy_lending_pool_function_info(

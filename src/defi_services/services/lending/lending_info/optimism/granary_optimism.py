@@ -12,7 +12,7 @@ GRANARY_OPTIMISM = {
     "poolToken": "0xfd389dc9533717239856190f42475d3f263a270d",
     "oracleAddress": "0x9aeefef549323511e027d70562f0c7edcdeb294c",
     "type": "LENDING_POOL",
-    "forked": "aave-v3",
+    "forked": "aave-v2",
     "reservesList": {
         "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1": {
             "tToken": "0x18d2b18af9a1f379025f46b8aeb4af75f6642c9f",

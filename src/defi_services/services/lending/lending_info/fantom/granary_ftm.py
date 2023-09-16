@@ -7,7 +7,7 @@ GRANARY_FTM = {
     "poolToken": "0x02838746d9e1413e07ee064fcbada57055417f21",
     "oracleAddress": "0x49afc876a2bd130ef135d9d6220bd85d3164b446",
     "type": "LENDING_POOL",
-    "forked": "aave-v3",
+    "forked": "aave-v2",
     "reservesList": {
         "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e": {
             "tToken": "0x8e4bfb85962a63cacfa2c0fde5ead86d9b120b16",
