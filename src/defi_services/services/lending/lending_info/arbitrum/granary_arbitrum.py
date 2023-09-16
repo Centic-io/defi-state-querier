@@ -7,7 +7,7 @@ GRANARY_ARBITRUM = {
     "poolToken": "0x80bb30d62a16e1f2084deae84dc293531c3ac3a1",
     "oracleAddress": "0xe12e084fc4550387cb2b252b5f289ba38b755354",
     "type": "LENDING_POOL",
-    "forked": "aave-v3",
+    "forked": "aave-v2",
     "reservesList": {
         "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1": {
             "tToken": "0xfc2eac1aeb490d5ff727e659273c8afc5dd2b0bb",
