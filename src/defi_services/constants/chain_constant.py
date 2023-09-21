@@ -7,3 +7,4 @@ class Chain:
     arbitrum = "0xa4b1"
     optimism = "0xa"
     avalanche = "0xa86a"
+    tron = "0x2b6653dc"

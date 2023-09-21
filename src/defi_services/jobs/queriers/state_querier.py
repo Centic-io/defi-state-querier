@@ -9,6 +9,7 @@ from web3.middleware import geth_poa_middleware
 
 from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import Token
+from defi_services.utils.thread_proxy import ThreadLocalProxy, get_provider_from_uri
 
 logger = logging.getLogger("StateQuerier")
 
@@ -22,6 +23,9 @@ class StateQuerier:
 
     def get_w3(self):
         return self._w3
+
+    def get_client_querier(self):
+        return self.client_querier
 
     @staticmethod
     def get_function_info(address: str, abi: list, fn_name: str, fn_paras: list = None, block_number: int = 'latest'):
@@ -72,7 +76,7 @@ class StateQuerier:
             fn_paras = value.get(Query.params)
             block_number = value.get(Query.block_number)
             items = key.split('_')
-            if Token.native_token == items[2] and "balanceof" == items[1]:
+            if Token.native_token == items[2] and "balanceof" == items[0]:
                 eth_call = self.add_native_token_balance_rpc_call(fn_paras, key, block_number)
             else:
                 abi = value.get(Query.abi)
@@ -115,14 +119,17 @@ class StateQuerier:
                            data=data_call, abi=abi, fn_name=fn_name, id=call_id)
         return eth_call
 
-    @staticmethod
-    def decode_response_data(response_data: dict, list_call_id: list, ignore_error=False):
+    def decode_response_data(self, response_data: dict, list_call_id: list, ignore_error=False):
         decoded_data = {}
         for call_id in list_call_id:
             try:
                 response_datum = response_data.get(call_id)
                 decoded_datum = response_datum.decode_result()
             except Exception as e:
+                decoded_datum = self.check_data(call_id, response_datum)
+                if decoded_datum:
+                    decoded_data[call_id] = decoded_datum
+                    continue
                 if not ignore_error:
                     logger.error(f"An exception when decode data from provider: {e}")
                     raise
@@ -136,3 +143,22 @@ class StateQuerier:
             else:
                 decoded_data[call_id] = decoded_datum
         return decoded_data
+
+    def create_batch_w3_provider(self):
+        return ThreadLocalProxy(lambda: get_provider_from_uri(self.provider_uri, batch=True))
+
+    @staticmethod
+    def generate_json_rpc(method, params, request_id=1):
+        return {
+            'jsonrpc': '2.0',
+            'method': method,
+            'params': params,
+            'id': request_id,
+        }
+
+    @staticmethod
+    def check_data(call_id: str, data):
+        fn = call_id.split("_")[0]
+        if fn == "underlying" and data.result == "0x":
+            return Token.native_token
+        return None

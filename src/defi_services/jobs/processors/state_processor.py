@@ -2,12 +2,14 @@ import logging
 
 from web3 import Web3
 
+from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_services import LendingServices
 from defi_services.constants.query_constant import Query
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.nft_services import NFTServices
 from defi_services.services.protocol_services import ProtocolServices
 from defi_services.services.token_services import TokenServices
+from defi_services.utils.convert_address import base58_to_hex, convert_address_dict
 from defi_services.utils.init_services import init_services
 
 logger = logging.getLogger("StateProcessor")
@@ -112,14 +114,21 @@ class StateProcessor:
 
         return result
 
-    def run(self, wallet: str, queries: list, block_number: int = 'latest',
+    def run(self, address: str, queries: list, block_number: int = 'latest',
             batch_size: int = 100, max_workers: int = 8, ignore_error=False, token_prices=None):
+        wallet = address
+        if self.chain_id == Chain.tron and not self.check_address(address):
+            wallet = base58_to_hex(address)
         if token_prices is None:
             token_prices = {}
         all_rpc_calls = {}
         for query in queries:
+            query_type = query.get("query_type")
             query_id = query.get("query_id")
             entity_id = query.get("entity_id")
+            if self.chain_id == Chain.tron and query_type in Query.balance and not self.check_address(entity_id):
+                entity_id = base58_to_hex(entity_id)
+
             query_type = query.get("query_type")
             rpc_calls, _ = self.init_rpc_call_information(
                 wallet, query_id, entity_id, query_type, block_number)
@@ -132,5 +141,8 @@ class StateProcessor:
             processed_data = self.process_decoded_data(
                 query_id, query_type, wallet, token_prices, decoded_data, block_number)
             result.append(processed_data)
+
+        if self.chain_id == Chain.tron:
+            result = convert_address_dict(result)
 
         return result

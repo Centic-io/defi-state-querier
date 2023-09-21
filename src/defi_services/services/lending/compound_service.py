@@ -218,45 +218,19 @@ class CompoundStateService(ProtocolServices):
         }
 
     # REWARDS BALANCE
-    def get_claimable_rewards_balance_function_info(
-            self,
-            wallet: str,
-            block_number: int = "latest",
-    ):
-        rpc_call = self.get_comptroller_function_info("compAccrued", [wallet], block_number)
-        get_reward_id = f"compAccrued_{self.name}_{wallet}_{block_number}".lower()
-        return {get_reward_id: rpc_call}
-
-    def calculate_claimable_rewards_balance(self, wallet: str, decoded_data: dict, block_number: int = "latest"):
-        get_reward_id = f"compAccrued_{self.name}_{wallet}_{block_number}".lower()
-        rewards = decoded_data.get(get_reward_id) / 10 ** 18
-        reward_token = self.pool_info.get("rewardToken")
-        result = {
-            reward_token: {"amount": rewards}
-        }
-        return result
-
     def get_rewards_balance_function_info(
             self,
             wallet: str,
             reserves_info: dict = None,
             block_number: int = "latest",
     ):
-        token = self.pool_info.get("poolToken")
-        fn_paras = [Web3.toChecksumAddress(token),
-                    Web3.toChecksumAddress(self.pool_info.get("comptrollerAddress")),
-                    Web3.toChecksumAddress(wallet)]
-        rpc_call = self.get_lens_function_info("getCompBalanceMetadataExt", fn_paras, block_number)
-        get_reward_id = f"getCompBalanceMetadataExt_{self.name}_{wallet}_{block_number}".lower()
+        rpc_call = self.get_comptroller_function_info("compAccrued", [wallet], block_number)
+        get_reward_id = f"compAccrued_{self.name}_{wallet}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
-    def calculate_rewards_balance(
-            self,
-            decoded_data: dict,
-            wallet: str,
-            block_number: int = "latest"):
-        get_reward_id = f"getCompBalanceMetadataExt_{self.name}_{wallet}_{block_number}".lower()
-        rewards = decoded_data.get(get_reward_id)[-1] / 10 ** 18
+    def calculate_rewards_balance(self, decoded_data: dict, wallet: str, block_number: int = "latest"):
+        get_reward_id = f"compAccrued_{self.name}_{wallet}_{block_number}".lower()
+        rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
         result = {
             reward_token: {"amount": rewards}
@@ -401,8 +375,9 @@ class CompoundStateService(ProtocolServices):
         )
 
     def get_comptroller_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
+        comptroller = self.pool_info['comptrollerAddress']
         return self.state_service.get_function_info(
-            self.pool_info['comptrollerAddress'], self.comptroller_abi, fn_name, fn_paras, block_number
+            comptroller, self.comptroller_abi, fn_name, fn_paras, block_number
         )
 
     def get_ctoken_function_info(self, ctoken: str, fn_name: str, fn_paras: list, block_number: int = "latest"):
