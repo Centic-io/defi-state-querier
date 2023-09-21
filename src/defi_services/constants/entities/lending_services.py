@@ -4,6 +4,7 @@ from defi_services.services.lending.aave_v2_services import AaveV2StateService
 from defi_services.services.lending.apeswap_services import ApeSwapStateService
 from defi_services.services.lending.compound_v3_services import CompoundV3StateService
 from defi_services.services.lending.granary_services import GranaryStateService
+from defi_services.services.lending.justlend_service import JustLendStateService
 from defi_services.services.lending.morpho_aave_v2_services import MorphoAaveV2StateService
 from defi_services.services.lending.morpho_aave_v3_services import MorphoAaveV3StateService
 from defi_services.services.lending.morpho_compound_services import MorphoCompoundStateService
@@ -93,6 +94,10 @@ class LendingServices:
         Lending.granary: GranaryStateService,
         Lending.silo: SiloStateService
     }
+
+    tron = {
+        Lending.justlend: JustLendStateService
+    }
     # mapping
     mapping = {
         Chain.ethereum: ethereum,
@@ -101,5 +106,6 @@ class LendingServices:
         Chain.avalanche: avalanche,
         Chain.polygon: polygon,
         Chain.arbitrum: arbitrum,
-        Chain.optimism: optimism
+        Chain.optimism: optimism,
+        Chain.tron: tron
     }

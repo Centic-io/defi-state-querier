@@ -13,6 +13,6 @@ class Query:
     protocol_reward = 'protocol_reward'
     protocol_apy = 'protocol_apy'
     all = [token_balance, nft_balance, deposit_borrow, protocol_reward]
-
+    balance = [nft_balance, token_balance]
     # entity_id
     token = "token"
