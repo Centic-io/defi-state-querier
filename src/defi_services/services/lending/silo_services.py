@@ -147,6 +147,7 @@ class SiloStateService(ProtocolServices):
             token_prices = {}
         result = {}
         for token, value in reserves_info.items():
+            data = {}
             underlying = token
             silo_pool = value.get('pool')
             assets = value.get('assets')
@@ -157,14 +158,14 @@ class SiloStateService(ProtocolServices):
                 decimals = decoded_data.get(decimals_key)
                 deposit_amount = decoded_data.get(deposit_key) / 10 ** decimals
                 borrow_amount = decoded_data.get(borrow_key) / 10 ** decimals
-                if asset not in result:
-                    result[asset] = {
+                if asset not in data:
+                    data[asset] = {
                         "borrow_amount": borrow_amount,
                         "deposit_amount": deposit_amount,
                     }
                 else:
-                    result[asset]["borrow_amount"] += borrow_amount
-                    result[asset]["deposit_amount"] += deposit_amount
+                    data[asset]["borrow_amount"] += borrow_amount
+                    data[asset]["deposit_amount"] += deposit_amount
 
                 if token_prices:
                     token_price = token_prices.get(underlying)
@@ -173,12 +174,13 @@ class SiloStateService(ProtocolServices):
                 if token_price is not None:
                     deposit_amount_in_usd = deposit_amount * token_price
                     borrow_amount_in_usd = borrow_amount * token_price
-                    if 'borrow_amount_in_usd' in result[asset]:
-                        result[asset]['borrow_amount_in_usd'] += borrow_amount_in_usd
-                        result[asset]['deposit_amount_in_usd'] += deposit_amount_in_usd
+                    if 'borrow_amount_in_usd' in data[asset]:
+                        data[asset]['borrow_amount_in_usd'] += borrow_amount_in_usd
+                        data[asset]['deposit_amount_in_usd'] += deposit_amount_in_usd
                     else:
-                        result[asset]['borrow_amount_in_usd'] = borrow_amount_in_usd
-                        result[asset]['deposit_amount_in_usd'] = deposit_amount_in_usd
+                        data[asset]['borrow_amount_in_usd'] = borrow_amount_in_usd
+                        data[asset]['deposit_amount_in_usd'] = deposit_amount_in_usd
+            result[silo_pool] = data
 
         return result
 

@@ -1,0 +1,4161 @@
+{
+  "0x1": [
+    {
+      "query_id": "aave-v2_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "aave-v2",
+      "deposit_borrow": {
+        "0x7d2768de32b0b80b7a3454c06bdac94a69ddc7a9": {
+          "0xdac17f958d2ee523a2206206994597c13d831ec7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xe41d2489571d322189246dafa5ebde1f4699f498": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 4.0071660117e-08
+          },
+          "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x0d8775f648430679a709e98d2b0cb6250d2887ef": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x4fabb145d64652a948d72533023f6e7a623c7c53": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xf629cbd94d3791c9250152bd8dfbdf380e2a3b9c": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xdd974d5c2e2928dea5f71b9825b8b646686bd200": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x514910771af9ca656af840dff83e8264ecf986ca": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x0f5d2fb29fb7d3cfee444a200298f468908cc942": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x408e41876cccdc0f92210600ef50372656052a38": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x57ab1ec28d129707052df4df418d58a2d46d5f51": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x0000000000085d4780b73119b644ae5ecd22b376": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xd533a949740bb3306d119cc777fa900ba034cd52": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x056fd409e1d7a124bd7017459dfea2f387b6d5cd": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xba100000625a3754423978a60c9317c58a424e3d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x8798249c2e607446efb7ad49ec89dd1865ff4272": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xd5147bc8e386d91cc5dbe72099dac6c9b99276f5": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x03ab458634910aad20ef5f1c8ee96f1d6ac54919": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xd46ba6d942050d489dbd938a2c909a5d5039a161": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x8e870d67f660d95d5be530380d0ec0bd388289e1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x1494ca1f11d487c2bbe4543e90080aeba4ba3c2b": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x853d955acef822db058eb8505911ed77f175b99e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x956f47f50a910163d8bf957cf5846d573e7f87ca": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xae7ab96520de3a18e5e111b5eaab095312d7fe84": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xc18360217d8f7ab5e7c516566761ea12ce7f9d72": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xa693b19d2931d498c5b318df961919bb4aee87a5": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x111111111117dc0aa78b770fa6a738034120c302": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x5f98805a4e8be255a32880fdec7f6728c6568ba0": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "aave-v2_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "aave-v2",
+      "protocol_reward": {
+        "0x4da27a545c0c5b758a6ba100e3a049001de870f5": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "compound_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "compound",
+      "deposit_borrow": {
+        "0x6c8c6b02e7b2be14d4fa6022dfd6d75921d90e4e": {
+          "0x0d8775f648430679a709e98d2b0cb6250d2887ef": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643": {
+          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5": {
+          "0x0000000000000000000000000000000000000000": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x158079ee67fce2f58472a96584a73c7ab9ac95c1": {
+          "0x1985365e9f78359a9b6ad760e32412f4a445e862": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x39aa39c021dfbae8fac545936693ac917d5e7563": {
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9": {
+          "0xdac17f958d2ee523a2206206994597c13d831ec7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xccf4429db6322d5c611ee964527d42e5d685dd6a": {
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xb3319f5d18bc0d84dd1b4825dcde5d5f7266d407": {
+          "0xe41d2489571d322189246dafa5ebde1f4699f498": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xf5dce57282a584d2746faf1593d3121fcac444dc": {
+          "0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x35a18000230da775cac24873d00ff85bccded550": {
+          "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x70e36f6bf80a52b3b46b3af8e106cc0ed743e8e4": {
+          "0xc00e94cb662c3520282e6f5717214004a7f26888": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x12392f67bdf24fae0af363c24ac620a2f67dad86": {
+          "0x0000000000085d4780b73119b644ae5ecd22b376": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xface851a4921ce59e912d19329929ce6da6eb0c7": {
+          "0x514910771af9ca656af840dff83e8264ecf986ca": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x95b4ef2869ebd94beb4eee400a99824bf5dc325b": {
+          "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x4b0181102a0112a2ef11abee5563bb4a3176c9d7": {
+          "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xe65cdb6479bac1e22340e4e755fae7e509ecd06c": {
+          "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x80a2ae356fc9ef4305676f7a3e2ed04e12c33946": {
+          "0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x041171993284df560249b57358f931d9eb7b925d": {
+          "0x8e870d67f660d95d5be530380d0ec0bd388289e1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x7713dd9ca933848f6819f38b8352d9a15ea73f67": {
+          "0x956f47f50a910163d8bf957cf5846d573e7f87ca": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "compound_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "compound",
+      "protocol_reward": {
+        "0xc00e94cb662c3520282e6f5717214004a7f26888": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "trava-finance_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "trava-finance",
+      "deposit_borrow": {
+        "0xd61afaaa8a69ba541bc4db9c9b40d4142b43b9a4": {
+          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xdac17f958d2ee523a2206206994597c13d831ec7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "trava-finance_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "trava-finance",
+      "protocol_reward": {
+        "0x044ede67afdb0f56d7451bb3aaccaeab3f772fad": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "flux-finance_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "flux-finance",
+      "deposit_borrow": {
+        "0x1dd7950c266fb1be96180a8fdb0591f70200e018": {
+          "0x1b19c19393e2d034d8ff31ff34c81252fcbbee92": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x465a5a630482f3abd6d3b84b39b29b07214d19e5": {
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xe2ba8693ce7474900a045757fe0efca900f6530b": {
+          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x81994b9607e06ab3d5cf3afff9a67374f05f27d7": {
+          "0xdac17f958d2ee523a2206206994597c13d831ec7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x1c9a2d6b33b4826757273d47ebee0e2dddcd978b": {
+          "0x853d955acef822db058eb8505911ed77f175b99e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "flux-finance_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "flux-finance",
+      "protocol_reward": {
+        "0xfaba6f8e4a5e8ab82f62fe7c39859fa577269be3": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "iron-bank_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "iron-bank",
+      "deposit_borrow": {
+        "0x41c84c0e2ee0b740cf0d31f63f3b6f627dc6b393": {
+          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x8e595470ed749b85c6f7669de83eae304c2ec68f": {
+          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x9e8e207083ffd5bdc3d99a1f32d1e6250869c1a9": {
+          "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xe7bff2da8a2f619c2586fb83938fa56ce803aa16": {
+          "0x514910771af9ca656af840dff83e8264ecf986ca": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xfa3472f7319477c9bfecdd66e4b948569e7621b9": {
+          "0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x12a9cc33a980daa74e00cc2d1a0e74c57a93d12c": {
+          "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x8fc8bfd80d6a9f17fb98a373023d72531792b431": {
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x48759f220ed983db51fa7a8c0d2aab8f3ce4166a": {
+          "0xdac17f958d2ee523a2206206994597c13d831ec7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x76eb2fe28b36b3ee97f3adae0c69606eedb2a37c": {
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x226f3738238932ba0db2319a8117d9555446102f": {
+          "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xecab2c76f1a8359a06fab5fa0ceea51280a97ecf": {
+          "0x69681f8fde45345c3870bcd5eaf4a05a60e7d227": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x00e5c0774a5f065c285068170b20393925c84bf3": {
+          "0x96e61422b6a9ba0e068b6c5add4ffabc6a4aae27": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xa8caea564811af0e92b1e044f3edd18fa9a73e4f": {
+          "0xdb25f211ab05b1c97d595516f45794528a807ad8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x30190a3b52b5ab1daf70d46d72536f5171f22340": {
+          "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x7736ffb07104c0c400bb0cc9a7c228452a732992": {
+          "0x1494ca1f11d487c2bbe4543e90080aeba4ba3c2b": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x86bbd9ac8b9b44c95ffc6baae58e25033b7548aa": {
+          "0xfafdf0c4c1cb09d430bf88c75d88bb46dae09967": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xb8c5af54bbdcc61453144cf472a9276ae36109f9": {
+          "0xd533a949740bb3306d119cc777fa900ba034cd52": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x215f34af6557a6598dbda9aa11cc556f5ae264b1": {
+          "0x5555f75e3d5278082200fb451d1b6ba946d8e13b": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x3c9f5385c288ce438ed55620938a4b967c080101": {
+          "0x95dfdc8161832e4ff7816ac4b6367ce201538253": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xe0b57feed45e7d908f2d0dacd26f113cf26715bf": {
+          "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xa7c4054afd3dbbbf5bfe80f41862b89ea05c9806": {
+          "0x57ab1ec28d129707052df4df418d58a2d46d5f51": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x1b3e95e8ecf7a7cab6c4de1b344f94865abd12d5": {
+          "0x1cc481ce2bd2ec7bf67d1be64d4878b16078f309": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xfeeb92386a055e2ef7c2b598c872a4047a7db59f": {
+          "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xbc6b6c837560d1fe317ebb54e105c89f303d5afd": {
+          "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "iron-bank_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "iron-bank",
+      "protocol_reward": {
+        "0x00a35fd824c717879bf370e70ac6868b95870dfb": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "uwu-lend_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "uwu-lend",
+      "deposit_borrow": {
+        "0x2409af0251dcb89ee3dee572629291f9b087c668": {
+          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x853d955acef822db058eb8505911ed77f175b99e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x29127fe04ffa4c32acac0ffe17280abd74eac313": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x5f98805a4e8be255a32880fdec7f6728c6568ba0": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x26fa3fffb6efe8c1e69103acb4044c26b9a106a9": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xd533a949740bb3306d119cc777fa900ba034cd52": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x3b79a28264fc52c7b4cea90558aa0b162f7faf57": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xdac17f958d2ee523a2206206994597c13d831ec7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x5938999dd0cc4d480c3b1a451aecc78ae4ddaab5": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xb9d7dddca9a4ac480991865efef82e01273f79c3": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x8dd09822e83313adca54c75696ae80c5429697ff": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "uwu-lend_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "uwu-lend",
+      "protocol_reward": {
+        "0x6b175474e89094c44da98b954eedeac495271d0f": {
+          "deposit": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          },
+          "borrow": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          }
+        },
+        "0x853d955acef822db058eb8505911ed77f175b99e": {
+          "deposit": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          },
+          "borrow": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          }
+        },
+        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
+          "deposit": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          },
+          "borrow": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          }
+        },
+        "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
+          "deposit": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          },
+          "borrow": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          }
+        },
+        "0x29127fe04ffa4c32acac0ffe17280abd74eac313": {
+          "deposit": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          },
+          "borrow": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          }
+        },
+        "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3": {
+          "deposit": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          },
+          "borrow": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          }
+        },
+        "0x5f98805a4e8be255a32880fdec7f6728c6568ba0": {
+          "deposit": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          },
+          "borrow": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          }
+        },
+        "0x26fa3fffb6efe8c1e69103acb4044c26b9a106a9": {
+          "deposit": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          },
+          "borrow": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          }
+        },
+        "0xd533a949740bb3306d119cc777fa900ba034cd52": {
+          "deposit": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          },
+          "borrow": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          }
+        },
+        "0x3b79a28264fc52c7b4cea90558aa0b162f7faf57": {
+          "deposit": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          },
+          "borrow": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          }
+        },
+        "0xdac17f958d2ee523a2206206994597c13d831ec7": {
+          "deposit": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          },
+          "borrow": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          }
+        },
+        "0x5938999dd0cc4d480c3b1a451aecc78ae4ddaab5": {
+          "deposit": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          },
+          "borrow": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          }
+        },
+        "0xb9d7dddca9a4ac480991865efef82e01273f79c3": {
+          "deposit": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          },
+          "borrow": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          }
+        },
+        "0x8dd09822e83313adca54c75696ae80c5429697ff": {
+          "deposit": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          },
+          "borrow": {
+            "rewards": {
+              "0x55c08ca52497e2f1534b59e2917bf524d4765257": {
+                "amount": 0.0
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "query_id": "aave-v3_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "aave-v3",
+      "deposit_borrow": {
+        "0x87870bca3f3fd6335c3f4ce8392d69350b4fa4e2": {
+          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.000219090778211332
+          },
+          "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+            "borrow_amount": 1001.93249,
+            "deposit_amount": 0.0
+          },
+          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x514910771af9ca656af840dff83e8264ecf986ca": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 332.8457902557051
+          },
+          "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 106.79212603957569
+          },
+          "0xbe9895146f7af43049ca1c1ae358b0541ea49704": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xdac17f958d2ee523a2206206994597c13d831ec7": {
+            "borrow_amount": 3839.668571,
+            "deposit_amount": 0.0
+          },
+          "0xae78736cd615f374d3085123a210448e74fc6393": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x5f98805a4e8be255a32880fdec7f6728c6568ba0": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xd533a949740bb3306d119cc777fa900ba034cd52": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xba100000625a3754423978a60c9317c58a424e3d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x5a98fcbea516cf06857215779fd812ca3bef1b32": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xc18360217d8f7ab5e7c516566761ea12ce7f9d72": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x111111111117dc0aa78b770fa6a738034120c302": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x853d955acef822db058eb8505911ed77f175b99e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xd33526068d116ce69f19a9ee46f0bd304f21a51f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "aave-v3_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "aave-v3",
+      "protocol_reward": {}
+    },
+    {
+      "query_id": "liqee_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "liqee",
+      "deposit_borrow": {
+        "0x5812fcf91adc502a765e5707ebb3f36a07f63c02": {
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x5acd75f21659a59ffab9aebaf350351a8bfaabc0": {
+          "0x0000000000000000000000000000000000000000": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x1180c114f7fadcb6957670432a3cf8ef08ab5354": {
+          "0xdac17f958d2ee523a2206206994597c13d831ec7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x2f956b2f801c6dad74e87e7f45c94f6283bf0f45": {
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x298f243ad592b6027d4717fbe9decda668e3c3a8": {
+          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x24677e213dec0ea53a430404cf4a11a6dc889fce": {
+          "0x4fabb145d64652a948d72533023f6e7a623c7c53": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x47566acd7af49d2a192132314826ed3c3c5f3698": {
+          "0x0316eb71485b0ab14103307bf65a021042c6d380": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xb3dc7425e63e1855eb41107134d471dd34d7b239": {
+          "0x431ad2ff6a9c365805ebad47ee021148d6f7dbe0": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x164315ea59169d46359baa4bcc6479bb421764b6": {
+          "0x355c665e101b9da58704a8fddb5feef210ef20c0": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xbec9a824d6da8d0f923fd9fbec4faa949d396320": {
+          "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xd1254d280e7504836e1b0e36535ebff248483cee": {
+          "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x591595bfae3f5d51a820ecd20a1e3fbb6638f34b": {
+          "0xb986f3a2d91d3704dc974a24fb735dcc5e3c1e70": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xfa2e831c674b61475c175b2206e81a5938b298dd": {
+          "0x527ec46ac094b399265d1d71eff7b31700aa655d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x028db7a9d133301bd49f27b5e41f83f56ab0faa6": {
+          "0x8d2cb35893c01fa8b564c84bd540c5109d9d278e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xa3068aa78611ed29d381e640bb2c02abcf3ca7de": {
+          "0x514910771af9ca656af840dff83e8264ecf986ca": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x039e7ef6a674f3ec1d88829b8215ed45385c24bc": {
+          "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x6e6a689a5964083dff9fd7a0f788baf620ea2dbe": {
+          "0x0000000000085d4780b73119b644ae5ecd22b376": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xbfd291da8a403daaf7e5e9dc1ec0aceacd4848b9": {
+          "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x71173e3c6999c2c72ccf363f4ae7b67bcc7e8f63": {
+          "0x853d955acef822db058eb8505911ed77f175b99e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x47c19a2ab52da26551a22e2b2aeed5d19ef4022f": {
+          "0x956f47f50a910163d8bf957cf5846d573e7f87ca": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x3e5cb932d7a1c0ca096b71cc486b2ad7e0dc3d0e": {
+          "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xe39672dfa87c824bcb3b38aa480ef684687cbc09": {
+          "0xd533a949740bb3306d119cc777fa900ba034cd52": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x59055220e00da46c891283ea1d79363c769158b9": {
+          "0xd5147bc8e386d91cc5dbe72099dac6c9b99276f5": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "liqee_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "liqee",
+      "protocol_reward": {
+        "0x431ad2ff6a9c365805ebad47ee021148d6f7dbe0": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "strike_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "strike",
+      "deposit_borrow": {
+        "0xbee9cf658702527b0acb2719c1faa29edc006a92": {
+          "0x0000000000000000000000000000000000000000": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x69702cfd7dad8bccaa24d6b440159404aaa140f5": {
+          "0xdac17f958d2ee523a2206206994597c13d831ec7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x3774e825d567125988fb293e926064b6faa71dab": {
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x18a908ed663823c908a900b934d6249d4befbe44": {
+          "0x4fabb145d64652a948d72533023f6e7a623c7c53": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x3f3b3b269d9f7088b022290906acff8710914be1": {
+          "0x514910771af9ca656af840dff83e8264ecf986ca": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x280f76a218ddc8d56b490b5835e251e55a2e8f8d": {
+          "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x9d1c2a187cf908aed8cfae2353ef72f06223d54d": {
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xb7e11002228d599f2a64b0c44d2299c9c644ff26": {
+          "0xc00e94cb662c3520282e6f5717214004a7f26888": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xdbee1d8c452c781c17ea20115cbad0d5f627a680": {
+          "0x8ce9137d39326ad0cd6491fb5cc0cba0e089b6a9": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x4164e5b047842ad7dff18fc6a6e63a1e40610f46": {
+          "0x74232704659ef37c08995e386a2e26cc27a8d7b1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xa9ba206cfb0548bf93ef1040dddd5121da9eaf85": {
+          "0xa693b19d2931d498c5b318df961919bb4aee87a5": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xf24a7d2077285e192aa7df957a4a699c144510d8": {
+          "0x4d224452801aced8b2f0aebe155379bb5d594381": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x54a0ed40abea082ed62c3a4f92621b8ed47732a2": {
+          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xc13fdf3af7ec87dca256d9c11ff96405d360f522": {
+          "0xa2cd3d43c775978a96bdbf12d733d5a1ed94fb18": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "strike_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "strike",
+      "protocol_reward": {
+        "0x74232704659ef37c08995e386a2e26cc27a8d7b1": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "onyx-protocol_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "onyx-protocol",
+      "deposit_borrow": {
+        "0x1961ad247b47f4f2242e55a0e5578c6cf01f8d12": {
+          "0xa2cd3d43c775978a96bdbf12d733d5a1ed94fb18": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x714bd93ab6ab2f0bcfd2aeaf46a46719991d0d79": {
+          "0x0000000000000000000000000000000000000000": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x1933f1183c421d44d531ed40a5d2445f6a91646d": {
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xbced4e924f28f43a24ceedec69ee21ed4d04d2dd": {
+          "0xdac17f958d2ee523a2206206994597c13d831ec7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x8f35113cfaba700ed7a907d92b114b44421e412a": {
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x830dacd5d0a62afa92c9bc6878461e9cd317b085": {
+          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xfee4428b7f403499c50a6da947916b71d33142dc": {
+          "0x514910771af9ca656af840dff83e8264ecf986ca": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x7497e945f23192d1dc3095409837f67927170f2d": {
+          "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xc0534bb221c0963b213f417585e3ca581993793a": {
+          "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xf52459e8bc708d55400c167e0d77ed49641226d3": {
+          "0x4d224452801aced8b2f0aebe155379bb5d594381": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x11b258a1c5ec962f43ab523be9b8fa317cb2eb69": {
+          "0x8e870d67f660d95d5be530380d0ec0bd388289e1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x4476175752a4947de953e26b40fc8c1e145fea82": {
+          "0x056fd409e1d7a124bd7017459dfea2f387b6d5cd": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x3f2dd7adbcd464d5b0a766f7eb367bd20a249691": {
+          "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x7ab16ed27ab8b22cb625db55c0e58521969cb091": {
+          "0xb7f7f6c52f2e2fdb1963eab30438024864c313f6": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x307269cf921213bd2e16b22dcd4401aec21d00bf": {
+          "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x0c19d213e9f2a5cbaa4ec6e8eac55a22276b0641": {
+          "0x45804880de22913dafe09f4980848ece6ecbaf78": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x5bcc74bd3cf4e2665674cd79a68f87d2d3fd6df0": {
+          "0x60e4d786628fea6478f785a6d7e704777c86a7c6": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "onyx-protocol_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "onyx-protocol",
+      "protocol_reward": {
+        "0xa2cd3d43c775978a96bdbf12d733d5a1ed94fb18": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "granary-finance_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "granary-finance",
+      "deposit_borrow": {
+        "0xb702ce183b4e1faa574834715e5d4a6378d0eed3": {
+          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xdac17f958d2ee523a2206206994597c13d831ec7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "granary-finance_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "granary-finance",
+      "protocol_reward": {
+        "0xf88baf18fab7e330fa0c4f83949e23f52fececce": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "wepiggy_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "wepiggy",
+      "deposit_borrow": {
+        "0x27a94869341838d5783368a8503fda5fbcd7987c": {
+          "0x0000000000000000000000000000000000000000": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x85166b72c87697a6acff24101b43fd54fe28a179": {
+          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x5cfad792c4df1323188180778aec58e00eace32a": {
+          "0xdac17f958d2ee523a2206206994597c13d831ec7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xf8e5b9738bf63adfff36a849f9b9c9617c8d8c1f": {
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xc12b9d620bfcb48be3e0ccbf0ea80c717333b46f": {
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x82413f75f0da101e0fe7f6ff6cba3461f7e04f29": {
+          "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x82de3959c09f665a82c794fafc1eb34cfcb555ee": {
+          "0xa1d0e215a23d7030842fc67ce582a6afa3ccab83": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x690aa2591e57180cba5a6123e9d462907a5e1c95": {
+          "0xbbbbca6a901c926f240b89eacb641d8aec7aeafd": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xef86384cf696929c3227428f539e740ee12fcdc7": {
+          "0xf88506b0f1d30056b9e5580668d5875b9cd30f23": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x959f30f765a44273eccaa0fac094160aa7c238e2": {
+          "0x03ab458634910aad20ef5f1c8ee96f1d6ac54919": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "wepiggy_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "wepiggy",
+      "protocol_reward": {
+        "0x6f620ec89b8479e97a6985792d0c64f237566746": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "morpho-aavev3_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "morpho-aavev3",
+      "deposit_borrow": {
+        "0x4d5f47fa6a74757f35c14fd3a6ef8e3c9bc514e8": {
+          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x0b925ed163218f6662a35e0f0371ac234f9e9371": {
+          "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x018008bfb33d285247a21d44e50697654f754e63": {
+          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c": {
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x5ee5bf7ae06d1be5997a1a72006fe6c607ec6de8": {
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xcc9ee9483f662091a1de4795249e24ac0ac2630f": {
+          "0xae78736cd615f374d3085123a210448e74fc6393": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x977b6fc5de62598b08c85ac8cf2b745874e8b78c": {
+          "0xbe9895146f7af43049ca1c1ae358b0541ea49704": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "morpho-aavev3_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "morpho-aavev3",
+      "protocol_reward": {}
+    },
+    {
+      "query_id": "morpho-aave_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "morpho-aave",
+      "deposit_borrow": {
+        "0x028171bca77440897b824ca71d1c56cac55b68a3": {
+          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x030ba81f1c18d280636f32af80b9aad02cf0854e": {
+          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xbcca60bb61934080951369a648fb03df4f96263c": {
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x3ed3b47dd13ec9a98b44e6204a523e766b225811": {
+          "0xdac17f958d2ee523a2206206994597c13d831ec7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x9ff58f4ffb29fa2266ab25e75e2a8b3503311656": {
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x1982b2f5814301d4e9a8b0201555376e62f82428": {
+          "0xae7ab96520de3a18e5e111b5eaab095312d7fe84": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x8dae6cb04688c62d939ed9b68d32bc62e49970b1": {
+          "0xd533a949740bb3306d119cc777fa900ba034cd52": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "morpho-aave_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "morpho-aave",
+      "protocol_reward": {}
+    },
+    {
+      "query_id": "morpho-compound_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "morpho-compound",
+      "deposit_borrow": {
+        "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643": {
+          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x70e36f6bf80a52b3b46b3af8e106cc0ed743e8e4": {
+          "0xc00e94cb662c3520282e6f5717214004a7f26888": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5": {
+          "0x0000000000000000000000000000000000000000": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x7713dd9ca933848f6819f38b8352d9a15ea73f67": {
+          "0x956f47f50a910163d8bf957cf5846d573e7f87ca": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x35a18000230da775cac24873d00ff85bccded550": {
+          "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x39aa39c021dfbae8fac545936693ac917d5e7563": {
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9": {
+          "0xdac17f958d2ee523a2206206994597c13d831ec7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xccf4429db6322d5c611ee964527d42e5d685dd6a": {
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "morpho-compound_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "morpho-compound",
+      "protocol_reward": {
+        "0xc00e94cb662c3520282e6f5717214004a7f26888": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "spark_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "spark",
+      "deposit_borrow": {
+        "0xc13e21b648a5ee794902342038ff3adab66be987": {
+          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x83f20f44975d03b1b09e64809b757c47f942beea": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x6810e776880c02933d47db1b9fc05908e5386b96": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xae78736cd615f374d3085123a210448e74fc6393": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "spark_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "spark",
+      "protocol_reward": {}
+    },
+    {
+      "query_id": "silo-finance_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "silo-finance",
+      "deposit_borrow": {
+        "0x96efdf95cc47fe90e8f63d2f5ef9fb8b180daeb9": {
+          "0xd533a949740bb3306d119cc777fa900ba034cd52": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xf939e0a03fb07f59a73314e73794be0e57ac1b4e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xa56d5162a4e3bc6ed6395b05765e18edaa3cedfe": {
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xf939e0a03fb07f59a73314e73794be0e57ac1b4e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xb2dc362990b405845daf147e357aad75e6ebd803": {
+          "0x5a98fcbea516cf06857215779fd812ca3bef1b32": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xf939e0a03fb07f59a73314e73794be0e57ac1b4e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xb0823c25cdf531a58e581ee14f160c290fef5722": {
+          "0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xf939e0a03fb07f59a73314e73794be0e57ac1b4e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x3876ca746cc3b25f304f8da8f9f80c220c99d750": {
+          "0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xf939e0a03fb07f59a73314e73794be0e57ac1b4e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x2c2a3abba45bf2d52ceb0eb3a55a4e354f986901": {
+          "0x514910771af9ca656af840dff83e8264ecf986ca": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xf939e0a03fb07f59a73314e73794be0e57ac1b4e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x076ad078ce2b22f208ded6812e4d5de4a3ee4088": {
+          "0x6dea81c8171d0ba574754ef6f8b412f2ed88c54d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xf939e0a03fb07f59a73314e73794be0e57ac1b4e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x463c0b5e3f52ab27ffe02c23e803903e5e5b361f": {
+          "0xae78736cd615f374d3085123a210448e74fc6393": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xf939e0a03fb07f59a73314e73794be0e57ac1b4e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xf60535db51e4639e0d23e4a3c2ba60194bf0f426": {
+          "0xbe9895146f7af43049ca1c1ae358b0541ea49704": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xf939e0a03fb07f59a73314e73794be0e57ac1b4e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x5128fb075c5f770bfc53152abb37a62bb9dbf723": {
+          "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xf939e0a03fb07f59a73314e73794be0e57ac1b4e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x4f11d892fd89cf16651fc1a2526ccfbdded3e616": {
+          "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xf939e0a03fb07f59a73314e73794be0e57ac1b4e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "silo-finance_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "silo-finance",
+      "protocol_reward": {
+        "0xd533a949740bb3306d119cc777fa900ba034cd52": {
+          "amount": 0.0
+        }
+      }
+    }
+  ],
+  "0x38": [
+    {
+      "query_id": "trava-finance_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "trava-finance",
+      "deposit_borrow": {
+        "0x75de5f7c91a89c16714017c7443eca20c7a8c295": {
+          "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x55d398326f99059ff775485246999027b3197955": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xe9e7cea3dedca5984780bafc599bd69add087d56": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x2170ed0880ac9a755fd29b2688956bd959f933f8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xfb6115445bff7b52feb98650c87f44907e58f802": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xba2ae424d960c26247dd6c32edc70b295c744c43": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x7083609fce4d1d8dc0c979aab8c869ea2c873402": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "trava-finance_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "trava-finance",
+      "protocol_reward": {
+        "0x170772a06affc0d375ce90ef59c8ec04c7ebf5d2": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "valas-finance_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "valas-finance",
+      "deposit_borrow": {
+        "0xe29a55a6aeff5c8b1beede5bcf2f0cb3af8f91f5": {
+          "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xe9e7cea3dedca5984780bafc599bd69add087d56": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x55d398326f99059ff775485246999027b3197955": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x2170ed0880ac9a755fd29b2688956bd959f933f8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x14016e85a25aeb13065688cafb43044c2ef86784": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x40af3827f39d0eacbf4a168f8d4ee67c121d11c9": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "valas-finance_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "valas-finance",
+      "protocol_reward": {
+        "0xb1ebdd56729940089ecc3ad0bbeeb12b6842ea6f": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "cream-lending_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "cream-lending",
+      "deposit_borrow": {
+        "0x1ffe17b99b439be0afc831239ddecda2a790ff3a": {
+          "0x0000000000000000000000000000000000000000": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x11883cdea6bab720092791cc89affa54428ce069": {
+          "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x2bc4eb013ddee29d37920938b96d353171289b7c": {
+          "0xe9e7cea3dedca5984780bafc599bd69add087d56": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xaa46e2c21b7763a73db48e9b318899253e66e20c": {
+          "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xcb87cee8c77cdfd310fb3c58ff72e688d46f90b1": {
+          "0x8ff795a6f4d97e7887c79bea79aba5cc76444adf": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xb31f5d117541825d6692c10e4357008edf3e2bcd": {
+          "0x2170ed0880ac9a755fd29b2688956bd959f933f8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x8cc7e2a6de999758499658bb702143fd025e09b2": {
+          "0x4338665cbb7b2485a8855a139b75d5e34ab0db94": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xef6d459fe81c3ed53d292c936b2df5a8084975de": {
+          "0x55d398326f99059ff775485246999027b3197955": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x3942936782d788ce69155f776a51a5f1c9dd9b22": {
+          "0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x53d88d2ffdbe71e81d95b08ae0ca49d0c4a8515f": {
+          "0x7083609fce4d1d8dc0c979aab8c869ea2c873402": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x81c15d3e956e55e77e1f3f257f0a65bd2725fc55": {
+          "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x426d6d53187be3288fe37f214e3f6901d8145b62": {
+          "0xd4cb328a82bdf5f03eb737f37fa6b370aef3e888": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x738f3810b3da0f3e6dc8c689d0d72f3b4992c43b": {
+          "0xad6caeb32cd2c308980a548bd0bc5aa4306c6c18": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x19ee64850862cfd234e20c0db4eda286f12ec907": {
+          "0x56b6fb708fc5732dec1afc8d8556423a2edccbd6": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x9095e8d707e40982affce41c61c10895157a1b22": {
+          "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xe692714717a89e4f2ab89dd17d8dddd7bb52de8e": {
+          "0x16939ef78684453bfdfb47825f8a5f714f12623a": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x1af8c1c3ad36a041cb6678fed86b1e095004fd16": {
+          "0x0d8ce2a99bb6e3b7db580ed848240e4a0f9ae153": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xea466cd2583a0290b9e7b987a769a7eb468fb0a5": {
+          "0x88f1a5ae2a3bf98aeaf342d26b30a79438c9142e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x3b0be453a4008ebc2edd457e7bd355f1c5469d68": {
+          "0xbf5140a22578168fd562dccf235e5d43a02ce9b1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x0e9d900c884964dc4b26db96ba113825b1a09baa": {
+          "0x0eb3a705fc54725037cc9e008bdede697f62f335": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xd83c88db3a6ca4a32fff1603b0f7ddce01f5f727": {
+          "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x264bc4ea2f45cf6331ad6c3ac8d7257cf487fcbc": {
+          "0xa1faa113cbe53436df28ff0aee54275c13b40975": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x2d3bfadf9bc94e3ab796029a030e863f1898aa06": {
+          "0x4b0f1812e5df2a09796481ff14017e6005508003": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xbf9b95b78bc42f6cf53ff2a0ce19d607cfe1ff82": {
+          "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x4ebdef163ff08ac1d56a89bafefd6c01cc28a48f": {
+          "0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x4cb7f1f4ad7a6b53802589af3b90612c1674fec4": {
+          "0x101d82428437127bf1608f699cd651e6abf9766e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x84902bd5ccef97648bf69c5096729a9367043beb": {
+          "0x4bd17003473389a42daf6a0a729f6fdb328bbbd7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xf77df34f4bf632fb5ca928592a73a29a42bcf0b1": {
+          "0xa184088a740c695e156f91f5cc086a06bb78b827": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x7f746a80506a4cafa39938f7c08ad59cfa6de418": {
+          "0xfce146bf3146100cfe5db4129cf6c82b0ef4ad8c": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xbe7e1d74acae787355169bc61a8729b2040fce6b": {
+          "0x695fd30af473f2960e81dc9ba7cb67679d35edb7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xdcf60e349a5aaeeecdd2fb6772931fbf3486ed1c": {
+          "0x250632378e573c6be1ac2f97fcdf00515d0aa91b": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xc17c8c5b8bb9456c624f8534fde6cbda2451488c": {
+          "0x9678e42cebeb63f23197d726b29b1cb20d0064e5": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xa8d75a0d17d2f4f2f4673975ab8470269d019c96": {
+          "0x47bead2563dcbf3bf2c9407fea4dc236faba485a": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x9b53e7d5e3f6cc8694840ed6c9f7fee79e7bcee5": {
+          "0x947950bcc74888a40ffa2593c5798f11fc9124c4": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x36cdf5972aca2b70f10d0f7af0d95871abc065d9": {
+          "0xa527a61703d82139f8a06bc30097cc9caa2df5a6": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x26a490a0f419dcfbed97e568403654c2746a7110": {
+          "0x1b96b92314c44b159149f7e0303511fb2fc4774f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xe39b9e0366940eb3ca62b85ffae838ef0f8b14e0": {
+          "0x7561eee90e24f3b348e1087a005f78b4c8453524": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x5fa61a5a65920f90af970b13b7f28daeef0440b7": {
+          "0x70d8929d04b60af4fb9b58713ebcf18765ade422": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x19b08ff7d90d63ad109c6fabb8e0fcc866477a41": {
+          "0xc15fa3e22c912a276550f3e5fe3b0deb87b55acd": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x15cc701370cb8ada2a2b6f4226ec5cf6aa93bc67": {
+          "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x98b7871702b602e65eaef46051d75ca334f872d0": {
+          "0x0ed7e52944161450477ee417de9cd3a859b14fd0": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x7fd568d6a1a11b19427c8ccb90f7bb80e4ab1c5f": {
+          "0x58f876857a02d6762e0101bb5c46a8c1ed44dc16": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x5ea2dd1de21ed3b5316cef89985edc66cf9b2a0e": {
+          "0x61eb789d75a95caa3ff50ed7e47b96c132fec082": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x9972dd9912367cf395bea752ad49d81f33f7ca85": {
+          "0x74e4716e431f45807dcf19f284c7aa99f18a4fbc": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x04c61ef58a6f1d6c572045a39a5434ab9dee69fb": {
+          "0x7efaef62fddcca950418312c6c91aef321375a00": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "cream-lending_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "cream-lending",
+      "protocol_reward": {
+        "0xd4cb328a82bdf5f03eb737f37fa6b370aef3e888": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "venus_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "venus",
+      "deposit_borrow": {
+        "0xeca88125a5adbe82614ffc12d0db554e2e2867c8": {
+          "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xfd5840cd36d94d7229439859c0112a4185bc0255": {
+          "0x55d398326f99059ff775485246999027b3197955": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x95c78222b3d6e262426483d42cfa53685a67ab9d": {
+          "0xe9e7cea3dedca5984780bafc599bd69add087d56": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x2ff3d0f6990a40261c66e1ff2017acbc282eb6d0": {
+          "0x47bead2563dcbf3bf2c9407fea4dc236faba485a": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x151b1e2635a717bcdc836ecd6fbb62b674fe3e1d": {
+          "0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xa07c5b74c9b40447a954e1466938b865b6bbea36": {
+          "0x0000000000000000000000000000000000000000": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x882c173bc7ff3b7786ca16dfed3dfffb9ee7847b": {
+          "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xf508fcd89b8bd15579dc79a6827cb4686a3592c8": {
+          "0x2170ed0880ac9a755fd29b2688956bd959f933f8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x57a5297f2cb2c0aac9d554660acd6d385ab50c6b": {
+          "0x4338665cbb7b2485a8855a139b75d5e34ab0db94": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xb248a295732e0225acd3337607cc01068e3b9c10": {
+          "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x5f0388ebc2b94fa8e123f404b79ccf5f40b29176": {
+          "0x8ff795a6f4d97e7887c79bea79aba5cc76444adf": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x1610bc33319e9398de5f57b33a5b184c806ad217": {
+          "0x7083609fce4d1d8dc0c979aab8c869ea2c873402": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x650b940a1033b8a1b1873f78730fcfc73ec11f1f": {
+          "0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x334b3ecb4dca3593bccc3c7ebd1a1c1d1780fbf1": {
+          "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xf91d58b5ae142dacc749f58a49fcbac340cb0343": {
+          "0x0d8ce2a99bb6e3b7db580ed848240e4a0f9ae153": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x972207a639cc1b374b893cc33fa251b55ceb7c07": {
+          "0x250632378e573c6be1ac2f97fcdf00515d0aa91b": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xebd0070237a0713e8d94fef1b728d3d993d290ef": {
+          "0x20bff4bbeda07536ff00e073bd8359e5d80d733d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x9a0af7fdb2065ce470d72664de73cae409da28ec": {
+          "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xec3422ef92b2fb59e84c8b02ba73f1fe84ed8d71": {
+          "0xba2ae424d960c26247dd6c32edc70b295c744c43": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x5c9476fcd6a4f9a3654139721c949c2233bbbbc8": {
+          "0xcc42724c6683b7e57334c4e856f4c9965ed682bd": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x86ac3974e2bd0d60825230fa6f355ff11409df5c": {
+          "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x26da28954763b92139ed49283625cecaf52c6f94": {
+          "0xfb6115445bff7b52feb98650c87f44907e58f802": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x08ceb3f4a7ed3500ca0982bcd0fc7816688084c3": {
+          "0x14016e85a25aeb13065688cafb43044c2ef86784": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x61edcfe8dd6ba3c891cb9bec2dc7657b3b422e93": {
+          "0x85eac5ac2f758618dfa09bdbe0cf174e7d574d5b": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xc5d3466aa484b040ee977073fcf337f2c00071c1": {
+          "0xce7de646e7208a4ef112cb6ed5038fa6cc6b12e3": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "venus_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "venus",
+      "protocol_reward": {
+        "0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "radiant-v2_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "radiant-v2",
+      "deposit_borrow": {
+        "0xd50cf00b6e600dd036ba8ef475677d816d6c4281": {
+          "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x55d398326f99059ff775485246999027b3197955": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xe9e7cea3dedca5984780bafc599bd69add087d56": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x2170ed0880ac9a755fd29b2688956bd959f933f8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "radiant-v2_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "radiant-v2",
+      "protocol_reward": {
+        "0xf7de7e8a6bd59ed41a4b5fe50278b3b7f31384df": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "liqee_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "liqee",
+      "deposit_borrow": {
+        "0x5511b64ae77452c7130670c79298dec978204a47": {
+          "0xe9e7cea3dedca5984780bafc599bd69add087d56": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xaf9c10b341f55465e8785f0f81dbb52a9bfe005d": {
+          "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x0bf8c72d618b5d46b055165e21d661400008fa0f": {
+          "0x55d398326f99059ff775485246999027b3197955": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xad5ec11426970c32da48f58c92b1039bc50e5492": {
+          "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xec3fd540a2dee6f479be539d64da593a59e12d08": {
+          "0x4a9a2b2b04549c3927dd2c9668a5ef3fca473623": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xc35acaeedb814f42b2214378d8950f8555b2d670": {
+          "0xa05478b34fad86cc86f07eb6698c69ea60b266e3": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x0b66a250dadf3237ddb38d485082a7bfe400356e": {
+          "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x390bf37355e9df6ea2e16eed5686886da6f47669": {
+          "0x2170ed0880ac9a755fd29b2688956bd959f933f8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xee9099c1318cf960651b3196747640eb84b8806b": {
+          "0xbf5140a22578168fd562dccf235e5d43a02ce9b1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x55012ad2f0a50195aef44f403536df2465009ef7": {
+          "0x0eb3a705fc54725037cc9e008bdede697f62f335": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x9ab060ba568b86848bf19577226184db6192725b": {
+          "0x7083609fce4d1d8dc0c979aab8c869ea2c873402": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xd739a569ec254d6a20ecf029f024816be58fb810": {
+          "0x0d8ce2a99bb6e3b7db580ed848240e4a0f9ae153": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xfc5bb1e8c29b100ef8f12773f972477bcab68862": {
+          "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xd57e1425837567f74a35d07669b23bfb67aa4a93": {
+          "0x0000000000000000000000000000000000000000": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x36f4c36d1f6e8418ecb2402f896b2a8fedde0991": {
+          "0xb5102cee1528ce2c760893034a4603663495fd72": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xb22ef996c0a2d262a19db2a66a256067f51511eb": {
+          "0x367c17d19fcd0f7746764455497d63c8e8b2bba3": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x6e42423e1bcb6a093a58e203b5eb6e8a8023b4e5": {
+          "0x20ecc92f0a33e16e8cf0417dfc3f586cf597f3a9": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x6ac0a0b3959c1e5fcbd09b59b09abf7c53c72346": {
+          "0x463e3d1e01d048fdf872710f7f3745b5cdf50d0e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x6d64effe3af8697336fc57efd5a7517ad526dd6d": {
+          "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xd957bea67aadb8a72061ce94d033c631d1c1e6ac": {
+          "0x4338665cbb7b2485a8855a139b75d5e34ab0db94": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x50e894894809f642de1e11b4076451734c963087": {
+          "0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xefae8f7af4bada590d4e707d900258fc72194d73": {
+          "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x9747e26c5ad01d3594ea49ccf00790f564193c15": {
+          "0x8ff795a6f4d97e7887c79bea79aba5cc76444adf": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x8be8cd81737b282c909f1911f3f0ade630c335aa": {
+          "0x16939ef78684453bfdfb47825f8a5f714f12623a": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "liqee_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "liqee",
+      "protocol_reward": {
+        "0x4a9a2b2b04549c3927dd2c9668a5ef3fca473623": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "wepiggy_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "wepiggy",
+      "deposit_borrow": {
+        "0x33a32f0ad4aa704e28c93ed8ffa61d50d51622a7": {
+          "0x0000000000000000000000000000000000000000": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x849c37a029b38d3826562697ccc40c34477c6293": {
+          "0x2170ed0880ac9a755fd29b2688956bd959f933f8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x311aea58ca127b955890647413846e351df32554": {
+          "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x12d803497d1e58dd4d4a4f455d754f1d0f937c8b": {
+          "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x2a8cd78bfb91acf53f589961d213d87c956e0d7f": {
+          "0x55d398326f99059ff775485246999027b3197955": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x2b7f68170a598e507b19bca41ed745eabc936b3f": {
+          "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x2dd8ffa7923a17739f70c34759af7650e44ea3be": {
+          "0xe9e7cea3dedca5984780bafc599bd69add087d56": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x811cd5cb4cc43f44600cfa5ee3f37a402c82aec2": {
+          "0x7083609fce4d1d8dc0c979aab8c869ea2c873402": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x17933112e9780abd0f27f2b7d9dda9e840d43159": {
+          "0xbf5140a22578168fd562dccf235e5d43a02ce9b1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x417fdfc74503d8008aeeb53248e5c0f1960c2c1d": {
+          "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x6a05bd123d780055c38526cc05d3c9b90d0e471c": {
+          "0x4338665cbb7b2485a8855a139b75d5e34ab0db94": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x00ff07204c3b27d72cf83ef521adb7066167561a": {
+          "0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xbc52bce2c73fec358abbf047c50377183b9ead0d": {
+          "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xdf21d42a0fc6746718f2cfe2798f91c9d7277f32": {
+          "0x0d8ce2a99bb6e3b7db580ed848240e4a0f9ae153": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x23cf81eeaa61c1c7607ee1a3bfcff1f99ac26c85": {
+          "0x8cd6e29d3686d24d3c2018cee54621ea0f89313b": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x33d295aaa719fd756310eb42de2847d0e7be294e": {
+          "0x2ed9a5c8c13b93955103b9a7c167b67ef4d568a3": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "wepiggy_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "wepiggy",
+      "protocol_reward": {
+        "0x6f620ec89b8479e97a6985792d0c64f237566746": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "granary-finance_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "granary-finance",
+      "deposit_borrow": {
+        "0x7171054f8d148fe1097948923c91a6596fc29032": {
+          "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x55d398326f99059ff775485246999027b3197955": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x2170ed0880ac9a755fd29b2688956bd959f933f8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "granary-finance_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "granary-finance",
+      "protocol_reward": {}
+    },
+    {
+      "query_id": "apeswap-lending_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "apeswap-lending",
+      "deposit_borrow": {
+        "0xc2e840bdd02b4a1d970c87a912d8576a7e61d314": {
+          "0x603c7f932ed1fc6575303d8fb018fdcbb0f39a95": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xaa1b1e1f251610ae10e4d553b05c662e60992eed": {
+          "0x2170ed0880ac9a755fd29b2688956bd959f933f8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x0096b6b49d13b347033438c4a699df3afd9d2f96": {
+          "0xe9e7cea3dedca5984780bafc599bd69add087d56": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xdbfd516d42743ca3f1c555311f7846095d85f6fd": {
+          "0x55d398326f99059ff775485246999027b3197955": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x3353f5bcfd7e4b146f2ed8f1e8d875733cd754a7": {
+          "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x91b66a9ef4f4cad7f8af942855c37dd53520f151": {
+          "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x34878f6a484005aa90e7188a546ea9e52b538f6f": {
+          "0x0000000000000000000000000000000000000000": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x5fce5d208dc325ff602c77497dc18f8eadac8ada": {
+          "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x92d106c39ac068eb113b3ecb3273b23cd19e6e26": {
+          "0x7083609fce4d1d8dc0c979aab8c869ea2c873402": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x3ee2bd8c244b5b3656673c2a49447e41d31f8e1e": {
+          "0x1bdd3cf7f79cfb8edbb955f20ad99211551ba275": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "apeswap-lending_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "apeswap-lending",
+      "protocol_reward": {}
+    }
+  ],
+  "0x89": [
+    {
+      "query_id": "aave-v2_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "aave-v2",
+      "deposit_borrow": {
+        "0x8dff5e27ea6b7ac08ebfdf9eb090f32ee9a30fcf": {
+          "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x2791bca1f2de4661ed88a30c99a7a9449aa84174": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xc2132d05d31c914a87c6611c10748aeb04b58e8f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xd6df932a45c0f255f85145f286ea0b292b21c90b": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x85955046df4668e1dd369d2de9f3aeb98dd2a369": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x172370d5cd63279efa6d502dab29171933a610af": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "aave-v2_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "aave-v2",
+      "protocol_reward": {
+        "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "aave-v3_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "aave-v3",
+      "deposit_borrow": {
+        "0x794a61358d6845594f94dc1db02a252b5b4814ad": {
+          "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x2791bca1f2de4661ed88a30c99a7a9449aa84174": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xc2132d05d31c914a87c6611c10748aeb04b58e8f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xd6df932a45c0f255f85145f286ea0b292b21c90b": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x172370d5cd63279efa6d502dab29171933a610af": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x85955046df4668e1dd369d2de9f3aeb98dd2a369": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xe111178a87a3bff0c8d18decba5798827539ae99": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x4e3decbb3645551b8a19f0ea1678079fcb33fb4c": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xe0b52e49357fd4daf2c15e02058dce6bc0057db4": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xa3fa99a148fa48d14ed51d610c367c61876997f1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xfa68fb4628dff1028cfec22b4162fccd0d45efb6": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x03b54a6e9a984069379fae1a4fc4dbae93b3bccd": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "aave-v3_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "aave-v3",
+      "protocol_reward": {
+        "0x1d734a02ef1e1f5886e66b0673b71af5b53ffa94": {
+          "amount": 0.0
+        },
+        "0xc3c7d422809852031b44ab29eec9f1eff2a58756": {
+          "amount": 0.0
+        },
+        "0x3a58a54c066fdc0f2d55fc9c89f0415c92ebf3c4": {
+          "amount": 0.0
+        },
+        "0xfa68fb4628dff1028cfec22b4162fccd0d45efb6": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "wepiggy_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "wepiggy",
+      "deposit_borrow": {
+        "0xc1b02e52e9512519edf99671931772e452fb4399": {
+          "0x0000000000000000000000000000000000000000": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x12d803497d1e58dd4d4a4f455d754f1d0f937c8b": {
+          "0x2791bca1f2de4661ed88a30c99a7a9449aa84174": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x0c8c1ab017c3c0c8a48dd9f1db2f59022d190f0b": {
+          "0xc2132d05d31c914a87c6611c10748aeb04b58e8f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x5cfad792c4df1323188180778aec58e00eace32a": {
+          "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xf4b6d5d432f1c7a9efc9e0b04acde479f9fd1f72": {
+          "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xf19200b30a0416322d58e6b6b1d6b5f832936729": {
+          "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x3a9cad689a510a7c410ee1be17929cdf78efac8c": {
+          "0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x1b1cd0fdb6592fe482026b8e47706eac1ee94a7c": {
+          "0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xc28e11040c529a6828c20a641f8f75b7c0ea92e3": {
+          "0x172370d5cd63279efa6d502dab29171933a610af": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xd0199ba93031ba37aa4e17c885a47edeeb23ae04": {
+          "0xf28164a485b0b2c90639e47b0f377b4a438a16b1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "wepiggy_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "wepiggy",
+      "protocol_reward": {
+        "0x6f620ec89b8479e97a6985792d0c64f237566746": {
+          "amount": 0.0
+        }
+      }
+    }
+  ],
+  "0xfa": [
+    {
+      "query_id": "trava-finance_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "trava-finance",
+      "deposit_borrow": {
+        "0xd98bb590bdfabf18c164056c185fbb6be5ee643f": {
+          "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x04068da6c83afcfa0e13ba15a6696662335d5b75": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x049d68029688eabf473097a2fc38ef61633a3c7a": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x321162cd933e2be498cd2267a90534a804051b11": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x74b23882a30290451a17c44f4f05243b6b58c76d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "trava-finance_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "trava-finance",
+      "protocol_reward": {
+        "0x1ddec3377347cba814027fbf13a86b6000f201fb": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "geist-finance_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "geist-finance",
+      "deposit_borrow": {
+        "0x9fad24f572045c7869117160a571b2e50b10d068": {
+          "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x74b23882a30290451a17c44f4f05243b6b58c76d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x321162cd933e2be498cd2267a90534a804051b11": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x049d68029688eabf473097a2fc38ef61633a3c7a": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x04068da6c83afcfa0e13ba15a6696662335d5b75": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x1e4f97b9f9f913c46f1632781732927b9019c68b": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82f0b8b456c1a451378467398982d4834b6829c1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "geist-finance_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "geist-finance",
+      "protocol_reward": {
+        "0xd8321aa83fb0a4ecd6348d4577431310a6e0814d": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "aave-v3_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "aave-v3",
+      "deposit_borrow": {
+        "0x794a61358d6845594f94dc1db02a252b5b4814ad": {
+          "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x04068da6c83afcfa0e13ba15a6696662335d5b75": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x321162cd933e2be498cd2267a90534a804051b11": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x74b23882a30290451a17c44f4f05243b6b58c76d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x049d68029688eabf473097a2fc38ef61633a3c7a": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x6a07a792ab2965c72a5b8088d3a069a7ac3a993b": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x1e4f97b9f9f913c46f1632781732927b9019c68b": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xae75a438b2e0cb8bb01ec1e1e376de11d44477cc": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "aave-v3_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "aave-v3",
+      "protocol_reward": {}
+    },
+    {
+      "query_id": "granary-finance_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "granary-finance",
+      "deposit_borrow": {
+        "0x7220ffd5dc173ba3717e47033a01d870f06e5284": {
+          "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x04068da6c83afcfa0e13ba15a6696662335d5b75": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x049d68029688eabf473097a2fc38ef61633a3c7a": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x321162cd933e2be498cd2267a90534a804051b11": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x74b23882a30290451a17c44f4f05243b6b58c76d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x841fad6eae12c286d1fd18d1d525dffa75c7effe": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xd7028092c830b5c8fce061af2e593413ebbc1fc1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "granary-finance_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "granary-finance",
+      "protocol_reward": {}
+    }
+  ],
+  "0xa4b1": [
+    {
+      "query_id": "radiant-v2_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "radiant-v2",
+      "deposit_borrow": {
+        "0xf4b1486dd74d07706052a33d31d7c0aafd0659e1": {
+          "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x5979d7b546e38e414f7e9822514be443a4800529": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x912ce59144191c1204e64559fe8253a0e49e6548": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "radiant-v2_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "radiant-v2",
+      "protocol_reward": {
+        "0x3082cc23568ea640225c2467653db90e9250aaa0": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "aave-v3_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "aave-v3",
+      "deposit_borrow": {
+        "0x794a61358d6845594f94dc1db02a252b5b4814ad": {
+          "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xf97f4df75117a78c1a5a0dbb814af92458539fb4": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xba5ddd1f9d7f570dc94a51479a000e3bce967196": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xd22a58f79e9481d1a88e00c343885a588b34b68b": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x5979d7b546e38e414f7e9822514be443a4800529": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x3f56e0c36d275367b8c502090edf38289b3dea0d": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "aave-v3_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "aave-v3",
+      "protocol_reward": {}
+    },
+    {
+      "query_id": "wepiggy_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "wepiggy",
+      "deposit_borrow": {
+        "0x17933112e9780abd0f27f2b7d9dda9e840d43159": {
+          "0x0000000000000000000000000000000000000000": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x3393cd223f59f32cc0cc845de938472595ca48a1": {
+          "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x2bf852e22c92fd790f4ae54a76536c8c4217786b": {
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xb65ab7e1c6c1ba202baed82d6fb71975d56f007c": {
+          "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x8f87c9c6efe9ca6997d6fec8bc930c1fed90ccc7": {
+          "0xf97f4df75117a78c1a5a0dbb814af92458539fb4": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xde39adfb2025d2aa51f6fd967e7c1753215f1905": {
+          "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "wepiggy_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "wepiggy",
+      "protocol_reward": {
+        "0x6f620ec89b8479e97a6985792d0c64f237566746": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "granary-finance_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "granary-finance",
+      "deposit_borrow": {
+        "0x102442a3ba1e441043154bc0b8a2e2fb5e0f94a7": {
+          "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x912ce59144191c1204e64559fe8253a0e49e6548": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xaf88d065e77c8cc2239327c5edb3a432268e5831": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x5979d7b546e38e414f7e9822514be443a4800529": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xec70dcb4a1efa46b8f2d97c310c9c4790ba5ffa8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "granary-finance_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "granary-finance",
+      "protocol_reward": {
+        "0x80bb30d62a16e1f2084deae84dc293531c3ac3a1": {
+          "amount": 0.0
+        },
+        "0xa1150db5105987cec5fd092273d1e3cbb22b378b": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "silo-finance_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "silo-finance",
+      "deposit_borrow": {
+        "0x0696e6808ee11a5750733a3d821f9bb847e584fb": {
+          "0x912ce59144191c1204e64559fe8253a0e49e6548": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xa8897b4552c075e884bdb8e7b704eb10db29bf0d": {
+          "0x5979d7b546e38e414f7e9822514be443a4800529": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x862da0a25e3dfe46df2cd4c14d79e1e4684dea4a": {
+          "0xf0cb2dc0db5e6c66b9a70ac27b06b878da017028": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x170a90981843461295a6ce0e0a631ee440222e29": {
+          "0xec70dcb4a1efa46b8f2d97c310c9c4790ba5ffa8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x7e38a9d2c99caef533e5d692ed8a2ce4b478e585": {
+          "0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xde998e5eef06dd09ff467086610b175f179a66a0": {
+          "0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x950aaeda8c6e806a8c889b4dbcc0361760b86249": {
+          "0x32eb7902d4134bf98a28b963d26de779af92a212": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x30c4aa967f68705ab5677ebe17b3affd0c59e71c": {
+          "0x539bde0d7dbd336b79148aa742883198bbf60342": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xfc6778a6955e1cecac448051de967f9b5ff4d647": {
+          "0x18c11fd286c5ec11c3b683caa813b77f5163a122": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x82622a6bdd2f1fa757a08837633971d42c17241a": {
+          "0x10393c20975cf177a3513071bc110f7962cd67da": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x5eda4bee7ba556e65bc4fb9eed5d74e61bc1f2a9": {
+          "0x51fc0f6660482ea73330e414efd7808811a57fa2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xc0ab69fffeb5375235d8caa4f7218097bbcc0a0a": {
+          "0x1622bf67e6e5747b81866fe0b85178a93c7f86e3": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xae1eb69e880670ca47c50c9ce712ec2b48fac3b6": {
+          "0x0341c0c0ec423328621788d4854119b97f44e391": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xa0cf37273068b461df43f1cfb58e2b2cecb56706": {
+          "0x65c936f008bc34fe819bce9fa5afd9dc2d49977f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x033f86120c101b0480b5c70327a8e90c4ae35041": {
+          "0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xd713ef310351055af26c6d3e20c4e629090c39a5": {
+          "0x11cdb42b0eb46d95f990bedd4695a6e3fa034978": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x69ec552be56e6505703f0c861c40039e5702037a": {
+          "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "silo-finance_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "silo-finance",
+      "protocol_reward": {
+        "0x0341c0c0ec423328621788d4854119b97f44e391": {
+          "amount": 0.0
+        }
+      }
+    }
+  ],
+  "0xa": [
+    {
+      "query_id": "aave-v3_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "aave-v3",
+      "deposit_borrow": {
+        "0x794a61358d6845594f94dc1db02a252b5b4814ad": {
+          "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x350a791bfc2c21f9ed5d10980dad2e2638ffa7f6": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x7f5c764cbc14f9669b88837ca1490cca17c31607": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x68f180fcce6836688e9084f035309e29bf0a2095": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x4200000000000000000000000000000000000006": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x76fb31fb4af56892a25e32cfc43de717950c9278": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x4200000000000000000000000000000000000042": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x1f32b1c2345538c0c6f582fcb022739c4a194ebb": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xc40f949f8a4e094d1b49a23ea9241d289b7b2819": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xdfa46478f9e5ea86d57387849598dbfb2e964b02": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "aave-v3_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "aave-v3",
+      "protocol_reward": {
+        "0x4200000000000000000000000000000000000042": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "granary-finance_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "granary-finance",
+      "deposit_borrow": {
+        "0x8fd4af47e4e63d1d2d45582c3286b4bd9bb95dfe": {
+          "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x7f5c764cbc14f9669b88837ca1490cca17c31607": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x68f180fcce6836688e9084f035309e29bf0a2095": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x4200000000000000000000000000000000000006": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x4200000000000000000000000000000000000042": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xfe8b128ba8c78aabc59d4c64cee7ff28e9379921": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x8700daec35af8ff88c16bdf0418774cb3d7599b4": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x1f32b1c2345538c0c6f582fcb022739c4a194ebb": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xaddb6a0412de1ba0f936dcaeb8aaa24578dcf3b2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "granary-finance_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "granary-finance",
+      "protocol_reward": {
+        "0xfdb794692724153d1488ccdbe0c56c252596735f": {
+          "amount": 0.0
+        },
+        "0x39fde572a18448f8139b7788099f0a0740f51205": {
+          "amount": 0.0
+        },
+        "0xfd389dc9533717239856190f42475d3f263a270d": {
+          "amount": 0.0
+        },
+        "0x4200000000000000000000000000000000000042": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "wepiggy_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "wepiggy",
+      "deposit_borrow": {
+        "0x8e1e582879cb8bac6283368e8ede458b63f499a5": {
+          "0x0000000000000000000000000000000000000000": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x811cd5cb4cc43f44600cfa5ee3f37a402c82aec2": {
+          "0x7f5c764cbc14f9669b88837ca1490cca17c31607": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x8158b34ff8a36dd9e4519d62c52913c24ad5554b": {
+          "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xc12b9d620bfcb48be3e0ccbf0ea80c717333b46f": {
+          "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x48a5322c3021d5ed5ce4293112141045d12c7efc": {
+          "0x68f180fcce6836688e9084f035309e29bf0a2095": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x8f00a5e13b3f2aaaddc9708ad5c77fbcc300b0ee": {
+          "0x350a791bfc2c21f9ed5d10980dad2e2638ffa7f6": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xd6a78766514cdfc1a1fa188a7782b52313133705": {
+          "0x4200000000000000000000000000000000000042": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "wepiggy_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "wepiggy",
+      "protocol_reward": {
+        "0x6f620ec89b8479e97a6985792d0c64f237566746": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "iron-bank_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "iron-bank",
+      "deposit_borrow": {
+        "0x17533a1bde957979e3977ebbfbc31e6deeb25c7d": {
+          "0x4200000000000000000000000000000000000006": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x1d073cf59ae0c169cbc58b6fdd518822ae89173a": {
+          "0x7f5c764cbc14f9669b88837ca1490cca17c31607": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x874c01c2d1767efa01fa54b2ac16be96fad5a742": {
+          "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x049e04bee77cffb055f733a138a2f204d3750283": {
+          "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xcdb9b4db65c913ab000b40204248c8a53185d14d": {
+          "0x68f180fcce6836688e9084f035309e29bf0a2095": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x4645e0952678e9566fb529d9313f5730e4e1c412": {
+          "0x4200000000000000000000000000000000000042": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0xe724ffa5d30782499086682c8362cb3673bf69ae": {
+          "0x8700daec35af8ff88c16bdf0418774cb3d7599b4": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x04f0fd3cd03b17a3e5921c0170ca6dd3952841ca": {
+          "0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "iron-bank_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "iron-bank",
+      "protocol_reward": {}
+    }
+  ],
+  "0xa86a": [
+    {
+      "query_id": "aave-v3_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "aave-v3",
+      "deposit_borrow": {
+        "0x794a61358d6845594f94dc1db02a252b5b4814ad": {
+          "0xd586e7f844cea2f87f50152665bcbc2c279d8d70": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x5947bb275c521040051d82396192181b413227a3": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x50b7545627a5162f82a992c33b87adc75187b218": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x63a72806098bd3d9520cc43356dd78afe5d386d9": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x2b2c81e08f1af8835a78bb2a90ae924ace0ea4be": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xd24c2ad096400b6fbcd2ad8b24e7acbc21a1da64": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x5c49b268c9841aff1cc3b0a418ff5c3442ee3f3b": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x152b9d0fdc40c096757f570a51e494bd4b943e50": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "aave-v3_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "aave-v3",
+      "protocol_reward": {
+        "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "aave-v2_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "aave-v2",
+      "deposit_borrow": {
+        "0x4f01aed16d97e3ab5ab2b501154dc9bb0f1a5a2c": {
+          "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xd586e7f844cea2f87f50152665bcbc2c279d8d70": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xc7198437980c041c805a1edcba50c1ce5db95118": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x63a72806098bd3d9520cc43356dd78afe5d386d9": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x50b7545627a5162f82a992c33b87adc75187b218": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "aave-v2_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "aave-v2",
+      "protocol_reward": {
+        "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "granary-finance_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "granary-finance",
+      "deposit_borrow": {
+        "0xb702ce183b4e1faa574834715e5d4a6378d0eed3": {
+          "0xd586e7f844cea2f87f50152665bcbc2c279d8d70": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xc7198437980c041c805a1edcba50c1ce5db95118": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x50b7545627a5162f82a992c33b87adc75187b218": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xd1c3f94de7e5b45fa4edbba472491a9f4b166fc4": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "granary-finance_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "granary-finance",
+      "protocol_reward": {}
+    }
+  ]
+}

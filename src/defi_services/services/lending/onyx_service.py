@@ -148,6 +148,7 @@ class OnyxStateService(ProtocolServices):
                 "supply": item[3]
             }
         for token, value in reserves_info.items():
+            data = {}
             underlying = token
             ctoken = value.get("cToken")
             if token == Token.native_token:
@@ -157,7 +158,7 @@ class OnyxStateService(ProtocolServices):
             decimals = decoded_data.get(get_decimals_id, 0)
             deposit_amount = ctoken_balance[ctoken]["supply"] / 10 ** decimals
             borrow_amount = ctoken_balance[ctoken]["borrow"] / 10 ** decimals
-            result[token] = {
+            data[token] = {
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
             }
@@ -168,8 +169,9 @@ class OnyxStateService(ProtocolServices):
             if token_price is not None:
                 deposit_amount_in_usd = deposit_amount * token_price
                 borrow_amount_in_usd = borrow_amount * token_price
-                result[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
-                result[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
+                data[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
+                data[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
+            result[ctoken] = data
         return result
 
     # TOKEN DEPOSIT BORROW BALANCE

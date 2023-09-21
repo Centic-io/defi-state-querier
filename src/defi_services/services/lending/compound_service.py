@@ -276,6 +276,7 @@ class CompoundStateService(ProtocolServices):
             token_prices = {}
         result = {}
         for token, value in reserves_info.items():
+            data = {}
             underlying = token
             ctoken = value.get("cToken")
             if token == Token.native_token:
@@ -286,7 +287,7 @@ class CompoundStateService(ProtocolServices):
             decimals = decoded_data[get_decimals_id]
             deposit_amount = decoded_data[get_total_deposit_id] / 10 ** decimals
             borrow_amount = decoded_data[get_total_borrow_id] / 10 ** decimals
-            result[token] = {
+            data[token] = {
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
             }
@@ -298,8 +299,9 @@ class CompoundStateService(ProtocolServices):
             if token_price is not None:
                 deposit_amount_in_usd = deposit_amount * token_price
                 borrow_amount_in_usd = borrow_amount * token_price
-                result[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
-                result[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
+                data[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
+                data[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
+            result[ctoken] = data
         return result
 
     # TOKEN DEPOSIT BORROW BALANCE
