@@ -4,6 +4,7 @@ from web3 import Web3
 
 from defi_services.abis.lending.venus.venus_comptroller_abi import VENUS_COMPTROLLER_ABI
 from defi_services.abis.lending.venus.venus_lens_abi import VENUS_LENS_ABI
+from defi_services.abis.lending.venus.vtoken_abi import VTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
@@ -30,6 +31,7 @@ class VenusStateService(CompoundStateService):
         self.state_service = state_service
         self.lens_abi = VENUS_LENS_ABI
         self.comptroller_abi = VENUS_COMPTROLLER_ABI
+        self.vtoken_abi = VTOKEN_ABI
 
         # BASIC FUNCTIONS
 
@@ -56,21 +58,35 @@ class VenusStateService(CompoundStateService):
                 continue
             ctokens.append(token)
 
-        lens_contract = _w3.eth.contract(
-            address=Web3.toChecksumAddress(self.pool_info.get("lensAddress")), abi=self.lens_abi
-        )
-        tokens = [Web3.toChecksumAddress(i) for i in ctokens]
-        metadata = lens_contract.functions.vTokenMetadataAll(tokens).call(block_identifier=block_number)
         reserves_info = {}
-        for data in metadata:
-            underlying = data[11].lower()
-            ctoken = data[0].lower()
-            lt = data[10] / 10 ** 18
-            reserves_info[underlying] = {
-                "cToken": ctoken,
-                "liquidationThreshold": lt
+        tokens = [Web3.toChecksumAddress(i) for i in ctokens]
+        # lens_contract = _w3.eth.contract(
+        #     address=Web3.toChecksumAddress(self.pool_info.get("lensAddress")), abi=self.lens_abi
+        # )
+        # metadata = lens_contract.functions.vTokenMetadataAll(tokens).call(block_identifier=block_number)
+        # for data in metadata:
+        #     underlying = data[11].lower()
+        #     ctoken = data[0].lower()
+        #     lt = data[10] / 10 ** 18
+        #     reserves_info[underlying] = {
+        #         "cToken": ctoken,
+        #         "liquidationThreshold": lt
+        #     }
+        queries = {}
+        for token in tokens:
+            key = f"underlying_{token}_latest".lower()
+            queries[key] = {
+                "address": token,
+                "abi": self.vtoken_abi,
+                "params": [],
+                "function": "underlying",
+                "block_number": "latest"
             }
-
+        decoded_data = self.state_service.query_state_data(queries)
+        for token in tokens:
+            key = f"underlying_{token}_latest".lower()
+            underlying = decoded_data.get(key).lower()
+            reserves_info[underlying] = {'cToken': token.lower()}
         return reserves_info
 
     def get_apy_lending_pool_function_info(
@@ -189,6 +205,7 @@ class VenusStateService(CompoundStateService):
             token_prices = {}
         result = {}
         for token, value in reserves_info.items():
+            data = {}
             underlying = token
             ctoken = value.get("cToken")
             if token == Token.native_token:
@@ -199,7 +216,7 @@ class VenusStateService(CompoundStateService):
             decimals = decoded_data[get_decimals_id]
             deposit_amount = decoded_data[get_total_deposit_id] / 10 ** decimals
             borrow_amount = decoded_data[get_total_borrow_id] / 10 ** decimals
-            result[token] = {
+            data[token] = {
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
             }
@@ -210,8 +227,9 @@ class VenusStateService(CompoundStateService):
             if token_price is not None:
                 deposit_amount_in_usd = deposit_amount * token_price
                 borrow_amount_in_usd = borrow_amount * token_price
-                result[token]['borrow_amount_in_usd'] += borrow_amount_in_usd
-                result[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
+                data[token]['borrow_amount_in_usd'] += borrow_amount_in_usd
+                data[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
+            result[ctoken] = data
         return result
 
     # TOKEN DEPOSIT BORROW BALANCE

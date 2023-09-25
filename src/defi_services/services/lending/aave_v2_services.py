@@ -247,8 +247,8 @@ class AaveV2StateService(ProtocolServices):
 
         return rpc_calls
 
-    @staticmethod
     def get_wallet_deposit_borrow_balance(
+            self,
             reserves_info,
             token_prices,
             decimals,
@@ -273,7 +273,7 @@ class AaveV2StateService(ProtocolServices):
                     "borrow_amount_in_usd": borrow_amount_in_usd,
                     "deposit_amount_in_usd": deposit_amount_in_usd,
                 })
-        return result
+        return {self.pool_info.get("address"): result}
 
     def calculate_wallet_deposit_borrow_balance(
             self,

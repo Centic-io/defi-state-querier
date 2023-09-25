@@ -76,24 +76,18 @@ class UwuStateService(ProtocolServices):
             reserve_key = f"getReserveData_{self.name}_{token_address}_{block_number}".lower()
             atoken_assets_key = f"assets_{value['tToken']}_{block_number}".lower()
             debt_token_assets_key = f"assets_{value['dToken']}_{block_number}".lower()
-            # sdebt_token_assets_key = f"assets_{value['sdToken']}_{block_number}".lower()
             atoken_total_supply_key = f'totalSupply_{value["tToken"]}_{block_number}'.lower()
             debt_token_total_supply_key = f'totalSupply_{value["dToken"]}_{block_number}'.lower()
-            # sdebt_token_total_supply_key = f'totalSupply_{value["sdToken"]}_{block_number}'.lower()
             decimals_key = f"decimals_{token_address}_{block_number}".lower()
 
             rpc_calls[reserve_key] = self.get_function_lending_pool_info("getReserveData", [token_address])
             rpc_calls[atoken_assets_key] = self.get_function_incentive_info("assets", [value['tToken']], block_number)
             rpc_calls[debt_token_assets_key] = self.get_function_incentive_info(
                 "assets", [value['dToken']], block_number)
-            # rpc_calls[sdebt_token_assets_key] = self.get_function_incentive_info(
-            #     "assets", [value['sdToken']], block_number)
             rpc_calls[atoken_total_supply_key] = self.state_service.get_function_info(
                 value["tToken"], ERC20_ABI, "totalSupply", block_number=block_number)
             rpc_calls[debt_token_total_supply_key] = self.state_service.get_function_info(
                 value["dToken"], ERC20_ABI, "totalSupply", block_number=block_number)
-            # rpc_calls[sdebt_token_total_supply_key] = self.state_service.get_function_info(
-            #     value["sdToken"], ERC20_ABI, "totalSupply", block_number=block_number)
             rpc_calls[decimals_key] = self.state_service.get_function_info(
                 token_address, ERC20_ABI, "decimals", block_number=block_number)
 
@@ -228,23 +222,20 @@ class UwuStateService(ProtocolServices):
             value = reserves_info[token]
             atoken_balance_of_key = f'balanceOf_{value["tToken"]}_{wallet}_{block_number}'.lower()
             debt_token_balance_of_key = f'balanceOf_{value["dToken"]}_{wallet}_{block_number}'.lower()
-            # sdebt_token_balance_of_key = f'balanceOf_{value["sdToken"]}_{wallet}_{block_number}'.lower()
             decimals_key = f"decimals_{token}_{block_number}".lower()
 
             rpc_calls[atoken_balance_of_key] = self.state_service.get_function_info(
                 value["tToken"], ERC20_ABI, "balanceOf", [wallet], block_number=block_number)
             rpc_calls[debt_token_balance_of_key] = self.state_service.get_function_info(
                 value["dToken"], ERC20_ABI, "balanceOf", [wallet], block_number=block_number)
-            # rpc_calls[sdebt_token_balance_of_key] = self.state_service.get_function_info(
-            #     value["sdToken"], ERC20_ABI, "balanceOf", [wallet], block_number=block_number)
 
             rpc_calls[decimals_key] = self.state_service.get_function_info(
                 token, ERC20_ABI, "decimals", block_number=block_number)
 
         return rpc_calls
 
-    @staticmethod
     def get_wallet_deposit_borrow_balance(
+            self,
             reserves_info,
             token_prices,
             decimals,
@@ -256,7 +247,6 @@ class UwuStateService(ProtocolServices):
             decimals_token = decimals.get(token)
             deposit_amount_wallet = deposit_amount.get(token) / 10 ** decimals_token
             borrow_amount_wallet = borrow_amount.get(token) / 10 ** decimals_token
-            # borrow_amount_wallet += stable_borrow_amount.get(token) / 10 ** decimals_token
             result[token] = {
                 "borrow_amount": borrow_amount_wallet,
                 "deposit_amount": deposit_amount_wallet,
@@ -268,7 +258,7 @@ class UwuStateService(ProtocolServices):
                     "borrow_amount_in_usd": borrow_amount_in_usd,
                     "deposit_amount_in_usd": deposit_amount_in_usd,
                 })
-        return result
+        return {self.pool_info.get("address"): result}
 
     def calculate_wallet_deposit_borrow_balance(
             self,
@@ -286,16 +276,14 @@ class UwuStateService(ProtocolServices):
             for pos in range(len(reserves_info.keys())):
                 token_prices[reserves_info[pos].lower()] = prices[pos] / 10 ** pool_decimals
 
-        decimals, deposit_amount, borrow_amount, stable_borrow_amount = {}, {}, {}, {}
+        decimals, deposit_amount, borrow_amount = {}, {}, {}
         for token in reserves_info:
             value = reserves_info[token]
             get_total_deposit_id = f"balanceOf_{value['tToken']}_{wallet}_{block_number}".lower()
             get_total_borrow_id = f"balanceOf_{value['dToken']}_{wallet}_{block_number}".lower()
-            # get_total_stable_borrow_id = f"balanceOf_{value['sdToken']}_{wallet}_{block_number}".lower()
             get_decimals_id = f"decimals_{token}_{block_number}".lower()
             deposit_amount[token] = decoded_data.get(get_total_deposit_id)
             borrow_amount[token] = decoded_data.get(get_total_borrow_id)
-            # stable_borrow_amount[token] = decoded_data.get(get_total_stable_borrow_id)
             decimals[token] = decoded_data.get(get_decimals_id)
 
         data = self.get_wallet_deposit_borrow_balance(

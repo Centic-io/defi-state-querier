@@ -10,9 +10,7 @@ from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
-from defi_services.constants.query_constant import Query
 from defi_services.constants.time_constant import TimeConstants
-from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.bsc.trava_bsc import TRAVA_BSC
 from defi_services.services.lending.lending_info.ethereum.trava_eth import TRAVA_ETH
@@ -228,8 +226,8 @@ class TravaStateService(ProtocolServices):
 
         return rpc_calls
 
-    @staticmethod
     def get_wallet_deposit_borrow_balance(
+            self,
             reserves_info: dict,
             token_prices: dict,
             decimals: dict,
@@ -252,7 +250,7 @@ class TravaStateService(ProtocolServices):
                     "borrow_amount_in_usd": borrow_amount_in_usd,
                     "deposit_amount_in_usd": deposit_amount_in_usd,
                 })
-        return result
+        return {self.pool_info.get("address"): result}
 
     def calculate_wallet_deposit_borrow_balance(
             self,

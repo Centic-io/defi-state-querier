@@ -148,7 +148,9 @@ class MorphoCompoundStateService(ProtocolServices):
         if token_prices is None:
             token_prices = {}
         result = {}
+        pool_address = self.pool_info.get("comptrollerAddress")
         for token, value in reserves_info.items():
+            data = {}
             underlying = token
             ctoken = value.get(self.market_key)
             if token == Token.native_token:
@@ -159,7 +161,7 @@ class MorphoCompoundStateService(ProtocolServices):
             decimals = decoded_data[get_decimals_id]
             deposit_amount = decoded_data[get_total_deposit_id][-1] / 10 ** decimals
             borrow_amount = decoded_data[get_total_borrow_id][-1] / 10 ** decimals
-            result[token] = {
+            data[token] = {
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
             }
@@ -170,9 +172,10 @@ class MorphoCompoundStateService(ProtocolServices):
             if token_price is not None:
                 deposit_amount_in_usd = deposit_amount * token_price
                 borrow_amount_in_usd = borrow_amount * token_price
-                result[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
-                result[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
-        return result
+                data[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
+                data[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
+            result.update(data)
+        return {pool_address.lower(): result}
 
     def get_lens_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
         return self.state_service.get_function_info(

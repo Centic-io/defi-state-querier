@@ -2,6 +2,7 @@ import logging
 import time
 
 from web3 import Web3
+
 from defi_services.abis.lending.aave_v2_and_forlks.aave_v2_incentives_abi import AAVE_V2_INCENTIVES_ABI
 from defi_services.abis.lending.aave_v2_and_forlks.lending_pool_abi import LENDING_POOL_ABI
 from defi_services.abis.lending.aave_v2_and_forlks.oracle_abi import ORACLE_ABI
@@ -9,7 +10,6 @@ from defi_services.abis.lending.granary.granary_rewarder_abi import GRANARY_REWA
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
-from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.arbitrum.granary_arbitrum import GRANARY_ARBITRUM
@@ -115,8 +115,8 @@ class GranaryStateService(ProtocolServices):
 
         return rpc_calls
 
-    @staticmethod
     def get_wallet_deposit_borrow_balance(
+            self,
             reserves_info,
             token_prices,
             decimals,
@@ -141,7 +141,7 @@ class GranaryStateService(ProtocolServices):
                     "borrow_amount_in_usd": borrow_amount_in_usd,
                     "deposit_amount_in_usd": deposit_amount_in_usd,
                 })
-        return result
+        return {self.pool_info.get("address"): result}
 
     def calculate_wallet_deposit_borrow_balance(
             self,

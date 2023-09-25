@@ -238,8 +238,8 @@ class ValasStateService(ProtocolServices):
 
         return rpc_calls
 
-    @staticmethod
     def get_wallet_deposit_borrow_balance(
+            self,
             reserves_info: dict,
             token_prices: dict,
             decimals: dict,
@@ -264,7 +264,7 @@ class ValasStateService(ProtocolServices):
                     "borrow_amount_in_usd": borrow_amount_in_usd,
                     "deposit_amount_in_usd": deposit_amount_in_usd,
                 })
-        return result
+        return {self.pool_info.get("address"): result}
 
     def calculate_wallet_deposit_borrow_balance(
             self,

@@ -51,7 +51,7 @@ def test_processor_job():
 
         assert not error
 
-    with open('tests/lib_service_data.json', 'w') as f:
+    with open('lib_service_data.json', 'w') as f:
         json.dump(data, f, indent=2)
 
 
