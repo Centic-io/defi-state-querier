@@ -131,6 +131,7 @@ class MorphoAaveV3StateService(MorphoCompoundStateService):
         if token_prices is None:
             token_prices = {}
         result = {}
+        pool_address = self.pool_info.get("comptrollerAddress")
         for token, value in reserves_info.items():
             data = {}
             underlying = token
@@ -156,5 +157,5 @@ class MorphoAaveV3StateService(MorphoCompoundStateService):
                 borrow_amount_in_usd = borrow_amount * token_price
                 data[token]['borrow_amount_in_usd'] += borrow_amount_in_usd
                 data[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
-            result[ctoken] = data
-        return result
+            result.update(data)
+        return {pool_address.lower(): result}

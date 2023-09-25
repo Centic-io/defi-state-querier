@@ -3,68 +3,177 @@ import json
 VENUS_LENS_ABI = json.loads('''
 [
   {
-    "constant": true,
-    "inputs": [],
-    "name": "BLOCKS_PER_DAY",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
     "inputs": [
       {
-        "internalType": "contract ComptrollerInterface",
-        "name": "comptroller",
-        "type": "address"
-      },
-      {
         "internalType": "address",
-        "name": "account",
+        "name": "poolRegistryAddress",
         "type": "address"
       }
     ],
-    "name": "getAccountLimits",
+    "name": "getAllPools",
     "outputs": [
       {
         "components": [
           {
-            "internalType": "contract VToken[]",
-            "name": "markets",
-            "type": "address[]"
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "comptroller",
+            "type": "address"
           },
           {
             "internalType": "uint256",
-            "name": "liquidity",
+            "name": "blockPosted",
             "type": "uint256"
           },
           {
             "internalType": "uint256",
-            "name": "shortfall",
+            "name": "timestampPosted",
             "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "category",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "logoURL",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "priceOracle",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "closeFactor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "liquidationIncentive",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minLiquidatableCollateral",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "vToken",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "exchangeRateCurrent",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "supplyRatePerBlock",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "borrowRatePerBlock",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "reserveFactorMantissa",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "supplyCaps",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "borrowCaps",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalBorrows",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalReserves",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalSupply",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalCash",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bool",
+                "name": "isListed",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint256",
+                "name": "collateralFactorMantissa",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "underlyingAssetAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "vTokenDecimals",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "underlyingDecimals",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct PoolLens.VTokenMetadata[]",
+            "name": "vTokens",
+            "type": "tuple[]"
           }
         ],
-        "internalType": "struct VenusLens.AccountLimits",
+        "internalType": "struct PoolLens.PoolData[]",
         "name": "",
-        "type": "tuple"
+        "type": "tuple[]"
       }
     ],
-    "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
-        "internalType": "address payable",
+        "internalType": "address",
         "name": "account",
         "type": "address"
       },
@@ -74,331 +183,526 @@ VENUS_LENS_ABI = json.loads('''
         "type": "address"
       }
     ],
-    "name": "getDailyXVS",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "contract GovernorAlpha",
-        "name": "governor",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "proposalIds",
-        "type": "uint256[]"
-      }
-    ],
-    "name": "getGovProposals",
+    "name": "getPendingRewards",
     "outputs": [
       {
         "components": [
           {
-            "internalType": "uint256",
-            "name": "proposalId",
-            "type": "uint256"
+            "internalType": "address",
+            "name": "distributorAddress",
+            "type": "address"
           },
           {
             "internalType": "address",
-            "name": "proposer",
+            "name": "rewardTokenAddress",
             "type": "address"
           },
           {
             "internalType": "uint256",
-            "name": "eta",
+            "name": "totalRewards",
             "type": "uint256"
           },
           {
-            "internalType": "address[]",
-            "name": "targets",
-            "type": "address[]"
-          },
-          {
-            "internalType": "uint256[]",
-            "name": "values",
-            "type": "uint256[]"
-          },
-          {
-            "internalType": "string[]",
-            "name": "signatures",
-            "type": "string[]"
-          },
-          {
-            "internalType": "bytes[]",
-            "name": "calldatas",
-            "type": "bytes[]"
-          },
-          {
-            "internalType": "uint256",
-            "name": "startBlock",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "endBlock",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "forVotes",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "againstVotes",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "canceled",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
-            "name": "executed",
-            "type": "bool"
+            "components": [
+              {
+                "internalType": "address",
+                "name": "vTokenAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct PoolLens.PendingReward[]",
+            "name": "pendingRewards",
+            "type": "tuple[]"
           }
         ],
-        "internalType": "struct VenusLens.GovProposal[]",
+        "internalType": "struct PoolLens.RewardSummary[]",
         "name": "",
         "type": "tuple[]"
       }
     ],
-    "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "constant": true,
     "inputs": [
       {
-        "internalType": "contract GovernorAlpha",
-        "name": "governor",
-        "type": "address"
-      },
-      {
         "internalType": "address",
-        "name": "voter",
+        "name": "comptrollerAddress",
         "type": "address"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "proposalIds",
-        "type": "uint256[]"
       }
     ],
-    "name": "getGovReceipts",
+    "name": "getPoolBadDebt",
     "outputs": [
       {
         "components": [
-          {
-            "internalType": "uint256",
-            "name": "proposalId",
-            "type": "uint256"
-          },
-          {
-            "internalType": "bool",
-            "name": "hasVoted",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
-            "name": "support",
-            "type": "bool"
-          },
-          {
-            "internalType": "uint96",
-            "name": "votes",
-            "type": "uint96"
-          }
-        ],
-        "internalType": "struct VenusLens.GovReceipt[]",
-        "name": "",
-        "type": "tuple[]"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "contract XVS",
-        "name": "xvs",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      },
-      {
-        "internalType": "uint32[]",
-        "name": "blockNumbers",
-        "type": "uint32[]"
-      }
-    ],
-    "name": "getVenusVotes",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "blockNumber",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "votes",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct VenusLens.VenusVotes[]",
-        "name": "",
-        "type": "tuple[]"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "internalType": "contract XVS",
-        "name": "xvs",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
-    ],
-    "name": "getXVSBalanceMetadata",
-    "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "balance",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "votes",
-            "type": "uint256"
-          },
           {
             "internalType": "address",
-            "name": "delegate",
+            "name": "comptroller",
             "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalBadDebtUsd",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "vTokenAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "badDebtUsd",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct PoolLens.BadDebt[]",
+            "name": "badDebts",
+            "type": "tuple[]"
           }
         ],
-        "internalType": "struct VenusLens.XVSBalanceMetadata",
+        "internalType": "struct PoolLens.BadDebtSummary",
         "name": "",
         "type": "tuple"
       }
     ],
-    "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
-        "internalType": "contract XVS",
-        "name": "xvs",
+        "internalType": "address",
+        "name": "poolRegistryAddress",
         "type": "address"
       },
       {
-        "internalType": "contract ComptrollerInterface",
+        "internalType": "address",
+        "name": "comptroller",
+        "type": "address"
+      }
+    ],
+    "name": "getPoolByComptroller",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "comptroller",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "blockPosted",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampPosted",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "category",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "logoURL",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "priceOracle",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "closeFactor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "liquidationIncentive",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minLiquidatableCollateral",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "vToken",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "exchangeRateCurrent",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "supplyRatePerBlock",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "borrowRatePerBlock",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "reserveFactorMantissa",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "supplyCaps",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "borrowCaps",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalBorrows",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalReserves",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalSupply",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalCash",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bool",
+                "name": "isListed",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint256",
+                "name": "collateralFactorMantissa",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "underlyingAssetAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "vTokenDecimals",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "underlyingDecimals",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct PoolLens.VTokenMetadata[]",
+            "name": "vTokens",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct PoolLens.PoolData",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "poolRegistryAddress",
+        "type": "address"
+      },
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "comptroller",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "blockPosted",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampPosted",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct PoolRegistryInterface.VenusPool",
+        "name": "venusPool",
+        "type": "tuple"
+      }
+    ],
+    "name": "getPoolDataFromVenusPool",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "creator",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "comptroller",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "blockPosted",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "timestampPosted",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "category",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "logoURL",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "priceOracle",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "closeFactor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "liquidationIncentive",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "minLiquidatableCollateral",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "vToken",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "exchangeRateCurrent",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "supplyRatePerBlock",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "borrowRatePerBlock",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "reserveFactorMantissa",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "supplyCaps",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "borrowCaps",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalBorrows",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalReserves",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalSupply",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalCash",
+                "type": "uint256"
+              },
+              {
+                "internalType": "bool",
+                "name": "isListed",
+                "type": "bool"
+              },
+              {
+                "internalType": "uint256",
+                "name": "collateralFactorMantissa",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "underlyingAssetAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "vTokenDecimals",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "underlyingDecimals",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct PoolLens.VTokenMetadata[]",
+            "name": "vTokens",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct PoolLens.PoolData",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "poolRegistryAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "asset",
+        "type": "address"
+      }
+    ],
+    "name": "getPoolsSupportedByAsset",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "poolRegistryAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "comptroller",
         "type": "address"
       },
       {
         "internalType": "address",
-        "name": "account",
+        "name": "asset",
         "type": "address"
       }
     ],
-    "name": "getXVSBalanceMetadataExt",
+    "name": "getVTokenForAsset",
     "outputs": [
-      {
-        "components": [
-          {
-            "internalType": "uint256",
-            "name": "balance",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "votes",
-            "type": "uint256"
-          },
-          {
-            "internalType": "address",
-            "name": "delegate",
-            "type": "address"
-          },
-          {
-            "internalType": "uint256",
-            "name": "allocated",
-            "type": "uint256"
-          }
-        ],
-        "internalType": "struct VenusLens.XVSBalanceMetadataExt",
-        "name": "",
-        "type": "tuple"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [
       {
         "internalType": "address",
-        "name": "holder",
-        "type": "address"
-      },
-      {
-        "internalType": "contract ComptrollerInterface",
-        "name": "comptroller",
-        "type": "address"
-      }
-    ],
-    "name": "pendingVenus",
-    "outputs": [
-      {
-        "internalType": "uint256",
         "name": "",
-        "type": "uint256"
+        "type": "address"
       }
     ],
-    "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
         "internalType": "contract VToken",
@@ -406,7 +710,7 @@ VENUS_LENS_ABI = json.loads('''
         "type": "address"
       },
       {
-        "internalType": "address payable",
+        "internalType": "address",
         "name": "account",
         "type": "address"
       }
@@ -446,17 +750,15 @@ VENUS_LENS_ABI = json.loads('''
             "type": "uint256"
           }
         ],
-        "internalType": "struct VenusLens.VTokenBalances",
+        "internalType": "struct PoolLens.VTokenBalances",
         "name": "",
         "type": "tuple"
       }
     ],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
         "internalType": "contract VToken[]",
@@ -464,7 +766,7 @@ VENUS_LENS_ABI = json.loads('''
         "type": "address[]"
       },
       {
-        "internalType": "address payable",
+        "internalType": "address",
         "name": "account",
         "type": "address"
       }
@@ -504,17 +806,15 @@ VENUS_LENS_ABI = json.loads('''
             "type": "uint256"
           }
         ],
-        "internalType": "struct VenusLens.VTokenBalances[]",
+        "internalType": "struct PoolLens.VTokenBalances[]",
         "name": "",
         "type": "tuple[]"
       }
     ],
-    "payable": false,
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
         "internalType": "contract VToken",
@@ -553,6 +853,16 @@ VENUS_LENS_ABI = json.loads('''
           },
           {
             "internalType": "uint256",
+            "name": "supplyCaps",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "borrowCaps",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "totalBorrows",
             "type": "uint256"
           },
@@ -595,39 +905,17 @@ VENUS_LENS_ABI = json.loads('''
             "internalType": "uint256",
             "name": "underlyingDecimals",
             "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "venusSupplySpeed",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "venusBorrowSpeed",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "dailySupplyXvs",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "dailyBorrowXvs",
-            "type": "uint256"
           }
         ],
-        "internalType": "struct VenusLens.VTokenMetadata",
+        "internalType": "struct PoolLens.VTokenMetadata",
         "name": "",
         "type": "tuple"
       }
     ],
-    "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
-    "constant": false,
     "inputs": [
       {
         "internalType": "contract VToken[]",
@@ -666,6 +954,16 @@ VENUS_LENS_ABI = json.loads('''
           },
           {
             "internalType": "uint256",
+            "name": "supplyCaps",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "borrowCaps",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "totalBorrows",
             "type": "uint256"
           },
@@ -708,39 +1006,17 @@ VENUS_LENS_ABI = json.loads('''
             "internalType": "uint256",
             "name": "underlyingDecimals",
             "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "venusSupplySpeed",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "venusBorrowSpeed",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "dailySupplyXvs",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "dailyBorrowXvs",
-            "type": "uint256"
           }
         ],
-        "internalType": "struct VenusLens.VTokenMetadata[]",
+        "internalType": "struct PoolLens.VTokenMetadata[]",
         "name": "",
         "type": "tuple[]"
       }
     ],
-    "payable": false,
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
-    "constant": true,
     "inputs": [
       {
         "internalType": "contract VToken",
@@ -763,17 +1039,15 @@ VENUS_LENS_ABI = json.loads('''
             "type": "uint256"
           }
         ],
-        "internalType": "struct VenusLens.VTokenUnderlyingPrice",
+        "internalType": "struct PoolLens.VTokenUnderlyingPrice",
         "name": "",
         "type": "tuple"
       }
     ],
-    "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "constant": true,
     "inputs": [
       {
         "internalType": "contract VToken[]",
@@ -796,12 +1070,11 @@ VENUS_LENS_ABI = json.loads('''
             "type": "uint256"
           }
         ],
-        "internalType": "struct VenusLens.VTokenUnderlyingPrice[]",
+        "internalType": "struct PoolLens.VTokenUnderlyingPrice[]",
         "name": "",
         "type": "tuple[]"
       }
     ],
-    "payable": false,
     "stateMutability": "view",
     "type": "function"
   }

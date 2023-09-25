@@ -28,7 +28,7 @@
           },
           "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
             "borrow_amount": 0.0,
-            "deposit_amount": 4.0071660117e-08
+            "deposit_amount": 4.0071697575e-08
           },
           "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9": {
             "borrow_amount": 0.0,
@@ -849,7 +849,7 @@
         "0x87870bca3f3fd6335c3f4ce8392d69350b4fa4e2": {
           "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
             "borrow_amount": 0.0,
-            "deposit_amount": 0.000219090778211332
+            "deposit_amount": 0.000219143757277668
           },
           "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0": {
             "borrow_amount": 0.0,
@@ -860,7 +860,7 @@
             "deposit_amount": 0.0
           },
           "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
-            "borrow_amount": 1001.93249,
+            "borrow_amount": 0.0,
             "deposit_amount": 0.0
           },
           "0x6b175474e89094c44da98b954eedeac495271d0f": {
@@ -869,18 +869,18 @@
           },
           "0x514910771af9ca656af840dff83e8264ecf986ca": {
             "borrow_amount": 0.0,
-            "deposit_amount": 332.8457902557051
+            "deposit_amount": 501.38423686612947
           },
           "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9": {
             "borrow_amount": 0.0,
-            "deposit_amount": 106.79212603957569
+            "deposit_amount": 122.10923626491174
           },
           "0xbe9895146f7af43049ca1c1ae358b0541ea49704": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
           },
           "0xdac17f958d2ee523a2206206994597c13d831ec7": {
-            "borrow_amount": 3839.668571,
+            "borrow_amount": 4166.446216,
             "deposit_amount": 0.0
           },
           "0xae78736cd615f374d3085123a210448e74fc6393": {
@@ -928,7 +928,7 @@
             "deposit_amount": 0.0
           },
           "0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f": {
-            "borrow_amount": 0.0,
+            "borrow_amount": 2788.217914085466,
             "deposit_amount": 0.0
           },
           "0xd33526068d116ce69f19a9ee46f0bd304f21a51f": {
@@ -1440,43 +1440,31 @@
       "query_type": "deposit_borrow",
       "entity_id": "morpho-aavev3",
       "deposit_borrow": {
-        "0x4d5f47fa6a74757f35c14fd3a6ef8e3c9bc514e8": {
+        "0x33333aea097c193e66081e930c33020272b33333": {
           "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0x0b925ed163218f6662a35e0f0371ac234f9e9371": {
+          },
           "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0x018008bfb33d285247a21d44e50697654f754e63": {
+          },
           "0x6b175474e89094c44da98b954eedeac495271d0f": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c": {
+          },
           "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0x5ee5bf7ae06d1be5997a1a72006fe6c607ec6de8": {
+          },
           "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0xcc9ee9483f662091a1de4795249e24ac0ac2630f": {
+          },
           "0xae78736cd615f374d3085123a210448e74fc6393": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0x977b6fc5de62598b08c85ac8cf2b745874e8b78c": {
+          },
           "0xbe9895146f7af43049ca1c1ae358b0541ea49704": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
@@ -1495,43 +1483,31 @@
       "query_type": "deposit_borrow",
       "entity_id": "morpho-aave",
       "deposit_borrow": {
-        "0x028171bca77440897b824ca71d1c56cac55b68a3": {
+        "0x777777c9898d384f785ee44acfe945efdff5f3e0": {
           "0x6b175474e89094c44da98b954eedeac495271d0f": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0x030ba81f1c18d280636f32af80b9aad02cf0854e": {
+          },
           "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0xbcca60bb61934080951369a648fb03df4f96263c": {
+          },
           "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0x3ed3b47dd13ec9a98b44e6204a523e766b225811": {
+          },
           "0xdac17f958d2ee523a2206206994597c13d831ec7": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0x9ff58f4ffb29fa2266ab25e75e2a8b3503311656": {
+          },
           "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0x1982b2f5814301d4e9a8b0201555376e62f82428": {
+          },
           "0xae7ab96520de3a18e5e111b5eaab095312d7fe84": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0x8dae6cb04688c62d939ed9b68d32bc62e49970b1": {
+          },
           "0xd533a949740bb3306d119cc777fa900ba034cd52": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
@@ -1550,49 +1526,35 @@
       "query_type": "deposit_borrow",
       "entity_id": "morpho-compound",
       "deposit_borrow": {
-        "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643": {
+        "0x8888882f8f843896699869179fb6e4f7e3b58888": {
           "0x6b175474e89094c44da98b954eedeac495271d0f": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0x70e36f6bf80a52b3b46b3af8e106cc0ed743e8e4": {
+          },
           "0xc00e94cb662c3520282e6f5717214004a7f26888": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5": {
+          },
           "0x0000000000000000000000000000000000000000": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0x7713dd9ca933848f6819f38b8352d9a15ea73f67": {
+          },
           "0x956f47f50a910163d8bf957cf5846d573e7f87ca": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0x35a18000230da775cac24873d00ff85bccded550": {
+          },
           "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0x39aa39c021dfbae8fac545936693ac917d5e7563": {
+          },
           "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9": {
+          },
           "0xdac17f958d2ee523a2206206994597c13d831ec7": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
-          }
-        },
-        "0xccf4429db6322d5c611ee964527d42e5d685dd6a": {
+          },
           "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
@@ -1780,6 +1742,63 @@
       "entity_id": "silo-finance",
       "protocol_reward": {
         "0xd533a949740bb3306d119cc777fa900ba034cd52": {
+          "amount": 0.0
+        }
+      }
+    },
+    {
+      "query_id": "compound-v3_deposit_borrow",
+      "query_type": "deposit_borrow",
+      "entity_id": "compound-v3",
+      "deposit_borrow": {
+        "0xa17581a9e3356d9a858b789d68b4d866e593ae94": {
+          "0xbe9895146f7af43049ca1c1ae358b0541ea49704": {
+            "borrow_amount": 0,
+            "deposit_amount": 0.0
+          },
+          "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0": {
+            "borrow_amount": 0,
+            "deposit_amount": 0.0
+          },
+          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0
+          }
+        },
+        "0xc3d688b66703497daa19211eedff47f25384cdc3": {
+          "0xc00e94cb662c3520282e6f5717214004a7f26888": {
+            "borrow_amount": 0,
+            "deposit_amount": 0.0
+          },
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
+            "borrow_amount": 0,
+            "deposit_amount": 0.0
+          },
+          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
+            "borrow_amount": 0,
+            "deposit_amount": 0.0
+          },
+          "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
+            "borrow_amount": 0,
+            "deposit_amount": 0.0
+          },
+          "0x514910771af9ca656af840dff83e8264ecf986ca": {
+            "borrow_amount": 0,
+            "deposit_amount": 0.0
+          },
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0
+          }
+        }
+      }
+    },
+    {
+      "query_id": "compound-v3_protocol_reward",
+      "query_type": "protocol_reward",
+      "entity_id": "compound-v3",
+      "protocol_reward": {
+        "0xc00e94cb662c3520282e6f5717214004a7f26888": {
           "amount": 0.0
         }
       }

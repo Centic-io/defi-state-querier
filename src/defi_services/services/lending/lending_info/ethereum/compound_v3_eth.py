@@ -5,7 +5,7 @@ COMPOUND_V3_ETH = {
     "factoryAddress": "0xa7f7de6ccad4d83d81676717053883337ac2c1b4",
     "poolToken": "0xc00e94cb662c3520282e6f5717214004a7f26888",
     "type": "LENDING_POOL",
-    "forked": "morpho",
+    "forked": "compound-v3",
     "reservesList": {
         "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
             "cometExt": "0xe2c1f54aff6b38fd9df7a69f22cb5fd3ba09f030",
