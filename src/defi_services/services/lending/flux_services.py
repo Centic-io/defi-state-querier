@@ -104,6 +104,7 @@ class FluxStateService(ProtocolServices):
             wallet: str,
             reserves_info: dict,
             block_number: int = "latest",
+            health_factor: bool = False
     ):
 
         rpc_calls = {}
@@ -132,10 +133,14 @@ class FluxStateService(ProtocolServices):
             decoded_data: dict,
             token_prices: dict = None,
             pool_decimals: int = 18,
-            block_number: int = "latest"):
+            block_number: int = "latest",
+            health_factor: bool = False
+    ):
         if token_prices is None:
             token_prices = {}
         result = {}
+        total_borrow = 0
+        total_collateral = 0
         for token, value in reserves_info.items():
             data = {}
             underlying = token
@@ -161,7 +166,17 @@ class FluxStateService(ProtocolServices):
                 borrow_amount_in_usd = borrow_amount * token_price
                 data[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
                 data[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
+                total_borrow += borrow_amount_in_usd
+                total_collateral += deposit_amount_in_usd * value.get("liquidationThreshold")
             result[ctoken] = data
+        if health_factor:
+            if total_collateral and total_borrow:
+                result['health_factor'] = total_collateral/total_borrow
+            elif total_collateral:
+                result['health_factor'] = 100
+            else:
+                result['health_factor'] = 0
+
         return result
 
     # TOKEN DEPOSIT BORROW BALANCE
@@ -231,6 +246,42 @@ class FluxStateService(ProtocolServices):
                 result[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
         return result
 
+    # HEALTH FACTOR
+    def get_health_factor_function_info(
+            self,
+            wallet: str,
+            reserves_info: dict = None,
+            block_number: int = "latest"
+    ):
+        rpc_calls = self.get_wallet_deposit_borrow_balance_function_info(
+            wallet,
+            reserves_info,
+            block_number,
+            True
+        )
+        return rpc_calls
+
+    def calculate_health_factor(
+            self,
+            wallet: str,
+            reserves_info,
+            decoded_data: dict = None,
+            token_prices: dict = None,
+            pool_decimals: int = 18,
+            block_number: int = "latest"
+    ):
+        data = self.calculate_wallet_deposit_borrow_balance(
+            wallet,
+            reserves_info,
+            decoded_data,
+            token_prices,
+            pool_decimals,
+            block_number,
+            True
+        )
+
+        return {"health_factor": data["health_factor"]}
+
     def get_lens_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
         return self.state_service.get_function_info(
             self.pool_info['lensAddress'], self.lens_abi, fn_name, fn_paras, block_number
@@ -245,29 +296,3 @@ class FluxStateService(ProtocolServices):
         return self.state_service.get_function_info(
             ctoken, CTOKEN_ABI, fn_name, fn_paras, block_number
         )
-
-    def get_ctoken_metadata_all(
-            self,
-            reserves_info: dict = None,
-            block_number: int = "latest"
-    ):
-        tokens = [Web3.toChecksumAddress(value['cToken']) for key, value in reserves_info.items()]
-        key = f"cTokenMetadataAll_{self.pool_info.get('lensAddress')}_{block_number}".lower()
-        return {
-            key: self.get_lens_function_info("cTokenMetadataAll", tokens, block_number)
-        }
-
-    def ctoken_underlying_price_all(
-            self, reserves_info, block_number: int = 'latest'):
-        tokens = [Web3.toChecksumAddress(value['cToken']) for key, value in reserves_info.items()]
-        key = f"cTokenUnderlyingPriceAll_{self.pool_info.get('lensAddress')}_{block_number}".lower()
-        return {
-            key: self.get_lens_function_info("cTokenUnderlyingPriceAll", tokens, block_number)
-        }
-
-    def get_all_markets(
-            self, block_number: int = 'latest'):
-        key = f"getAllMarkets_{self.pool_info.get('comptrollerAddress')}_{block_number}".lower()
-        return {
-            key: self.get_comptroller_function_info("getAllMarkets", [], block_number)
-        }

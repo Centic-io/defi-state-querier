@@ -60,18 +60,6 @@ class VenusStateService(CompoundStateService):
 
         reserves_info = {}
         tokens = [Web3.toChecksumAddress(i) for i in ctokens]
-        # lens_contract = _w3.eth.contract(
-        #     address=Web3.toChecksumAddress(self.pool_info.get("lensAddress")), abi=self.lens_abi
-        # )
-        # metadata = lens_contract.functions.vTokenMetadataAll(tokens).call(block_identifier=block_number)
-        # for data in metadata:
-        #     underlying = data[11].lower()
-        #     ctoken = data[0].lower()
-        #     lt = data[10] / 10 ** 18
-        #     reserves_info[underlying] = {
-        #         "cToken": ctoken,
-        #         "liquidationThreshold": lt
-        #     }
         queries = {}
         for token in tokens:
             key = f"underlying_{token}_latest".lower()
@@ -82,11 +70,15 @@ class VenusStateService(CompoundStateService):
                 "function": "underlying",
                 "block_number": "latest"
             }
+            markets = f"markets_{token}_latest".lower()
+            queries[markets] = self.get_comptroller_function_info("markets", [token])
         decoded_data = self.state_service.query_state_data(queries)
         for token in tokens:
             key = f"underlying_{token}_latest".lower()
             underlying = decoded_data.get(key).lower()
-            reserves_info[underlying] = {'cToken': token.lower()}
+            markets = f"markets_{token}_latest".lower()
+            liquidation_threshold = decoded_data.get(markets)[1] / 10**18
+            reserves_info[underlying] = {'cToken': token.lower(), "liquidationThreshold": liquidation_threshold}
         return reserves_info
 
     def get_apy_lending_pool_function_info(

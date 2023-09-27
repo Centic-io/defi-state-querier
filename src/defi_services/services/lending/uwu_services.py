@@ -295,7 +295,7 @@ class UwuStateService(ProtocolServices):
 
     # REWARDS BALANCE
 
-    def get_all_rewards_balance_function_info(
+    def get_rewards_balance_function_info(
             self,
             wallet,
             reserves_info: dict = None,
@@ -312,7 +312,7 @@ class UwuStateService(ProtocolServices):
 
         return rpc_calls
 
-    def calculate_all_rewards_balance(
+    def calculate_rewards_balance(
             self, decoded_data: dict, wallet: str, block_number: int = "latest"):
         reward_token = self.pool_info['rewardToken']
         key = f"claimableReward_{self.name}_{wallet}_{block_number}".lower()
@@ -320,56 +320,6 @@ class UwuStateService(ProtocolServices):
         result = {
             reward_token: {"amount": rewards}
         }
-
-        return result
-
-    def get_rewards_balance_function_info(
-            self,
-            wallet,
-            reserves_info: dict = None,
-            block_number: int = "latest"
-    ):
-        rpc_calls = {}
-        for token, value in reserves_info.items():
-            atoken, debt_token = Web3.toChecksumAddress(value['tToken']), Web3.toChecksumAddress(value['dToken'])
-            akey = f"claimableReward_{atoken}_{wallet}_{block_number}".lower()
-            dkey = f"claimableReward_{debt_token}_{wallet}_{block_number}".lower()
-            rpc_calls[akey] = self.get_function_incentive_info(
-                "claimableReward", [wallet, [atoken]], block_number)
-            rpc_calls[dkey] = self.get_function_incentive_info(
-                "claimableReward", [wallet, [debt_token]], block_number)
-        return rpc_calls
-
-    def calculate_rewards_balance(
-            self,
-            decoded_data: dict,
-            wallet: str,
-            block_number: int = "latest"):
-        result = {}
-        reward_token = self.pool_info['rewardToken']
-        reserves_info = self.pool_info['reservesList']
-        for token, value in reserves_info.items():
-            atoken, debt_token = value['tToken'], value['dToken']
-            akey = f"claimableReward_{atoken}_{wallet}_{block_number}".lower()
-            dkey = f"claimableReward_{debt_token}_{wallet}_{block_number}".lower()
-            deposit_reward = decoded_data.get(akey)[0] / 10 ** 18
-            borrow_reward = decoded_data.get(dkey)[0] / 10 ** 18
-            result[token] = {
-                "deposit": {
-                    "rewards": {
-                        reward_token: {
-                            "amount": deposit_reward
-                        }
-                    }
-                },
-                "borrow": {
-                    "rewards": {
-                        reward_token: {
-                            "amount": borrow_reward
-                        }
-                    }
-                }
-            }
 
         return result
 

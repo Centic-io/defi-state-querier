@@ -225,7 +225,8 @@ class AaveV2StateService(ProtocolServices):
             self,
             wallet: str,
             reserves_info: dict,
-            block_number: int = "latest"
+            block_number: int = "latest",
+            health_factor: bool = False
     ):
         rpc_calls = {}
         for token in reserves_info:
@@ -241,15 +242,16 @@ class AaveV2StateService(ProtocolServices):
                 value["dToken"], ERC20_ABI, "balanceOf", [wallet], block_number=block_number)
             rpc_calls[sdebt_token_balance_of_key] = self.state_service.get_function_info(
                 value["sdToken"], ERC20_ABI, "balanceOf", [wallet], block_number=block_number)
-
             rpc_calls[decimals_key] = self.state_service.get_function_info(
                 token, ERC20_ABI, "decimals", block_number=block_number)
+        if health_factor:
+            rpc_calls.update(self.get_health_factor_function_info(wallet, reserves_info, block_number))
 
         return rpc_calls
 
     def get_wallet_deposit_borrow_balance(
             self,
-            reserves_info,
+            reserves_info: dict,
             token_prices,
             decimals,
             deposit_amount,
@@ -273,16 +275,18 @@ class AaveV2StateService(ProtocolServices):
                     "borrow_amount_in_usd": borrow_amount_in_usd,
                     "deposit_amount_in_usd": deposit_amount_in_usd,
                 })
+
         return {self.pool_info.get("address"): result}
 
     def calculate_wallet_deposit_borrow_balance(
             self,
-            wallet,
+            wallet: str,
             reserves_info: dict,
             decoded_data: dict,
             token_prices: dict,
             pool_decimals: int = 18,
             block_number: int = 'latest',
+            health_factor: bool = False
     ):
         asset_price_key = f"getAssetsPrices_{self.name}_{block_number}".lower()
         if not token_prices and asset_price_key in decoded_data:
@@ -302,13 +306,48 @@ class AaveV2StateService(ProtocolServices):
             borrow_amount[token] = decoded_data.get(get_total_borrow_id)
             stable_borrow_amount[token] = decoded_data.get(get_total_stable_borrow_id)
             decimals[token] = decoded_data.get(get_decimals_id)
-
         data = self.get_wallet_deposit_borrow_balance(
-            reserves_info, token_prices, decimals, deposit_amount,
-            borrow_amount, stable_borrow_amount
-        )
-
+                reserves_info, token_prices, decimals, deposit_amount,
+                borrow_amount, stable_borrow_amount
+            )
+        if health_factor:
+            hf = self.calculate_health_factor(
+                wallet, reserves_info, decoded_data, token_prices, pool_decimals, block_number)
+            data.update(hf)
         return data
+
+    # HEALTH FACTOR
+    def get_health_factor_function_info(
+            self,
+            wallet: str,
+            reserves_info: dict = None,
+            block_number: int = "latest"
+    ):
+        rpc_calls = {}
+        key = f"getUserAccountData_{self.name}_{wallet}_{block_number}".lower()
+        pool_address = self.pool_info.get("address")
+        rpc_calls[key] = self.state_service.get_function_info(
+            pool_address, self.lending_abi, "getUserAccountData", [wallet], block_number)
+        return rpc_calls
+
+    def calculate_health_factor(
+            self,
+            wallet: str,
+            reserves_info,
+            decoded_data: dict = None,
+            token_prices: dict = None,
+            pool_decimals: int = 18,
+            block_number: int = "latest"
+    ):
+        key = f"getUserAccountData_{self.name}_{wallet}_{block_number}".lower()
+        data = decoded_data.get(key)
+        health_factor = 0
+        if data[0] and data[1]:
+            health_factor = data[5] / 10 ** 18
+
+        if data[0] and not data[1]:
+            health_factor = 100
+        return {"health_factor": health_factor}
 
     # REWARDS BALANCE
     def get_rewards_balance_function_info(

@@ -18,7 +18,7 @@ AAVE_V3_ETH = {
             "tToken": "0x0b925ed163218f6662a35e0f0371ac234f9e9371",
             "sdToken": "0x39739943199c0fbfe9e5f1b5b160cd73a64cb85d",
             "dToken": "0xc96113eed8cab59cd8a66813bcb0ceb29f06d2e4",
-            "liquidationThreshold": 0.8
+            "liquidationThreshold": 0.81
         },
         "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
             "tToken": "0x5ee5bf7ae06d1be5997a1a72006fe6c607ec6de8",
@@ -54,7 +54,7 @@ AAVE_V3_ETH = {
             "tToken": "0x977b6fc5de62598b08c85ac8cf2b745874e8b78c",
             "sdToken": "0x82be6012cea6d147b968ebaea5ceecf6a5b4f493",
             "dToken": "0x0c91bca95b5fe69164ce583a2ec9429a569798ed",
-            "liquidationThreshold": 0.74
+            "liquidationThreshold": 0.77
         },
         "0xdac17f958d2ee523a2206206994597c13d831ec7": {
             "tToken": "0x23878914efe38d27c4d67ab83ed1b93a74d4086a",
@@ -66,7 +66,7 @@ AAVE_V3_ETH = {
             "tToken": "0xcc9ee9483f662091a1de4795249e24ac0ac2630f",
             "sdToken": "0x1d1906f909cae494c7441604dafdddbd0485a925",
             "dToken": "0xae8593dd575fe29a9745056aa91c4b746eee62c8",
-            "liquidationThreshold": 0.74
+            "liquidationThreshold": 0.77
         },
         "0x5f98805a4e8be255a32880fdec7f6728c6568ba0": {
             "tToken": "0x3fe6a295459fae07df8a0cecc36f37160fe86aa9",
@@ -139,6 +139,12 @@ AAVE_V3_ETH = {
             "sdToken": "0x41e330fd8f7ea31e2e8f02cc0c9392d1403597b4",
             "dToken": "0x8988eca19d502fd8b9ccd03fa3bd20a6f599bc2a",
             "liquidationThreshold": 0.0
+        },
+        "0x83f20f44975d03b1b09e64809b757c47f942beea": {
+            "tToken": "0x4c612e3b15b96ff9a6faed838f8d07d479a8dd4c",
+            "sdToken": "0x48bc45f084988bc01933ea93eeffebc0416534f6",
+            "dToken": "0x8db9d35e117d8b93c6ca9b644b25bad5d9908141",
+            "liquidationThreshold": 0.8
         }
     }
 }

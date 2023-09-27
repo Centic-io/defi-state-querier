@@ -58,6 +58,13 @@ class ProtocolServices:
 
         if Query.protocol_reward in query_types and wallet and wallet != Token.native_token:
             rpc_calls.update(self.get_rewards_balance_function_info(wallet, reserves_info, block_number))
+
+        if Query.deposit_borrow_health_factor in query_types:
+            rpc_calls.update(self.get_wallet_deposit_borrow_balance_function_info(
+                wallet, reserves_info, block_number, health_factor=True
+            ))
+        if Query.health_factor in query_types:
+            rpc_calls.update(self.get_health_factor_function_info(wallet, reserves_info, block_number))
         logger.info(f"Get encoded rpc calls in {time.time() - begin}s")
         return rpc_calls
 
@@ -91,13 +98,23 @@ class ProtocolServices:
                 reserves_info, decoded_data, token_prices, pool_token_price, pool_decimals,
                 block_number
             ))
+
+        if Query.health_factor in query_types:
+            result.update(self.calculate_health_factor(
+                wallet, reserves_info, decoded_data, token_prices, pool_decimals, block_number))
+
+        if Query.deposit_borrow_health_factor in query_types:
+            result.update(self.calculate_wallet_deposit_borrow_balance(
+                wallet, reserves_info, decoded_data, token_prices, pool_decimals,
+                block_number, health_factor=True
+            ))
         logger.info(f"Process protocol data in {time.time() - begin}")
         return result
 
     # REWARD BALANCE
     def get_rewards_balance_function_info(
             self,
-            wallet,
+            wallet: str,
             reserves_info: dict = None,
             block_number: int = "latest"
     ) -> dict:
@@ -136,16 +153,38 @@ class ProtocolServices:
             wallet: str,
             reserves_info: dict,
             block_number: int = "latest",
+            health_factor: bool = False
     ) -> dict:
         return {}
 
     def calculate_wallet_deposit_borrow_balance(
             self,
-            wallet,
+            wallet: str,
             reserves_info: dict,
             decoded_data: dict,
             token_prices: dict,
             pool_decimals: int = 18,
             block_number: int = 'latest',
+            health_factor: bool = False
     ) -> dict:
+        return {}
+
+    # HEALTH FACTOR
+    def get_health_factor_function_info(
+            self,
+            wallet: str,
+            reserves_info: dict = None,
+            block_number: int = "latest"
+    ):
+        return {}
+
+    def calculate_health_factor(
+            self,
+            wallet: str,
+            reserves_info,
+            decoded_data: dict = None,
+            token_prices: dict = None,
+            pool_decimals: int = 18,
+            block_number: int = "latest"
+    ):
         return {}

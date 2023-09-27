@@ -1,5 +1,6 @@
 from defi_services.abis.lending.compound_v3.comet_abi import COMET_ABI
 from defi_services.abis.lending.compound_v3.comet_ext_abi import COMET_EXT_ABI
+from defi_services.abis.lending.compound_v3.reward_abi import REWARD_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
@@ -22,6 +23,7 @@ class CompoundV3StateService(CompoundStateService):
         self.pool_info = CompoundV3Info.mapping.get(chain_id)
         self.comet_abi = COMET_ABI
         self.comet_ext = COMET_EXT_ABI
+        self.reward_abi = REWARD_ABI
 
     def get_service_info(self):
         info = {
@@ -70,11 +72,12 @@ class CompoundV3StateService(CompoundStateService):
             block_number: int = "latest",
     ):
         result = {}
+        reward_address = self.pool_info.get("rewardAddress")
         for token, value in self.pool_info.get("reservesList").items():
-            ext_address = value.get("cometExt")
+            comet = value.get("comet")
             rpc_call = self.state_service.get_function_info(
-                ext_address, self.comet_ext, "baseTrackingAccrued", [wallet], block_number)
-            get_reward_id = f"baseTrackingAccrued_{ext_address}_{wallet}_{block_number}".lower()
+                reward_address, self.reward_abi, "getRewardOwed", [comet, wallet], block_number)
+            get_reward_id = f"getRewardOwed_{reward_address}_{comet}_{wallet}_{block_number}".lower()
             result[get_reward_id] = rpc_call
         return result
 
@@ -84,10 +87,11 @@ class CompoundV3StateService(CompoundStateService):
             wallet: str,
             block_number: int = "latest"):
         reward_amount = 0
+        reward_address = self.pool_info.get("rewardAddress")
         for token, value in self.pool_info.get("reservesList").items():
-            ext_address = value.get("cometExt")
-            get_reward_id = f"baseTrackingAccrued_{ext_address}_{wallet}_{block_number}".lower()
-            reward_amount += decoded_data.get(get_reward_id) / 10 ** 18
+            comet = value.get("comet")
+            get_reward_id = f"getRewardOwed_{reward_address}_{comet}_{wallet}_{block_number}".lower()
+            reward_amount += decoded_data.get(get_reward_id)[1] / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
         result = {
             reward_token: {"amount": reward_amount}
@@ -100,6 +104,7 @@ class CompoundV3StateService(CompoundStateService):
             wallet: str,
             reserves_info: dict,
             block_number: int = "latest",
+            health_factor: bool = False
     ):
 
         rpc_calls = {}
@@ -135,8 +140,12 @@ class CompoundV3StateService(CompoundStateService):
             decoded_data: dict,
             token_prices: dict = None,
             pool_decimals: int = 18,
-            block_number: int = "latest"):
+            block_number: int = "latest",
+            health_factor: bool = False
+    ):
         result = {}
+        total_borrow = 0
+        total_collateral = 0
         for token, value in reserves_info.items():
             deposit_borrow = {}
             underlying = token
@@ -149,18 +158,18 @@ class CompoundV3StateService(CompoundStateService):
             borrow_key = f"borrowBalanceOf_{comet}_{underlying}_{wallet}_{block_number}".lower()
             decimals = decoded_data[get_decimals_id]
             borrow_amount = decoded_data[borrow_key] / 10 ** decimals
-            for asset in assets:
+            for asset, asset_info in assets.items():
                 balance_key = f"collateralBalanceOf_{comet_ext}_{asset}_{wallet}_{block_number}".lower()
                 decimals_key = f"decimals_{asset}_{block_number}".lower()
                 decimals_token = decoded_data[decimals_key]
                 deposit_amount = decoded_data[balance_key] / 10 ** decimals_token
-                if asset not in deposit_borrow:
-                    deposit_borrow[asset] = {
+                deposit_borrow[asset] = {
                         "borrow_amount": 0,
                         "deposit_amount": deposit_amount,
                     }
-                else:
-                    deposit_borrow[token]["deposit_amount"] += deposit_amount
+                if token_prices:
+                    deposit_amount_in_usd = deposit_amount * token_prices.get(asset)
+                    total_collateral += deposit_amount_in_usd * asset_info.get("liquidationThreshold")
 
             if underlying not in deposit_borrow:
                 deposit_borrow[underlying] = {
@@ -169,7 +178,21 @@ class CompoundV3StateService(CompoundStateService):
                 }
             else:
                 deposit_borrow[underlying]["borrow_amount"] = borrow_amount
+
+            if token_prices:
+                borrow_amount_in_usd = token_prices.get(underlying)
+                total_borrow += borrow_amount_in_usd
+
             result[comet] = deposit_borrow
+
+        if health_factor:
+            if total_collateral and total_borrow:
+                result['health_factor'] = total_collateral/total_borrow
+            elif total_collateral:
+                result['health_factor'] = 100
+            else:
+                result['health_factor'] = 0
+
         return result
 
 
