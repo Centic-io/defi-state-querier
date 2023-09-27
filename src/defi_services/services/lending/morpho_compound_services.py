@@ -183,14 +183,16 @@ class MorphoCompoundStateService(ProtocolServices):
                 total_borrow += borrow_amount_in_usd
                 total_collateral += deposit_amount_in_usd * value.get("liquidationThreshold")
             result.update(data)
+        result = {pool_address.lower(): result}
         if health_factor:
             if total_collateral and total_borrow:
-                result['health_factor'] = total_collateral/total_borrow
+                hf = total_collateral / total_borrow
             elif total_collateral:
-                result['health_factor'] = 100
+                hf = 100
             else:
-                result['health_factor'] = 0
-        return {pool_address.lower(): result, "health_factor": health_factor}
+                hf = 0
+            result["health_factor"] = hf
+        return result
 
     # HEALTH FACTOR
     def get_health_factor_function_info(
@@ -227,6 +229,7 @@ class MorphoCompoundStateService(ProtocolServices):
         )
 
         return {"health_factor": data["health_factor"]}
+
     def get_lens_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
         return self.state_service.get_function_info(
             self.pool_info['lensAddress'], self.lens_abi, fn_name, fn_paras, block_number

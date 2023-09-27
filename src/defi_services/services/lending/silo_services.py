@@ -1,7 +1,5 @@
 import logging
-import time
 
-from defi_services.abis.lending.cream.cream_lens_abi import CREAM_LENS_ABI
 from defi_services.abis.lending.silo.silo_abi import SILO_ABI
 from defi_services.abis.lending.silo.silo_lens_abi import SILO_LENS_ABI
 from defi_services.abis.lending.silo.silo_repository_abi import SILO_REPOSITORY_ABI
@@ -9,8 +7,6 @@ from defi_services.abis.lending.silo.silo_reward_abi import SILO_REWARD_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
-from defi_services.constants.query_constant import Query
-from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.arbitrum.silo_arbitrum import SILO_ARBITRUM
 from defi_services.services.lending.lending_info.ethereum.silo_eth import SILO_ETH
@@ -35,6 +31,7 @@ class SiloLlamaInfo:
 
 class SiloStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1", llama_version: bool = True):
+        super().__init__()
         self.name = f"{chain_id}_{Lending.silo}"
         self.chain_id = chain_id
         if Chain.ethereum == chain_id and llama_version:
@@ -113,7 +110,8 @@ class SiloStateService(ProtocolServices):
             self,
             wallet: str,
             reserves_info: dict = None,
-            block_number: int = "latest"
+            block_number: int = "latest",
+            health_factor: bool = False
     ):
 
         rpc_calls = {}
@@ -142,7 +140,8 @@ class SiloStateService(ProtocolServices):
             decoded_data: dict,
             token_prices: dict = None,
             pool_decimals: int = 18,
-            block_number: int = "latest"):
+            block_number: int = "latest",
+            health_factor: bool = False):
         if token_prices is None:
             token_prices = {}
         result = {}
