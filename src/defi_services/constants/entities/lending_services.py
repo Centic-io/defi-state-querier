@@ -25,6 +25,7 @@ from defi_services.services.lending.liqee_service import LiqeeStateService
 from defi_services.services.lending.strike_service import StrikeStateService
 from defi_services.services.lending.onyx_service import OnyxStateService
 from defi_services.services.lending.wepiggy_services import WepiggyStateService
+from defi_services.services.lending.tenderfi_service import TenderFiStateService
 
 
 class LendingServices:
@@ -92,7 +93,8 @@ class LendingServices:
         Lending.aave_v3: AaveV3StateService,
         Lending.wepiggy: WepiggyStateService,
         Lending.granary: GranaryStateService,
-        Lending.silo: SiloStateService
+        Lending.silo: SiloStateService,
+        Lending.tenderfi: TenderFiStateService
     }
 
     tron = {
