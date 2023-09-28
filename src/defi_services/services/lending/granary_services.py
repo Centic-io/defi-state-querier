@@ -92,10 +92,10 @@ class GranaryStateService(ProtocolServices):
             self,
             wallet: str,
             reserves_info: dict,
-            block_number: int = "latest"
+            block_number: int = "latest",
+            health_factor: bool = False
     ):
         rpc_calls = {}
-
         for token in reserves_info:
             value = reserves_info[token]
             atoken_balance_of_key = f'balanceOf_{value["tToken"]}_{wallet}_{block_number}'.lower()
@@ -112,7 +112,8 @@ class GranaryStateService(ProtocolServices):
 
             rpc_calls[decimals_key] = self.state_service.get_function_info(
                 token, ERC20_ABI, "decimals", block_number=block_number)
-
+        if health_factor:
+            rpc_calls.update(self.get_health_factor_function_info(wallet, reserves_info, block_number))
         return rpc_calls
 
     def get_wallet_deposit_borrow_balance(
@@ -151,6 +152,7 @@ class GranaryStateService(ProtocolServices):
             token_prices: dict,
             pool_decimals: int = 18,
             block_number: int = 'latest',
+            health_factor: bool = False
     ):
         asset_price_key = f"getAssetsPrices_{self.name}_{block_number}".lower()
         if not token_prices and asset_price_key in decoded_data:
@@ -175,8 +177,44 @@ class GranaryStateService(ProtocolServices):
             reserves_info, token_prices, decimals, deposit_amount,
             borrow_amount, stable_borrow_amount
         )
-
+        if health_factor:
+            hf = self.calculate_health_factor(
+                wallet, reserves_info, decoded_data, token_prices, pool_decimals, block_number)
+            data.update(hf)
         return data
+
+    # HEALTH FACTOR
+    def get_health_factor_function_info(
+            self,
+            wallet: str,
+            reserves_info: dict = None,
+            block_number: int = "latest"
+    ):
+        rpc_calls = {}
+        key = f"getUserAccountData_{self.name}_{wallet}_{block_number}".lower()
+        pool_address = self.pool_info.get("address")
+        rpc_calls[key] = self.state_service.get_function_info(
+            pool_address, self.lending_abi, "getUserAccountData", [wallet], block_number)
+        return rpc_calls
+
+    def calculate_health_factor(
+            self,
+            wallet: str,
+            reserves_info,
+            decoded_data: dict = None,
+            token_prices: dict = None,
+            pool_decimals: int = 18,
+            block_number: int = "latest"
+    ):
+        key = f"getUserAccountData_{self.name}_{wallet}_{block_number}".lower()
+        data = decoded_data.get(key)
+        health_factor = 0
+        if data[0] and data[1]:
+            health_factor = data[5] / 10 ** 18
+
+        if data[0] and not data[1]:
+            health_factor = 100
+        return {"health_factor": health_factor}
 
     # REWARDS BALANCE
     def get_rewards_balance_function_info(

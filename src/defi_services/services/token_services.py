@@ -18,13 +18,14 @@ class TokenServices:
         return info
 
     @staticmethod
-    def get_data(wallet: str, token: str, decoded_data: dict, token_price: dict, block_number: int = "latest"):
+    def get_data(wallet: str, token: str, decoded_data: dict, block_number: int = "latest", **kwargs):
+        token_prices = kwargs.get("token_prices", {})
         decimals_key = f"decimals_{token}_{block_number}".lower()
         balance_key = f"balanceOf_{wallet}_{token}_{block_number}".lower()
         if balance_key in decoded_data:
             balance = decoded_data.get(balance_key) or 0
             decimals = decoded_data.get(decimals_key, 18)
-            return balance * token_price.get(token, 1) / 10 ** decimals
+            return balance * token_prices.get(token, 1) / 10 ** decimals
 
         return None
 

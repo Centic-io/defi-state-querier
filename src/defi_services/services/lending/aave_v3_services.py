@@ -58,11 +58,8 @@ class AaveV3StateService(AaveV2StateService):
 
     def get_dapp_asset_info(self, block_number: int = 'latest'):
         _w3 = self.state_service.get_w3()
-        incentive_address = self.pool_info.get("stakedIncentiveAddress")
         pool_address = self.pool_info.get("address")
-        incentive_contract = _w3.eth.contract(address=_w3.toChecksumAddress(incentive_address), abi=self.incentive_abi)
         pool_contract = _w3.eth.contract(address=_w3.toChecksumAddress(pool_address), abi=self.lending_abi)
-        reward_tokens = [i.lower() for i in incentive_contract.functions.getRewardsList().call(block_identifier=block_number)]
         reserve_list = pool_contract.functions.getReservesList().call(block_identifier=block_number)
         reserves_info = {}
         for token in reserve_list:
