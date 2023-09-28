@@ -1,4 +1,5 @@
 import logging
+import time
 
 from defi_services.abis.lending.silo.silo_abi import SILO_ABI
 from defi_services.abis.lending.silo.silo_lens_abi import SILO_LENS_ABI
@@ -7,6 +8,7 @@ from defi_services.abis.lending.silo.silo_reward_abi import SILO_REWARD_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
+from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.arbitrum.silo_arbitrum import SILO_ARBITRUM
 from defi_services.services.lending.lending_info.ethereum.silo_eth import SILO_ETH
@@ -77,6 +79,25 @@ class SiloStateService(ProtocolServices):
             }
 
         return result
+    def get_token_list(self):
+        begin = time.time()
+        reward_token = self.pool_info.get('rewardToken')
+        tokens = [self.pool_info.get("poolToken")]
+        if isinstance(reward_token, list):
+            tokens += reward_token
+        elif isinstance(reward_token, str):
+            tokens.append(reward_token)
+
+        for token, value in self.pool_info.get("reservesList").items():
+            if token == Token.native_token:
+                tokens.append(Token.wrapped_token.get(self.chain_id))
+                continue
+            tokens.append(token)
+            for asset in value.get("assets"):
+                tokens.append(asset)
+        logger.info(f"Get token list related in {time.time() - begin}s")
+        tokens = list(set(tokens))
+        return tokens
 
     # REWARDS BALANCE
     def get_rewards_balance_function_info(
@@ -119,6 +140,10 @@ class SiloStateService(ProtocolServices):
             underlying = token
             silo_pool = value.get('pool')
             assets = value.get('assets')
+            if health_factor:
+                key = f'getUserLiquidationThreshold_{self.name}_{silo_pool}_{wallet}_{block_number}'.lower()
+                rpc_calls[key] = self.get_lens_function_info(
+                    "getUserLiquidationThreshold", [silo_pool,wallet], block_number)
             for asset in assets:
                 deposit_key = f"collateralBalanceOfUnderlying_{underlying}_{silo_pool}_{asset}_{wallet}_{block_number}".lower()
                 borrow_key = f"debtBalanceOfUnderlying_{underlying}_{silo_pool}_{asset}_{wallet}_{block_number}".lower()
@@ -145,11 +170,17 @@ class SiloStateService(ProtocolServices):
         if token_prices is None:
             token_prices = {}
         result = {}
+        total_borrow = 0
+        total_collateral = 0
         for token, value in reserves_info.items():
             data = {}
             underlying = token
             silo_pool = value.get('pool')
             assets = value.get('assets')
+            liquidation_threshold = 1
+            if health_factor:
+                key = f'getUserLiquidationThreshold_{self.name}_{silo_pool}_{wallet}_{block_number}'.lower()
+                liquidation_threshold = decoded_data.get(key) / 10 ** 18
             for asset in assets:
                 deposit_key = f"collateralBalanceOfUnderlying_{underlying}_{silo_pool}_{asset}_{wallet}_{block_number}".lower()
                 borrow_key = f"debtBalanceOfUnderlying_{underlying}_{silo_pool}_{asset}_{wallet}_{block_number}".lower()
@@ -179,9 +210,54 @@ class SiloStateService(ProtocolServices):
                     else:
                         data[asset]['borrow_amount_in_usd'] = borrow_amount_in_usd
                         data[asset]['deposit_amount_in_usd'] = deposit_amount_in_usd
+                    total_collateral += deposit_amount_in_usd * liquidation_threshold
+                    total_borrow += borrow_amount_in_usd
             result[silo_pool] = data
-
+        if health_factor:
+            if total_collateral and total_borrow:
+                hf = total_collateral/total_borrow
+            elif total_collateral:
+                hf = 100
+            else:
+                hf = 0
+            result["health_factor"] = hf
         return result
+
+    # HEALTH FACTOR
+    def get_health_factor_function_info(
+            self,
+            wallet: str,
+            reserves_info: dict = None,
+            block_number: int = "latest"
+    ):
+        rpc_calls = self.get_wallet_deposit_borrow_balance_function_info(
+            wallet,
+            reserves_info,
+            block_number,
+            True
+        )
+        return rpc_calls
+
+    def calculate_health_factor(
+            self,
+            wallet: str,
+            reserves_info,
+            decoded_data: dict = None,
+            token_prices: dict = None,
+            pool_decimals: int = 18,
+            block_number: int = "latest"
+    ):
+        data = self.calculate_wallet_deposit_borrow_balance(
+            wallet,
+            reserves_info,
+            decoded_data,
+            token_prices,
+            pool_decimals,
+            block_number,
+            True
+        )
+
+        return {"health_factor": data["health_factor"]}
 
     def get_lens_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
         return self.state_service.get_function_info(

@@ -36,6 +36,7 @@ class ProtocolServices:
                 continue
             tokens.append(token)
         logger.info(f"Get token list related in {time.time() - begin}s")
+        tokens = list(set(tokens))
         return tokens
 
     def get_function_info(

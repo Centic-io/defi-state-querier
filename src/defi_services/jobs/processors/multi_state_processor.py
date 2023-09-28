@@ -94,7 +94,7 @@ class MultiStateProcessor:
             entity_id = query.get("entity_id")
             query_type = query.get("query_type")
             block_number = query.get("block_number", "latest")
-            reserves = query.get("reserves_info", None)
+            reserves = query.get("reserves_list", None)
             rpc_calls = self.init_rpc_call_information(
                 wallet, query_id, entity_id, query_type, block_number, reserves_info=reserves)
             all_rpc_calls.update(rpc_calls)
@@ -104,7 +104,7 @@ class MultiStateProcessor:
             wallet = query.get("wallet")
             query_type = query.get("query_type")
             block_number = query.get("block_number", "latest")
-            reserves = query.get("reserves_info", None)
+            reserves = query.get("reserves_list", None)
             processed_data = self.process_decoded_data(
                 query_id, query_type, wallet, decoded_data, block_number, reserves_info=reserves)
             result[query_id] = processed_data

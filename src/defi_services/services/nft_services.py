@@ -18,11 +18,12 @@ class NFTServices:
         return info
 
     @staticmethod
-    def get_data(wallet: str, token: str, decoded_data: dict, token_price: dict, block_number: int = "latest"):
+    def get_data(wallet: str, token: str, decoded_data: dict, block_number: int = "latest", **kwargs):
+        token_prices = kwargs.get("token_prices", {})
         balance_key = f"balanceOf_{wallet}_{token}_{block_number}".lower()
         if balance_key in decoded_data:
             balance = decoded_data.get(balance_key) or 0
-            return balance * token_price.get(token, 1)
+            return balance * token_prices.get(token, 1)
 
         return None
 
