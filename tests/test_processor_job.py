@@ -33,12 +33,14 @@ def test_processor_job():
                 queries.append({
                     "query_id": f'{p_id}_deposit_borrow',
                     "entity_id": p_id,
-                    "query_type": "deposit_borrow"
+                    "query_type": "deposit_borrow",
+                    "reserves_list": p.get("protocol_info", {}).get("reservesList")
                 })
                 queries.append({
                     "query_id": f'{p_id}_protocol_reward',
                     "entity_id": p_id,
-                    "query_type": "protocol_reward"
+                    "query_type": "protocol_reward",
+                    "reserves_list": p.get("protocol_info", {}).get("reservesList")
                 })
 
         error = False

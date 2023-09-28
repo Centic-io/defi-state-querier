@@ -82,7 +82,6 @@ class WepiggyStateService(ProtocolServices):
 
         return reserves_info
 
-
     # REWARDS BALANCE
     def get_rewards_balance_function_info(
             self,
@@ -94,7 +93,7 @@ class WepiggyStateService(ProtocolServices):
         get_reward_id = f"wpcAccrued_{self.name}_{wallet}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
-    def calculate_rewards_balance(self, decoded_data: dict, wallet: str,  block_number: int = "latest"):
+    def calculate_rewards_balance(self, decoded_data: dict, wallet: str, block_number: int = "latest"):
         get_reward_id = f"wpcAccrued_{self.name}_{wallet}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
@@ -108,7 +107,8 @@ class WepiggyStateService(ProtocolServices):
             self,
             wallet: str,
             reserves_info: dict,
-            block_number: int = "latest"
+            block_number: int = "latest",
+            health_factor: bool = False
     ):
 
         rpc_calls = {}
@@ -137,10 +137,12 @@ class WepiggyStateService(ProtocolServices):
             decoded_data: dict,
             token_prices: dict = None,
             pool_decimals: int = 18,
-            block_number: int = "latest"):
+            block_number: int = "latest",
+            health_factor: bool = False):
         if token_prices is None:
             token_prices = {}
         result = {}
+        total_borrow, total_collateral = 0, 0
         for token, value in reserves_info.items():
             data = {}
             underlying = token
@@ -166,8 +168,53 @@ class WepiggyStateService(ProtocolServices):
                 borrow_amount_in_usd = borrow_amount * token_price
                 data[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
                 data[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
+                total_borrow += borrow_amount_in_usd
+                total_collateral += deposit_amount_in_usd * value.get("liquidationThreshold")
             result[ctoken] = data
+        if health_factor:
+            if total_collateral and total_borrow:
+                result['health_factor'] = total_collateral / total_borrow
+            elif total_collateral:
+                result['health_factor'] = 100
+            else:
+                result['health_factor'] = 0
         return result
+
+    # HEALTH FACTOR
+    def get_health_factor_function_info(
+            self,
+            wallet: str,
+            reserves_info: dict = None,
+            block_number: int = "latest"
+    ):
+        rpc_calls = self.get_wallet_deposit_borrow_balance_function_info(
+            wallet,
+            reserves_info,
+            block_number,
+            True
+        )
+        return rpc_calls
+
+    def calculate_health_factor(
+            self,
+            wallet: str,
+            reserves_info,
+            decoded_data: dict = None,
+            token_prices: dict = None,
+            pool_decimals: int = 18,
+            block_number: int = "latest"
+    ):
+        data = self.calculate_wallet_deposit_borrow_balance(
+            wallet,
+            reserves_info,
+            decoded_data,
+            token_prices,
+            pool_decimals,
+            block_number,
+            True
+        )
+
+        return {"health_factor": data["health_factor"]}
 
     # TOKEN DEPOSIT BORROW BALANCE
     def get_token_deposit_borrow_balance_function_info(

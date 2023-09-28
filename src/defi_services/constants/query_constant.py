@@ -12,6 +12,8 @@ class Query:
     deposit_borrow = 'deposit_borrow'
     protocol_reward = 'protocol_reward'
     protocol_apy = 'protocol_apy'
+    health_factor = 'health_factor'
+    deposit_borrow_health_factor = 'deposit_borrow_health_factor'
     all = [token_balance, nft_balance, deposit_borrow, protocol_reward]
     balance = [nft_balance, token_balance]
     # entity_id

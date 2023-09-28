@@ -60,18 +60,6 @@ class VenusStateService(CompoundStateService):
 
         reserves_info = {}
         tokens = [Web3.toChecksumAddress(i) for i in ctokens]
-        # lens_contract = _w3.eth.contract(
-        #     address=Web3.toChecksumAddress(self.pool_info.get("lensAddress")), abi=self.lens_abi
-        # )
-        # metadata = lens_contract.functions.vTokenMetadataAll(tokens).call(block_identifier=block_number)
-        # for data in metadata:
-        #     underlying = data[11].lower()
-        #     ctoken = data[0].lower()
-        #     lt = data[10] / 10 ** 18
-        #     reserves_info[underlying] = {
-        #         "cToken": ctoken,
-        #         "liquidationThreshold": lt
-        #     }
         queries = {}
         for token in tokens:
             key = f"underlying_{token}_latest".lower()
@@ -82,11 +70,15 @@ class VenusStateService(CompoundStateService):
                 "function": "underlying",
                 "block_number": "latest"
             }
+            markets = f"markets_{token}_latest".lower()
+            queries[markets] = self.get_comptroller_function_info("markets", [token])
         decoded_data = self.state_service.query_state_data(queries)
         for token in tokens:
             key = f"underlying_{token}_latest".lower()
             underlying = decoded_data.get(key).lower()
-            reserves_info[underlying] = {'cToken': token.lower()}
+            markets = f"markets_{token}_latest".lower()
+            liquidation_threshold = decoded_data.get(markets)[1] / 10 ** 18
+            reserves_info[underlying] = {'cToken': token.lower(), "liquidationThreshold": liquidation_threshold}
         return reserves_info
 
     def get_apy_lending_pool_function_info(
@@ -172,6 +164,7 @@ class VenusStateService(CompoundStateService):
             wallets: str,
             reserves_info: dict,
             block_number: int = "latest",
+            health_factor: bool = False
     ):
 
         rpc_calls = {}
@@ -200,10 +193,14 @@ class VenusStateService(CompoundStateService):
             decoded_data: dict,
             token_prices: dict = None,
             pool_decimals: int = 18,
-            block_number: int = "latest"):
+            block_number: int = "latest",
+            health_factor: bool = False
+    ):
         if token_prices is None:
             token_prices = {}
         result = {}
+        total_borrow = 0
+        total_collateral = 0
         for token, value in reserves_info.items():
             data = {}
             underlying = token
@@ -229,8 +226,53 @@ class VenusStateService(CompoundStateService):
                 borrow_amount_in_usd = borrow_amount * token_price
                 data[token]['borrow_amount_in_usd'] += borrow_amount_in_usd
                 data[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
+                total_borrow += borrow_amount_in_usd
+                total_collateral += deposit_amount_in_usd * value.get("liquidationThreshold")
             result[ctoken] = data
+        if health_factor:
+            if total_collateral and total_borrow:
+                result['health_factor'] = total_collateral / total_borrow
+            elif total_collateral:
+                result['health_factor'] = 100
+            else:
+                result['health_factor'] = 0
         return result
+
+    # HEALTH FACTOR
+    def get_health_factor_function_info(
+            self,
+            wallet: str,
+            reserves_info: dict = None,
+            block_number: int = "latest"
+    ):
+        rpc_calls = self.get_wallet_deposit_borrow_balance_function_info(
+            wallet,
+            reserves_info,
+            block_number,
+            True
+        )
+        return rpc_calls
+
+    def calculate_health_factor(
+            self,
+            wallet: str,
+            reserves_info,
+            decoded_data: dict = None,
+            token_prices: dict = None,
+            pool_decimals: int = 18,
+            block_number: int = "latest"
+    ):
+        data = self.calculate_wallet_deposit_borrow_balance(
+            wallet,
+            reserves_info,
+            decoded_data,
+            token_prices,
+            pool_decimals,
+            block_number,
+            True
+        )
+
+        return {"health_factor": data["health_factor"]}
 
     # TOKEN DEPOSIT BORROW BALANCE
     def get_token_deposit_borrow_balance_function_info(
@@ -244,7 +286,6 @@ class VenusStateService(CompoundStateService):
             if token == Token.native_token:
                 underlying = Token.wrapped_token.get(self.chain_id)
             ctoken = value.get('cToken')
-            underlying_price_key = f"vTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
             underlying_borrow_key = f"totalBorrows_{ctoken}_{block_number}".lower()
             underlying_balance_key = f"totalSupply_{ctoken}_{block_number}".lower()
             underlying_decimals_key = f"decimals_{underlying}_{block_number}".lower()

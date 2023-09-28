@@ -88,7 +88,7 @@ class StateProcessor:
 
     def process_decoded_data(
             self, query_id: str, query_type: str, wallet: str,
-            token_prices: dict, decoded_data: dict, block_number: int = 'latest'):
+            decoded_data: dict, block_number: int = 'latest', **kwargs):
         result = {
             "query_id": query_id,
             "query_type": query_type
@@ -99,15 +99,15 @@ class StateProcessor:
             data = None
             if self.check_address(entity):
                 if Query.token_balance == query_type:
-                    data = self.token_service.get_data(wallet, entity, entity_value, token_prices, block_number)
+                    data = self.token_service.get_data(wallet, entity, entity_value, block_number)
 
                 if Query.nft_balance == query_type:
-                    data = self.nft_service.get_data(wallet, entity, entity_value, token_prices, block_number)
+                    data = self.nft_service.get_data(wallet, entity, entity_value, block_number)
 
             elif entity in self.lending_services:
                 entity_service: ProtocolServices = self.services.get(entity)
                 data = entity_service.get_data(
-                    [query_type], wallet, entity_value, block_number, token_prices=token_prices)
+                    [query_type], wallet, entity_value, block_number, **kwargs)
             else:
                 continue
             result[query_type] = data
@@ -130,16 +130,19 @@ class StateProcessor:
                 entity_id = base58_to_hex(entity_id)
 
             query_type = query.get("query_type")
+            reserves_list = query.get("reserves_list", None)
             rpc_calls, _ = self.init_rpc_call_information(
-                wallet, query_id, entity_id, query_type, block_number)
+                wallet, query_id, entity_id, query_type, block_number, reserve_info=reserves_list)
             all_rpc_calls.update(rpc_calls)
         result = []
         decoded_data = self.execute_rpc_calls(all_rpc_calls, batch_size, max_workers, ignore_error=ignore_error)
         for query in queries:
             query_id = query.get("query_id")
             query_type = query.get("query_type")
+            reserves_list = query.get("reserves_list", None)
             processed_data = self.process_decoded_data(
-                query_id, query_type, wallet, token_prices, decoded_data, block_number)
+                    query_id, query_type, wallet, decoded_data, block_number,
+                    token_prices=token_prices, reserve_info=reserves_list)
             result.append(processed_data)
 
         if self.chain_id == Chain.tron:

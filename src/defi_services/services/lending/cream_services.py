@@ -34,3 +34,14 @@ class CreamStateService(CompoundStateService):
         }
         return info
 
+    def get_rewards_balance_function_info(
+            self,
+            wallet: str,
+            reserves_info: dict = None,
+            block_number: int = "latest",
+    ):
+        reward_token = self.pool_info.get("rewardToken")
+        comptroller = self.pool_info.get("comptrollerImplementationAddress")
+        rpc_call = self.get_lens_function_info("getCompBalanceMetadataExt", [reward_token, comptroller, wallet], block_number)
+        get_reward_id = f"getCompBalanceMetadataExt_{self.name}_{wallet}_{block_number}".lower()
+        return {get_reward_id: rpc_call}
