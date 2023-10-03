@@ -29,7 +29,7 @@ class MorphoAaveV2StateService(MorphoCompoundStateService):
         super().__init__(state_service, chain_id)
         self.name = f"{chain_id}_{Lending.morpho_aave_v2}"
         self.chain_id = chain_id
-        self.compound_info = AaveInfo.mapping.get(chain_id)
+        self.aave_info = AaveInfo.mapping.get(chain_id)
         self.pool_info = MorphoAaveV2Info.mapping.get(chain_id)
         self.state_service = state_service
         self.lending_abi = LENDING_POOL_ABI
@@ -55,11 +55,11 @@ class MorphoAaveV2StateService(MorphoCompoundStateService):
             block_number: int = "latest"):
         begin = time.time()
         _w3 = self.state_service.get_w3()
-        pool_address = Web3.toChecksumAddress(self.pool_info['address'])
+        pool_address = Web3.toChecksumAddress(self.aave_info['address'])
         contract = _w3.eth.contract(address=pool_address, abi=self.lending_abi)
         comptroller_contract = _w3.eth.contract(
             address=_w3.toChecksumAddress(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
-        markets = comptroller_contract.functions.getAllMarkets().call(block_identifier=block_number)
+        markets = comptroller_contract.functions.getMarketsCreated().call(block_identifier=block_number)
         reserves_list = contract.functions.getReservesList().call(block_identifier=block_number)
         reserves_info = {}
         for token in reserves_list:

@@ -160,8 +160,12 @@ class OnyxStateService(ProtocolServices):
 
             get_decimals_id = f"decimals_{underlying}_{block_number}".lower()
             decimals = decoded_data.get(get_decimals_id, 0)
-            deposit_amount = ctoken_balance[ctoken]["supply"] / 10 ** decimals
-            borrow_amount = ctoken_balance[ctoken]["borrow"] / 10 ** decimals
+            if decimals:
+                deposit_amount = ctoken_balance[ctoken]["supply"] / 10 ** decimals
+                borrow_amount = ctoken_balance[ctoken]["borrow"] / 10 ** decimals
+            else:
+                deposit_amount = ctoken_balance[ctoken]["supply"]
+                borrow_amount = ctoken_balance[ctoken]["borrow"]
             data[token] = {
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,

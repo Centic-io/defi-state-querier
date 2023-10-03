@@ -4,8 +4,8 @@ import time
 from web3 import Web3
 
 from defi_services.abis.lending.aave_v2_and_forlks.aave_v2_incentives_abi import AAVE_V2_INCENTIVES_ABI
-from defi_services.abis.lending.aave_v2_and_forlks.lending_pool_abi import LENDING_POOL_ABI
 from defi_services.abis.lending.aave_v2_and_forlks.oracle_abi import ORACLE_ABI
+from defi_services.abis.lending.aave_v3.aave_v3_lending_pool_abi import AAVE_V3_LENDING_POOL_ABI
 from defi_services.abis.lending.morpho.morpho_aave_v3_comptroller_abi import MORPHO_AAVE_V3_COMPTROLLER_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
@@ -33,7 +33,7 @@ class MorphoAaveV3StateService(MorphoCompoundStateService):
         self.aave_info = AaveV3Info.mapping.get(chain_id)
         self.pool_info = MorphoAaveV3Info.mapping.get(chain_id)
         self.state_service = state_service
-        self.lending_abi = LENDING_POOL_ABI
+        self.lending_abi = AAVE_V3_LENDING_POOL_ABI
         self.incentive_abi = AAVE_V2_INCENTIVES_ABI
         self.oracle_abi = ORACLE_ABI
         self.comptroller_abi = MORPHO_AAVE_V3_COMPTROLLER_ABI
@@ -59,14 +59,14 @@ class MorphoAaveV3StateService(MorphoCompoundStateService):
         contract = _w3.eth.contract(address=pool_address, abi=self.lending_abi)
         comptroller_contract = _w3.eth.contract(
             address=_w3.toChecksumAddress(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
-        markets = comptroller_contract.functions.getAllMarkets().call(block_identifier=block_number)
+        markets = comptroller_contract.functions.marketsCreated().call(block_identifier=block_number)
         markets = [i.lower() for i in markets]
         reserves_list = contract.functions.getReservesList().call(block_identifier=block_number)
         reserves_info = {}
         for token in reserves_list:
             value = contract.functions.getReserveData(token).call(block_identifier=block_number)
             key = token.lower()
-            if token in markets:
+            if key in markets:
                 reserves_info[key] = {}
                 reserves_info[key]["tToken"] = value[8].lower()
                 reserves_info[key]["dToken"] = value[9].lower()

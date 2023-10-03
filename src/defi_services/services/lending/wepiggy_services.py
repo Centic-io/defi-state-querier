@@ -69,9 +69,14 @@ class WepiggyStateService(ProtocolServices):
             address=Web3.toChecksumAddress(self.pool_info.get("lensAddress")), abi=self.lens_abi
         )
         tokens = [Web3.toChecksumAddress(i) for i in ctokens]
-        metadata = lens_contract.functions.pTokenMetadataAll(tokens).call(block_identifier=block_number)
         reserves_info = {}
-        for data in metadata:
+        for token in tokens:
+            if token.lower() == '0xef86384cf696929c3227428f539e740ee12fcdc7':
+                reserves_info[token.lower()] = self.pool_info.get("reservesList").get(
+                    "0xf88506b0f1d30056b9e5580668d5875b9cd30f23")
+                continue
+            data = lens_contract.functions.pTokenMetadata(Web3.toChecksumAddress(token)).call(
+                block_identifier=block_number)
             underlying = data[2].lower()
             ctoken = data[0].lower()
             lt = data[10] / 10 ** 18

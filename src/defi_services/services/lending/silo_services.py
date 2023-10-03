@@ -66,19 +66,23 @@ class SiloStateService(ProtocolServices):
         repository_contract = _w3.eth.contract(
             address=_w3.toChecksumAddress(self.pool_info.get("repositoryAddress")), abi=self.repository_abi)
         result = {}
+        if not tokens:
+            tokens = self.pool_info.get("reservesList").keys()
         for token in tokens:
-            silo_token = repository_contract.functions.getSilo().call(block_identifier=block_number)
-            if not silo_token: continue
+            silo_token = repository_contract.functions.getSilo(_w3.toChecksumAddress(token)).call(block_identifier=block_number)
+            if not silo_token:
+                continue
             contract = _w3.eth.contract(address=_w3.toChecksumAddress(silo_token), abi=self.silo_abi)
             assets = contract.functions.getAssets().call()
             main_asset = contract.functions.siloAsset().call()
             all_assets = [i.lower() for i in assets]
             result[main_asset.lower()] = {
-                'pool': token.lower(),
+                'pool': silo_token.lower(),
                 'assets': all_assets
             }
 
         return result
+
     def get_token_list(self):
         begin = time.time()
         reward_token = self.pool_info.get('rewardToken')
@@ -143,7 +147,7 @@ class SiloStateService(ProtocolServices):
             if health_factor:
                 key = f'getUserLiquidationThreshold_{self.name}_{silo_pool}_{wallet}_{block_number}'.lower()
                 rpc_calls[key] = self.get_lens_function_info(
-                    "getUserLiquidationThreshold", [silo_pool,wallet], block_number)
+                    "getUserLiquidationThreshold", [silo_pool, wallet], block_number)
             for asset in assets:
                 deposit_key = f"collateralBalanceOfUnderlying_{underlying}_{silo_pool}_{asset}_{wallet}_{block_number}".lower()
                 borrow_key = f"debtBalanceOfUnderlying_{underlying}_{silo_pool}_{asset}_{wallet}_{block_number}".lower()
@@ -215,7 +219,7 @@ class SiloStateService(ProtocolServices):
             result[silo_pool] = data
         if health_factor:
             if total_collateral and total_borrow:
-                hf = total_collateral/total_borrow
+                hf = total_collateral / total_borrow
             elif total_collateral:
                 hf = 100
             else:

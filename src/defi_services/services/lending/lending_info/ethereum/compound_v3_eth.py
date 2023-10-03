@@ -8,7 +8,6 @@ COMPOUND_V3_ETH = {
     "forked": "compound-v3",
     "reservesList": {
         "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
-            "cometExt": "0xe2c1f54aff6b38fd9df7a69f22cb5fd3ba09f030",
             "comet": "0xa17581a9e3356d9a858b789d68b4d866e593ae94",
             "assets": {
                 "0xbe9895146f7af43049ca1c1ae358b0541ea49704": {
@@ -24,7 +23,6 @@ COMPOUND_V3_ETH = {
             }
         },
         "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
-            "cometExt": "0x285617313887d43256f852cae0ee4de4b68d45b0",
             "comet": "0xc3d688b66703497daa19211eedff47f25384cdc3",
             "assets": {
                 "0xc00e94cb662c3520282e6f5717214004a7f26888": {

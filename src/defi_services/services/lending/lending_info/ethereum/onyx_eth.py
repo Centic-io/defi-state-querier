@@ -57,13 +57,11 @@ ONYX_ETH = {
         },
         "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d": {
             "cToken": "0x3f2dd7adbcd464d5b0a766f7eb367bd20a249691",
-            "liquidationThreshold": 0.6,
-            "decimals": 1,
+            "liquidationThreshold": 0.6
         },
         "0xb7f7f6c52f2e2fdb1963eab30438024864c313f6": {
             "cToken": "0x7ab16ed27ab8b22cb625db55c0e58521969cb091",
-            "liquidationThreshold": 0.6,
-            "decimals": 1
+            "liquidationThreshold": 0.6
         },
         "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce": {
             "cToken": "0x307269cf921213bd2e16b22dcd4401aec21d00bf",
@@ -75,8 +73,7 @@ ONYX_ETH = {
         },
         "0x60e4d786628fea6478f785a6d7e704777c86a7c6": {
             "cToken": "0x5bcc74bd3cf4e2665674cd79a68f87d2d3fd6df0",
-            "liquidationThreshold": 0.6,
-            "decimals": 1
+            "liquidationThreshold": 0.6
         }
     }
 }

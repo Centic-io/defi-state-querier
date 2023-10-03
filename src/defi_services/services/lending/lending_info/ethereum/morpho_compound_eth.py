@@ -39,6 +39,6 @@ MORPHO_COMPOUND_ETH = {
         "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
             "cToken": "0xccf4429db6322d5c611ee964527d42e5d685dd6a",
             "liquidationThreshold": 0.7
-        },
+        }
     }
 }
