@@ -194,5 +194,3 @@ class CompoundV3StateService(CompoundStateService):
                 result['health_factor'] = 0
 
         return result
-
-

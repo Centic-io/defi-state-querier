@@ -9,6 +9,10 @@ class Chain:
     avalanche = "0xa86a"
     tron = "0x2b6653dc"
 
+    native_decimals = {
+        tron: 6
+    }
+
 
 class BlockTime:
     block_time_by_chains = {

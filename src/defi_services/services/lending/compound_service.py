@@ -135,8 +135,8 @@ class CompoundStateService(ProtocolServices):
             })
         return reserve_tokens_info
 
-    @staticmethod
     def get_reserve_tokens_metadata(
+            self,
             decoded_data: dict,
             reserves_info: dict,
             block_number: int = "latest"
@@ -147,7 +147,7 @@ class CompoundStateService(ProtocolServices):
                 underlying_decimals_query_id = f"decimals_{token_address}_{block_number}".lower()
                 underlying_decimals = decoded_data.get(underlying_decimals_query_id)
             else:
-                underlying_decimals = 18
+                underlying_decimals = Chain.native_decimals.get(self.chain_id, 18)
 
             ctoken = reserve_info.get("cToken")
             ctoken_decimals_query_id = f"decimals_{ctoken}_{block_number}".lower()

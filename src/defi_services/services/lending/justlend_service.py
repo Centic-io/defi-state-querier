@@ -2,7 +2,6 @@ from web3 import Web3
 
 from defi_services.abis.lending.justlend.just_token_abi import JUST_TOKEN_ABI
 from defi_services.abis.lending.justlend.justlend_comptroller_abi import JUSTLEND_COMPTROLLER_ABI
-from defi_services.abis.token.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending

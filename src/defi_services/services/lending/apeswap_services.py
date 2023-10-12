@@ -86,4 +86,3 @@ class ApeSwapStateService(CompoundStateService):
         return self.state_service.get_function_info(
             ctoken, APESWAP_CTOKEN_ABI, fn_name, fn_paras, block_number
         )
-
