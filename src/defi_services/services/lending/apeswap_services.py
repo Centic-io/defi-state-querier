@@ -82,7 +82,7 @@ class ApeSwapStateService(CompoundStateService):
             self, decoded_data: dict, wallet: str, block_number: int = "latest"):
         return {}
 
-    def get_ctoken_function_info(self, ctoken: str, fn_name: str, fn_paras: list, block_number: int = "latest"):
+    def get_ctoken_function_info(self, ctoken: str, fn_name: str, fn_paras: list = None, block_number: int = "latest"):
         return self.state_service.get_function_info(
             ctoken, APESWAP_CTOKEN_ABI, fn_name, fn_paras, block_number
         )

@@ -54,9 +54,6 @@ class ProtocolServices:
                 wallet, reserves_info, block_number
             ))
 
-        if Query.protocol_apy in query_types:
-            rpc_calls.update(self.get_apy_lending_pool_function_info(reserves_info, block_number))
-
         if Query.protocol_reward in query_types and wallet and wallet != Token.native_token:
             rpc_calls.update(self.get_rewards_balance_function_info(wallet, reserves_info, block_number))
 
@@ -66,6 +63,10 @@ class ProtocolServices:
             ))
         if Query.health_factor in query_types:
             rpc_calls.update(self.get_health_factor_function_info(wallet, reserves_info, block_number))
+
+        if Query.protocol_apy in query_types:
+            rpc_calls.update(self.get_apy_lending_pool_function_info(reserves_info, block_number))
+
         logger.info(f"Get encoded rpc calls in {time.time() - begin}s")
         return rpc_calls
 
@@ -94,12 +95,6 @@ class ProtocolServices:
                 decoded_data, wallet, block_number
             ))
 
-        if Query.protocol_apy in query_types:
-            result.update(self.calculate_apy_lending_pool_function_call(
-                reserves_info, decoded_data, token_prices, pool_token_price, pool_decimals,
-                block_number
-            ))
-
         if Query.health_factor in query_types:
             result.update(self.calculate_health_factor(
                 wallet, reserves_info, decoded_data, token_prices, pool_decimals, block_number))
@@ -109,6 +104,11 @@ class ProtocolServices:
                 wallet, reserves_info, decoded_data, token_prices, pool_decimals,
                 block_number, health_factor=True
             ))
+
+        if Query.protocol_apy in query_types:
+            result.update(self.calculate_apy_lending_pool_function_call(
+                reserves_info, decoded_data, token_prices, pool_token_price, pool_decimals, block_number))
+
         logger.info(f"Process protocol data in {time.time() - begin}")
         return result
 
@@ -126,25 +126,6 @@ class ProtocolServices:
             decoded_data: dict,
             wallet: str,
             block_number: int = "latest"
-    ) -> dict:
-        return {}
-
-    # CALCULATE APY LENDING POOL
-    def get_apy_lending_pool_function_info(
-            self,
-            reserves_info: dict,
-            block_number: int = "latest",
-    ) -> dict:
-        return {}
-
-    def calculate_apy_lending_pool_function_call(
-            self,
-            reserves_info: dict,
-            decoded_data: dict,
-            token_prices: dict,
-            pool_token_price: float,
-            pool_decimals: int = 18,
-            block_number: int = 'latest',
     ) -> dict:
         return {}
 
@@ -189,3 +170,22 @@ class ProtocolServices:
             block_number: int = "latest"
     ):
         return {}
+
+    # CALCULATE APY LENDING POOL
+    def get_apy_lending_pool_function_info(
+            self,
+            reserves_info: dict,
+            block_number: int = "latest",
+    ) -> dict:
+        ...
+
+    def calculate_apy_lending_pool_function_call(
+            self,
+            reserves_info: dict,
+            decoded_data: dict,
+            token_prices: dict,
+            pool_token_price: float,
+            pool_decimals: int = 18,
+            block_number: int = 'latest',
+    ) -> dict:
+        ...

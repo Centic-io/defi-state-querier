@@ -1,5 +1,4 @@
 import logging
-import time
 
 from web3 import Web3
 
@@ -7,10 +6,10 @@ from defi_services.abis.lending.cream.cream_comptroller_abi import CREAM_COMPTRO
 from defi_services.abis.lending.cream.cream_lens_abi import CREAM_LENS_ABI
 from defi_services.abis.token.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
-from defi_services.constants.chain_constant import Chain
+from defi_services.constants.chain_constant import Chain, BlockTime
 from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
-from defi_services.constants.query_constant import Query
+from defi_services.constants.time_constant import TimeConstants
 from defi_services.constants.token_constant import ContractAddresses, Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.ethereum.compound_eth import COMPOUND_ETH
@@ -77,102 +76,143 @@ class CompoundStateService(ProtocolServices):
         return reserves_info
 
     # CALCULATE APY LENDING POOL
+    def get_apy_lending_pool_function_info_deprecated(
+            self,
+            reserves_info: dict,
+            block_number: int = "latest"
+    ):
+        rpc_calls = {}
+        for token, reserve_info in reserves_info.items():
+            ctoken = reserve_info.get("ctoken")
+            metadata_key = f"cTokenMetadata_{ctoken}_{block_number}".lower()
+            rpc_calls[metadata_key] = self.get_lens_function_info('cTokenMetadata', [ctoken], block_number)
+
+        return rpc_calls
+
     def get_apy_lending_pool_function_info(
             self,
             reserves_info: dict,
             block_number: int = "latest"
     ):
         rpc_calls = {}
-        for token, value in reserves_info.items():
-            ctoken = value.get("ctoken")
-            speed_key = f"compSpeeds_{ctoken}_{block_number}".lower()
-            mint_key = f"mintGuardianPaused_{ctoken}_{block_number}".lower()
-            borrow_key = f"borrowGuardianPaused_{ctoken}_{block_number}".lower()
-            metadata_key = f"cTokenMetadata_{ctoken}_{block_number}".lower()
-            rpc_calls[speed_key] = self.get_comptroller_function_info('compSpeeds', [ctoken], block_number)
-            rpc_calls[mint_key] = self.get_comptroller_function_info('mintGuardianPaused', [ctoken], block_number)
-            rpc_calls[borrow_key] = self.get_comptroller_function_info('borrowGuardianPaused', [ctoken], block_number)
-            rpc_calls[metadata_key] = self.get_comptroller_function_info('cTokenMetadata', [ctoken], block_number)
+        for token_address, reserve_info in reserves_info.items():
+            if token_address != Token.native_token:
+                query_id = f"decimals_{token_address}_{block_number}".lower()
+                rpc_calls[query_id] = self.state_service.get_function_info(token_address, ERC20_ABI, "decimals", [], block_number)
+
+            ctoken = reserve_info.get("cToken")
+            for fn_name in ['decimals', 'totalSupply', 'totalBorrows', 'supplyRatePerBlock', 'borrowRatePerBlock', 'exchangeRateStored']:
+                query_id = f"{fn_name}_{ctoken}_{block_number}".lower()
+                rpc_calls[query_id] = self.get_ctoken_function_info(
+                    ctoken=ctoken,
+                    fn_name=fn_name,
+                    block_number=block_number
+                )
 
         return rpc_calls
 
     @staticmethod
-    def get_apy_lending_pool(
+    def get_reserve_tokens_metadata_deprecated(
             decoded_data: dict,
             reserves_info: dict,
-            block_number: int = "latest",
-            underlying_price: dict = None,
+            block_number: int = "latest"
     ):
-        underlying_prices, underlying_decimals, reserve_tokens_info = {}, {}, []
-        ctoken_speeds, borrow_paused_tokens, mint_paused_tokens = {}, {}, {}
-        for token, value in reserves_info.items():
-            ctoken = value.get('cToken')
-            speeds_call_id = f'compSpeeds_{ctoken}_{block_number}'.lower()
-            borrow_guardian_paused_call_id = f'borrowGuardianPaused_{ctoken}_{block_number}'.lower()
-            mint_guardian_paused_call_id = f'mintGuardianPaused_{ctoken}_{block_number}'.lower()
-            ctoken_speeds[ctoken] = decoded_data.get(speeds_call_id)
-            borrow_paused_tokens[ctoken] = decoded_data.get(borrow_guardian_paused_call_id)
-            mint_paused_tokens[ctoken] = decoded_data.get(mint_guardian_paused_call_id)
+        reserve_tokens_info = []
+        for token, reserve_info in reserves_info.items():
+            ctoken = reserve_info.get('cToken')
             metadata_id = f"cTokenMetadata_{ctoken}_{block_number}".lower()
-            reserve_tokens_info.append(decoded_data.get(metadata_id))
-            price_token = underlying_price.get(token)
-            underlying_decimals[ctoken] = decoded_data.get(metadata_id)[-1]
-            underlying_prices[ctoken] = price_token
-        return {
-            "reserve_tokens_info": reserve_tokens_info,
-            "ctoken_speeds": ctoken_speeds,
-            "borrow_paused_tokens": borrow_paused_tokens,
-            "mint_paused_tokens": mint_paused_tokens,
-            "underlying_prices": underlying_prices,
-            "underlying_decimals": underlying_decimals
-        }
+            info = decoded_data.get(metadata_id)
+
+            reserve_tokens_info.append({
+                "token": ctoken,
+                "borrow_rate": info[3],
+                "supply_rate": info[2],
+                "supply": info[7],
+                "borrow": info[5],
+                "exchange_rate": info[1],
+                "underlying": info[11].lower(),
+                "underlying_decimals": info[13]
+            })
+        return reserve_tokens_info
+
+    @staticmethod
+    def get_reserve_tokens_metadata(
+            decoded_data: dict,
+            reserves_info: dict,
+            block_number: int = "latest"
+    ):
+        reserve_tokens_info = []
+        for token_address, reserve_info in reserves_info.items():
+            if token_address != Token.native_token:
+                underlying_decimals_query_id = f"decimals_{token_address}_{block_number}".lower()
+                underlying_decimals = decoded_data.get(underlying_decimals_query_id)
+            else:
+                underlying_decimals = 18
+
+            ctoken = reserve_info.get("cToken")
+            ctoken_decimals_query_id = f"decimals_{ctoken}_{block_number}".lower()
+            total_supply_query_id = f"totalSupply_{ctoken}_{block_number}".lower()
+            total_borrow_query_id = f"totalBorrows_{ctoken}_{block_number}".lower()
+            supply_rate_query_id = f"supplyRatePerBlock_{ctoken}_{block_number}".lower()
+            borrow_rate_query_id = f"borrowRatePerBlock_{ctoken}_{block_number}".lower()
+            exchange_rate_query_id = f"exchangeRateStored_{ctoken}_{block_number}".lower()
+
+            reserve_tokens_info.append({
+                "token": ctoken,
+                "token_decimals": decoded_data.get(ctoken_decimals_query_id),
+                "borrow_rate": decoded_data.get(borrow_rate_query_id),
+                "supply_rate": decoded_data.get(supply_rate_query_id),
+                "supply": decoded_data.get(total_supply_query_id),
+                "borrow": decoded_data.get(total_borrow_query_id),
+                "exchange_rate": decoded_data.get(exchange_rate_query_id),
+                "underlying_decimals": underlying_decimals,
+                "underlying": token_address
+            })
+        return reserve_tokens_info
 
     def calculate_apy_lending_pool_function_call(
             self,
             reserves_info: dict,
             decoded_data: dict,
             token_prices: dict,
-            pool_token_price: float = 1,
+            pool_token_price: float,
             pool_decimals: int = 18,
             block_number: int = "latest",
     ):
-        pool_token_price = token_prices.get(self.pool_info.get("poolToken"))
-        tokens_interest_rates = dict()
-        decode_data = self.get_apy_lending_pool(
-            decoded_data, reserves_info, block_number,
-            token_prices)
+        reserve_tokens_info = self.get_reserve_tokens_metadata(decoded_data, reserves_info, block_number)
 
-        mint_paused_tokens = decode_data["mint_paused_tokens"]
-        borrow_paused_tokens = decode_data["borrow_paused_tokens"]
-        reserve_tokens_info = decode_data["reserve_tokens_info"]
-        ctoken_speeds = decode_data["ctoken_speeds"]
-        for data in reserve_tokens_info:
-            address = data[0].lower()
-            underlying_token_price = float(decode_data["underlying_prices"][address])
-
-            token_info = {
-                "token": address,
-                "token_decimals": data[12],
-                "borrow_rate": data[3],
-                "supply_rate": data[2],
-                "supply": data[7],
-                "borrow": data[5],
-                "exchange_rate": data[1],
-                "underlying": data[11].lower(),
-                "underlying_price": underlying_token_price,
-                "underlying_decimals": data[13],
-                "speed": ctoken_speeds[address]
-            }
+        data = {}
+        for token_info in reserve_tokens_info:
             underlying_token = token_info['underlying']
-            token_info["mint_paused"] = mint_paused_tokens[address]
-            token_info["borrow_paused"] = borrow_paused_tokens[address]
-            tokens_interest_rates[underlying_token] = self._calculate_interest_rates(
-                token_info, pool_decimals, pool_token_price)
+            data[underlying_token] = self._calculate_interest_rates(
+                token_info, pool_decimals=pool_decimals,
+                apx_block_speed_in_seconds=BlockTime.block_time_by_chains[self.chain_id]
+            )
 
-        return tokens_interest_rates
+        return data
+
+    @classmethod
+    def _calculate_interest_rates(
+            cls, token_info: dict, pool_decimals: int, apx_block_speed_in_seconds: float):
+        block_per_day = int(TimeConstants.A_DAY / apx_block_speed_in_seconds)
+
+        exchange_rate = float(token_info["exchange_rate"]) / 10 ** (18 - 8 + token_info["underlying_decimals"])
+
+        total_borrow = float(token_info["borrow"]) / 10 ** int(token_info["underlying_decimals"])
+        total_supply = float(token_info["supply"]) * exchange_rate / 10 ** int(token_info["token_decimals"])
+
+        supply_apy = ((token_info["supply_rate"] / 10 ** pool_decimals) * block_per_day + 1) ** 365 - 1
+        borrow_apy = ((token_info["borrow_rate"] / 10 ** pool_decimals) * block_per_day + 1) ** 365 - 1
+
+        return {
+            DBConst.deposit_apy: supply_apy,
+            DBConst.borrow_apy: borrow_apy,
+            DBConst.total_deposit: total_supply,
+            DBConst.total_borrow: total_borrow
+        }
 
     @staticmethod
-    def _calculate_interest_rates(
+    def _calculate_interest_rates_deprecated(
             token_info: dict, pool_decimals: int, pool_price: float):
         apx_block_speed_in_seconds = 3
         exchange_rate = float(token_info["exchange_rate"]) / 10 ** (18 - 8 + token_info["underlying_decimals"])
@@ -434,7 +474,7 @@ class CompoundStateService(ProtocolServices):
             comptroller, self.comptroller_abi, fn_name, fn_paras, block_number
         )
 
-    def get_ctoken_function_info(self, ctoken: str, fn_name: str, fn_paras: list, block_number: int = "latest"):
+    def get_ctoken_function_info(self, ctoken: str, fn_name: str, fn_paras: list = None, block_number: int = "latest"):
         return self.state_service.get_function_info(
             ctoken, CTOKEN_ABI, fn_name, fn_paras, block_number
         )

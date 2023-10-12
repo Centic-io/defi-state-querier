@@ -81,61 +81,44 @@ class VenusStateService(CompoundStateService):
             reserves_info[underlying] = {'cToken': token.lower(), "liquidationThreshold": liquidation_threshold}
         return reserves_info
 
-    def get_apy_lending_pool_function_info(
+    # LENDING APY
+    def get_apy_lending_pool_function_info_deprecated(
             self,
             reserves_info: dict,
-            block_number: int = "latest",
-            is_price_oracle: bool = False
+            block_number: int = "latest"
     ):
         rpc_calls = {}
         for token, value in reserves_info.items():
-            ctoken = value.get("ctoken")
-            speed_key = f"venusSpeeds_{ctoken}_{block_number}".lower()
-            mint_key = f"mintGuardianPaused_{ctoken}_{block_number}".lower()
-            borrow_key = f"borrowGuardianPaused_{ctoken}_{block_number}".lower()
+            ctoken = value.get("cToken")
             metadata_key = f"vTokenMetadata_{ctoken}_{block_number}".lower()
-            if is_price_oracle:
-                price_key = f"vTokenUnderlyingPrice_{ctoken}_{block_number}".lower()
-                rpc_calls[price_key] = self.get_comptroller_function_info(
-                    'vTokenUnderlyingPrice', [ctoken], block_number)
-            rpc_calls[speed_key] = self.get_comptroller_function_info('venusSpeeds', [ctoken], block_number)
-            rpc_calls[mint_key] = self.get_comptroller_function_info('mintGuardianPaused', [ctoken], block_number)
-            rpc_calls[borrow_key] = self.get_comptroller_function_info('borrowGuardianPaused', [ctoken], block_number)
-            rpc_calls[metadata_key] = self.get_comptroller_function_info('vTokenMetadata', [ctoken], block_number)
+            rpc_calls[metadata_key] = self.get_lens_function_info('vTokenMetadata', [ctoken], block_number)
 
         return rpc_calls
 
     @staticmethod
-    def get_apy_lending_pool(
+    def get_reserve_tokens_metadata_deprecated(
             decoded_data: dict,
             reserves_info: dict,
-            block_number: int = "latest",
-            underlying_price: dict = None,
+            block_number: int = "latest"
     ):
-        underlying_prices, underlying_decimals, reserve_tokens_info = {}, {}, []
-        ctoken_speeds, borrow_paused_tokens, mint_paused_tokens = {}, {}, {}
-        for token, value in reserves_info.items():
-            ctoken = value.get('cToken')
-            speeds_call_id = f'venusSpeeds_{ctoken}_{block_number}'.lower()
-            borrow_guardian_paused_call_id = f'borrowGuardianPaused_{ctoken}_{block_number}'.lower()
-            mint_guardian_paused_call_id = f'mintGuardianPaused_{ctoken}_{block_number}'.lower()
-            ctoken_speeds[ctoken] = decoded_data.get(speeds_call_id)
-            borrow_paused_tokens[ctoken] = decoded_data.get(borrow_guardian_paused_call_id)
-            mint_paused_tokens[ctoken] = decoded_data.get(mint_guardian_paused_call_id)
+        reserve_tokens_info = []
+        for token, reserve_info in reserves_info.items():
+            ctoken = reserve_info.get('cToken')
             metadata_id = f"vTokenMetadata_{ctoken}_{block_number}".lower()
-            reserve_tokens_info.append(decoded_data.get(metadata_id))
-            price_token = underlying_price.get(token)
+            info = decoded_data.get(metadata_id)
 
-            underlying_decimals[ctoken] = decoded_data.get(metadata_id)[-1]
-            underlying_prices[ctoken] = price_token
-        return {
-            "reserve_tokens_info": reserve_tokens_info,
-            "ctoken_speeds": ctoken_speeds,
-            "borrow_paused_tokens": borrow_paused_tokens,
-            "mint_paused_tokens": mint_paused_tokens,
-            "underlying_prices": underlying_prices,
-            "underlying_decimals": underlying_decimals
-        }
+            reserve_tokens_info.append({
+                "token": ctoken,
+                "borrow_rate": info[3],
+                "supply_rate": info[2],
+                "supply": info[7],
+                "borrow": info[5],
+                "exchange_rate": info[1],
+                "underlying": info[11].lower(),
+                "underlying_decimals": info[13]
+            })
+
+        return reserve_tokens_info
 
     # REWARDS BALANCE
     def get_rewards_balance_function_info(
