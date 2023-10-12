@@ -73,6 +73,10 @@ Get some information of protocols in their github or documents.
 [2] Get basic information of protocols and save in a python file like [aave_v2_eth.py](src/defi_services/services/lending/lending_info/ethereum/aave_v2_eth.py).
 **![](images/basic_information.png)** 
 
+### Infrastructure
+
+**![](images/infra.drawio.png)**  
+
 ### Important files
 
 [1] [state_querier.py](src/defi_services/jobs/queriers/state_querier.py) - create function information, encode function calls, push function calls, and decode response data.

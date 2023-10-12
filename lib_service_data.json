@@ -28,7 +28,7 @@
           },
           "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
             "borrow_amount": 0.0,
-            "deposit_amount": 4.0071697961e-08
+            "deposit_amount": 4.0071700874e-08
           },
           "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9": {
             "borrow_amount": 0.0,
@@ -628,7 +628,7 @@
         "0x87870bca3f3fd6335c3f4ce8392d69350b4fa4e2": {
           "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
             "borrow_amount": 0.0,
-            "deposit_amount": 0.000219157359582316
+            "deposit_amount": 0.000219259589855402
           },
           "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0": {
             "borrow_amount": 0.0,
@@ -648,18 +648,18 @@
           },
           "0x514910771af9ca656af840dff83e8264ecf986ca": {
             "borrow_amount": 0.0,
-            "deposit_amount": 501.38447289591306
+            "deposit_amount": 501.3895379913605
           },
           "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9": {
             "borrow_amount": 0.0,
-            "deposit_amount": 122.10923626491174
+            "deposit_amount": 151.97158223925726
           },
           "0xbe9895146f7af43049ca1c1ae358b0541ea49704": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
           },
           "0xdac17f958d2ee523a2206206994597c13d831ec7": {
-            "borrow_amount": 4166.839621,
+            "borrow_amount": 4171.259556,
             "deposit_amount": 0.0
           },
           "0xae78736cd615f374d3085123a210448e74fc6393": {
@@ -707,7 +707,7 @@
             "deposit_amount": 0.0
           },
           "0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f": {
-            "borrow_amount": 2788.4086291958843,
+            "borrow_amount": 4826.331579129663,
             "deposit_amount": 0.0
           },
           "0xd33526068d116ce69f19a9ee46f0bd304f21a51f": {
@@ -866,6 +866,18 @@
         },
         "0x59055220e00da46c891283ea1d79363c769158b9": {
           "0xd5147bc8e386d91cc5dbe72099dac6c9b99276f5": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x5f02fb5f1203a502c701a12fd409548993f795ba": {
+          "0x83f20f44975d03b1b09e64809b757c47f942beea": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          }
+        },
+        "0x33b5edc15e05d3dac27fccad77cf550c5f3f02aa": {
+          "0xae78736cd615f374d3085123a210448e74fc6393": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
           }
@@ -1062,14 +1074,14 @@
         },
         "0x3f2dd7adbcd464d5b0a766f7eb367bd20a249691": {
           "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d": {
-            "borrow_amount": 0.0,
-            "deposit_amount": 0.0
+            "borrow_amount": 0,
+            "deposit_amount": 0
           }
         },
         "0x7ab16ed27ab8b22cb625db55c0e58521969cb091": {
           "0xb7f7f6c52f2e2fdb1963eab30438024864c313f6": {
-            "borrow_amount": 0.0,
-            "deposit_amount": 0.0
+            "borrow_amount": 0,
+            "deposit_amount": 0
           }
         },
         "0x307269cf921213bd2e16b22dcd4401aec21d00bf": {
@@ -1086,8 +1098,8 @@
         },
         "0x5bcc74bd3cf4e2665674cd79a68f87d2d3fd6df0": {
           "0x60e4d786628fea6478f785a6d7e704777c86a7c6": {
-            "borrow_amount": 0.0,
-            "deposit_amount": 0.0
+            "borrow_amount": 0,
+            "deposit_amount": 0
           }
         }
       }
@@ -1232,7 +1244,7 @@
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
           },
-          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
           },
@@ -1240,7 +1252,15 @@
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
           },
-          "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": {
+          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xbe9895146f7af43049ca1c1ae358b0541ea49704": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xdac17f958d2ee523a2206206994597c13d831ec7": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
           },
@@ -1248,7 +1268,7 @@
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
           },
-          "0xbe9895146f7af43049ca1c1ae358b0541ea49704": {
+          "0x83f20f44975d03b1b09e64809b757c47f942beea": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
           }
@@ -1267,18 +1287,6 @@
       "entity_id": "morpho-aave",
       "deposit_borrow": {
         "0x777777c9898d384f785ee44acfe945efdff5f3e0": {
-          "0x6b175474e89094c44da98b954eedeac495271d0f": {
-            "borrow_amount": 0.0,
-            "deposit_amount": 0.0
-          },
-          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
-            "borrow_amount": 0.0,
-            "deposit_amount": 0.0
-          },
-          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
-            "borrow_amount": 0.0,
-            "deposit_amount": 0.0
-          },
           "0xdac17f958d2ee523a2206206994597c13d831ec7": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
@@ -1287,11 +1295,23 @@
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
           },
-          "0xae7ab96520de3a18e5e111b5eaab095312d7fe84": {
+          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0x6b175474e89094c44da98b954eedeac495271d0f": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
           },
           "0xd533a949740bb3306d119cc777fa900ba034cd52": {
+            "borrow_amount": 0.0,
+            "deposit_amount": 0.0
+          },
+          "0xae7ab96520de3a18e5e111b5eaab095312d7fe84": {
             "borrow_amount": 0.0,
             "deposit_amount": 0.0
           }

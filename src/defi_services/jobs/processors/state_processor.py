@@ -145,7 +145,7 @@ class StateProcessor:
                     token_prices=token_prices, reserve_info=reserves_list)
             result.append(processed_data)
 
-        if self.chain_id == Chain.tron:
-            result = convert_address_dict(result)
+        # if self.chain_id == Chain.tron:
+        #     result = convert_address_dict(result)
 
         return result
