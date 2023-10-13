@@ -142,7 +142,6 @@ class TravaStateService(ProtocolServices):
         total_supply_t = token_info.get('a_token_supply')
         total_supply_d = token_info.get('d_token_supply')
 
-        # update deposit, borrow apy
         total_supply = total_supply_t / 10 ** token_info['underlying_decimals']
         total_borrow = total_supply_d / 10 ** token_info['underlying_decimals']
 

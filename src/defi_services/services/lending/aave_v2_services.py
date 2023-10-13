@@ -210,7 +210,6 @@ class AaveV2StateService(ProtocolServices):
         total_supply_sd = token_info.get('sd_token_supply')
         total_borrow = total_supply_d + total_supply_sd
 
-        # update deposit, borrow apy
         total_supply = total_supply_t / 10 ** token_info['underlying_decimals']
         total_borrow = total_borrow / 10 ** token_info['underlying_decimals']
 

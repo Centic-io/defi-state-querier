@@ -11,9 +11,7 @@ from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
-from defi_services.constants.query_constant import Query
 from defi_services.constants.time_constant import TimeConstants
-from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.bsc.valas_bsc import VALAS_BSC
 from defi_services.services.protocol_services import ProtocolServices
@@ -29,6 +27,7 @@ class ValasInfo:
 
 class ValasStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x38"):
+        super().__init__()
         self.name = f"{chain_id}_{Lending.valas}"
         self.chain_id = chain_id
         self.pool_info = ValasInfo.mapping.get(chain_id)
@@ -72,6 +71,93 @@ class ValasStateService(ProtocolServices):
     def get_apy_lending_pool_function_info(
             self,
             reserves_info: dict,
+            block_number: int = "latest"
+    ):
+        rpc_calls = {}
+        for token_address, value in reserves_info.items():
+            reserve_key = f"getReserveData_{self.name}_{token_address}_{block_number}".lower()
+            atoken_total_supply_key = f'totalSupply_{value["tToken"]}_{block_number}'.lower()
+            debt_token_total_supply_key = f'totalSupply_{value["dToken"]}_{block_number}'.lower()
+            decimals_key = f"decimals_{token_address}_{block_number}".lower()
+
+            rpc_calls[reserve_key] = self.get_function_lending_pool_info("getReserveData", [token_address])
+            rpc_calls[atoken_total_supply_key] = self.state_service.get_function_info(
+                value["tToken"], ERC20_ABI, "totalSupply", block_number=block_number)
+            rpc_calls[debt_token_total_supply_key] = self.state_service.get_function_info(
+                value["dToken"], ERC20_ABI, "totalSupply", block_number=block_number)
+            rpc_calls[decimals_key] = self.state_service.get_function_info(
+                token_address, ERC20_ABI, "decimals", block_number=block_number)
+
+        return rpc_calls
+
+    def get_reserve_tokens_metadata(
+            self,
+            decoded_data: dict,
+            reserves_info: dict,
+            block_number: int = "latest"
+    ):
+        reserve_tokens_info = []
+        for token_address, reserve_info in reserves_info.items():
+            get_reserve_data_call_id = f'getReserveData_{self.name}_{token_address}_{block_number}'.lower()
+            reserve_data = decoded_data.get(get_reserve_data_call_id)
+
+            atoken = reserve_data[7].lower()
+            debt_token = reserve_data[9].lower()
+            decimals_call_id = f"decimals_{token_address}_{block_number}".lower()
+            atoken_total_supply_key = f'totalSupply_{atoken}_{block_number}'.lower()
+            debt_token_total_supply_key = f'totalSupply_{debt_token}_{block_number}'.lower()
+
+            reserve_tokens_info.append({
+                'underlying': token_address,
+                'underlying_decimals': decoded_data.get(decimals_call_id),
+                'a_token_supply': decoded_data.get(atoken_total_supply_key),
+                'd_token_supply': decoded_data.get(debt_token_total_supply_key),
+                'supply_apy': reserve_data[3],
+                'borrow_apy': reserve_data[4],
+                'stable_borrow_apy': reserve_data[5]
+            })
+
+        return reserve_tokens_info
+
+    def calculate_apy_lending_pool_function_call(
+            self,
+            reserves_info: dict,
+            decoded_data: dict,
+            token_prices: dict,
+            pool_token_price: float,
+            pool_decimals: int = 18,
+            block_number: int = 'latest',
+    ):
+        reserve_tokens_info = self.get_reserve_tokens_metadata(decoded_data, reserves_info, block_number)
+
+        data = {}
+        for token_info in reserve_tokens_info:
+            underlying_token = token_info['underlying']
+            data[underlying_token] = self._calculate_interest_rates(token_info)
+
+        return data
+
+    @classmethod
+    def _calculate_interest_rates(cls, token_info: dict):
+        total_supply_t = token_info.get('a_token_supply')
+        total_supply_d = token_info.get('d_token_supply')
+
+        total_supply = total_supply_t / 10 ** token_info['underlying_decimals']
+        total_borrow = total_supply_d / 10 ** token_info['underlying_decimals']
+
+        supply_apy = float(token_info['supply_apy']) / 10 ** 27
+        borrow_apy = float(token_info['borrow_apy']) / 10 ** 27
+
+        return {
+            DBConst.deposit_apy: supply_apy,
+            DBConst.borrow_apy: borrow_apy,
+            DBConst.total_deposit: total_supply,
+            DBConst.total_borrow: total_borrow
+        }
+
+    def get_apy_lending_pool_function_info_deprecated(
+            self,
+            reserves_info: dict,
             block_number: int = "latest",
     ):
         rpc_calls = {}
@@ -101,7 +187,7 @@ class ValasStateService(ProtocolServices):
         return rpc_calls
 
     @staticmethod
-    def get_apy_lending_pool(
+    def get_apy_lending_pool_deprecated(
             atokens: dict,
             debt_tokens: dict,
             decimals: dict,
@@ -156,7 +242,7 @@ class ValasStateService(ProtocolServices):
 
         return interest_rate
 
-    def calculate_apy_lending_pool_function_call(
+    def calculate_apy_lending_pool_function_call_deprecated(
             self,
             reserves_info: dict,
             decoded_data: dict,
@@ -205,7 +291,7 @@ class ValasStateService(ProtocolServices):
             for pos in range(len(reserves_info.keys())):
                 token_prices[reserves_info[pos].lower()] = prices[pos] / 10 ** pool_decimals
 
-        data = self.get_apy_lending_pool(
+        data = self.get_apy_lending_pool_deprecated(
             atokens, debt_tokens, decimals, reserves_info, asset_data_tokens, total_supply_tokens, interest_rate,
             token_prices, pool_token_price, pool_decimals, rewards_per_second, total_alloc_point
         )
