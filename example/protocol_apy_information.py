@@ -3,13 +3,13 @@ import json
 from defi_services.jobs.processors.state_processor import StateProcessor
 
 job = StateProcessor(
-    provider_uri="https://rpc.ankr.com/bsc",
-    chain_id="0x38"
+    provider_uri="https://rpc.ankr.com/optimism",
+    chain_id="0xa"
 )
 queries = [
     {
         "query_id": 4,
-        "entity_id": 'liqee',
+        "entity_id": 'wepiggy',
         "query_type": "protocol_apy"
     }
 ]
