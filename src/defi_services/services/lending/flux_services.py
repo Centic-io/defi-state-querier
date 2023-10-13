@@ -1,19 +1,16 @@
 import logging
-import time
 
 from web3 import Web3
 
 from defi_services.abis.lending.cream.cream_comptroller_abi import CREAM_COMPTROLLER_ABI
 from defi_services.abis.lending.cream.cream_lens_abi import CREAM_LENS_ABI
-from defi_services.abis.token.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
-from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import ContractAddresses, Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
+from defi_services.services.lending.compound_service import CompoundStateService
 from defi_services.services.lending.lending_info.ethereum.flux_eth import FLUX_ETH
-from defi_services.services.protocol_services import ProtocolServices
 
 logger = logging.getLogger("Flux finance Lending Pool State Service")
 
@@ -24,9 +21,9 @@ class FluxInfo:
     }
 
 
-class FluxStateService(ProtocolServices):
+class FluxStateService(CompoundStateService):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
-        super().__init__()
+        super().__init__(state_service, chain_id)
         self.name = f"{chain_id}_{Lending.flux}"
         self.chain_id = chain_id
         self.pool_info = FluxInfo.mapping.get(chain_id)
@@ -290,9 +287,4 @@ class FluxStateService(ProtocolServices):
     def get_comptroller_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
         return self.state_service.get_function_info(
             self.pool_info['comptrollerAddress'], self.comptroller_abi, fn_name, fn_paras, block_number
-        )
-
-    def get_ctoken_function_info(self, ctoken: str, fn_name: str, fn_paras: list, block_number: int = "latest"):
-        return self.state_service.get_function_info(
-            ctoken, CTOKEN_ABI, fn_name, fn_paras, block_number
         )
