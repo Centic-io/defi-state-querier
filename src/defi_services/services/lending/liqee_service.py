@@ -6,15 +6,16 @@ from web3 import Web3
 from defi_services.abis.lending.liqee.liqee_comptroller_abi import LIQEE_CONTROLLER_ABI
 from defi_services.abis.lending.liqee.liqee_lending_data_abi import LIQEE_LENDING_DATA_ABI
 from defi_services.abis.lending.liqee.liqee_token_abi import LIQEE_TOKEN_ABI
-from defi_services.abis.token.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
-from defi_services.constants.chain_constant import Chain
+from defi_services.constants.chain_constant import Chain, BlockTime
+from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
+from defi_services.constants.time_constant import TimeConstants
 from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
+from defi_services.services.lending.compound_service import CompoundStateService
 from defi_services.services.lending.lending_info.bsc.liqee_bsc import LIQEE_BSC
 from defi_services.services.lending.lending_info.ethereum.liqee_eth import LIQEE_ETH
-from defi_services.services.protocol_services import ProtocolServices
 
 logger = logging.getLogger("Liqee Lending Pool State Service")
 
@@ -26,9 +27,9 @@ class LiqeeInfo:
     }
 
 
-class LiqeeStateService(ProtocolServices):
+class LiqeeStateService(CompoundStateService):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
-        super().__init__()
+        super().__init__(state_service, chain_id)
         self.name = f"{chain_id}_{Lending.liqee}"
         self.chain_id = chain_id
         self.pool_info = LiqeeInfo.mapping.get(chain_id)
@@ -84,6 +85,86 @@ class LiqeeStateService(ProtocolServices):
         return tokens
 
     # CALCULATE APY LENDING POOL
+    def get_reserve_tokens_metadata(
+            self,
+            decoded_data: dict,
+            reserves_info: dict,
+            block_number: int = "latest"
+    ):
+        reserve_tokens_info = []
+        for token_address, reserve_info in reserves_info.items():
+            if token_address != Token.native_token:
+                underlying_decimals_query_id = f"decimals_{token_address}_{block_number}".lower()
+                underlying_decimals = decoded_data.get(underlying_decimals_query_id)
+            else:
+                underlying_decimals = Chain.native_decimals.get(self.chain_id, 18)
+
+            ctoken = reserve_info.get("cToken")
+            ctoken_decimals_query_id = f"decimals_{ctoken}_{block_number}".lower()
+            total_supply_query_id = f"totalSupply_{ctoken}_{block_number}".lower()
+            total_borrow_query_id = f"totalBorrows_{ctoken}_{block_number}".lower()
+            supply_rate_query_id = f"supplyRatePerBlock_{ctoken}_{block_number}".lower()
+            borrow_rate_query_id = f"borrowRatePerBlock_{ctoken}_{block_number}".lower()
+            exchange_rate_query_id = f"exchangeRateStored_{ctoken}_{block_number}".lower()
+
+            reserve_tokens_info.append({
+                "token": ctoken,
+                "token_decimals": decoded_data.get(ctoken_decimals_query_id),
+                "borrow_rate": decoded_data.get(borrow_rate_query_id),
+                "supply_rate": decoded_data.get(supply_rate_query_id) or 0,  # dForce iMUSX 0x36f4c36d1f6e8418ecb2402f896b2a8fedde0991 does not support function supplyRatePerBlock
+                "supply": decoded_data.get(total_supply_query_id),
+                "borrow": decoded_data.get(total_borrow_query_id),
+                "exchange_rate": decoded_data.get(exchange_rate_query_id),
+                "underlying_decimals": underlying_decimals,
+                "underlying": token_address
+            })
+        return reserve_tokens_info
+
+    def calculate_apy_lending_pool_function_call(
+            self,
+            reserves_info: dict,
+            decoded_data: dict,
+            token_prices: dict,
+            pool_token_price: float,
+            pool_decimals: int = 18,
+            block_number: int = "latest",
+    ):
+        reserve_tokens_info = self.get_reserve_tokens_metadata(decoded_data, reserves_info, block_number)
+
+        if self.chain_id == Chain.ethereum:
+            apx_block_speed_in_seconds = 13  # Follow document of dForce
+        else:
+            apx_block_speed_in_seconds = BlockTime.block_time_by_chains[self.chain_id]
+
+        data = {}
+        for token_info in reserve_tokens_info:
+            underlying_token = token_info['underlying']
+            data[underlying_token] = self._calculate_interest_rates(
+                token_info, pool_decimals=pool_decimals,
+                apx_block_speed_in_seconds=apx_block_speed_in_seconds
+            )
+
+        return data
+
+    @classmethod
+    def _calculate_interest_rates(
+            cls, token_info: dict, pool_decimals: int, apx_block_speed_in_seconds: float):
+        block_per_day = int(TimeConstants.A_DAY / apx_block_speed_in_seconds)
+
+        exchange_rate = float(token_info["exchange_rate"]) / 10 ** 18  # changed for dForce
+
+        total_borrow = float(token_info["borrow"]) / 10 ** int(token_info["underlying_decimals"])
+        total_supply = float(token_info["supply"]) * exchange_rate / 10 ** int(token_info["token_decimals"])
+
+        supply_apy = ((token_info["supply_rate"] / 10 ** pool_decimals) * block_per_day + 1) ** 365 - 1
+        borrow_apy = ((token_info["borrow_rate"] / 10 ** pool_decimals) * block_per_day + 1) ** 365 - 1
+
+        return {
+            DBConst.deposit_apy: supply_apy,
+            DBConst.borrow_apy: borrow_apy,
+            DBConst.total_deposit: total_supply,
+            DBConst.total_borrow: total_borrow
+        }
 
     # REWARDS BALANCE
     def get_rewards_balance_function_info(
@@ -296,11 +377,6 @@ class LiqeeStateService(ProtocolServices):
     def get_comptroller_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
         return self.state_service.get_function_info(
             self.pool_info['controllerAddress'], self.controller_abi, fn_name, fn_paras, block_number
-        )
-
-    def get_ctoken_function_info(self, ctoken: str, fn_name: str, fn_paras: list, block_number: int = "latest"):
-        return self.state_service.get_function_info(
-            ctoken, CTOKEN_ABI, fn_name, fn_paras, block_number
         )
 
     def get_all_markets(
