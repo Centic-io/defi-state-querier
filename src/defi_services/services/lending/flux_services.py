@@ -278,13 +278,3 @@ class FluxStateService(CompoundStateService):
         )
 
         return {"health_factor": data["health_factor"]}
-
-    def get_lens_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
-        return self.state_service.get_function_info(
-            self.pool_info['lensAddress'], self.lens_abi, fn_name, fn_paras, block_number
-        )
-
-    def get_comptroller_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
-        return self.state_service.get_function_info(
-            self.pool_info['comptrollerAddress'], self.comptroller_abi, fn_name, fn_paras, block_number
-        )

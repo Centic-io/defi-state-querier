@@ -373,15 +373,3 @@ class LiqeeStateService(CompoundStateService):
         return self.state_service.get_function_info(
             self.pool_info['lendingDataAddress'], self.lending_data_abi, fn_name, fn_paras, block_number
         )
-
-    def get_comptroller_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
-        return self.state_service.get_function_info(
-            self.pool_info['controllerAddress'], self.controller_abi, fn_name, fn_paras, block_number
-        )
-
-    def get_all_markets(
-            self, block_number: int = 'latest'):
-        key = f"getAllMarkets_{self.pool_info.get('comptrollerAddress')}_{block_number}".lower()
-        return {
-            key: self.get_comptroller_function_info("getAllMarkets", [], block_number)
-        }
