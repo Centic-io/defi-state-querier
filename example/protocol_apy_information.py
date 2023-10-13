@@ -9,7 +9,7 @@ job = StateProcessor(
 queries = [
     {
         "query_id": 4,
-        "entity_id": 'strike',
+        "entity_id": 'onyx-protocol',
         "query_type": "protocol_apy"
     }
 ]
