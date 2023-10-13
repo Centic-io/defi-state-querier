@@ -76,7 +76,39 @@ class AaveV3StateService(AaveV2StateService):
         return reserves_info
 
     # CALCULATE APY LENDING POOL
-    def get_apy_lending_pool_function_info(
+    def get_reserve_tokens_metadata(
+            self,
+            decoded_data: dict,
+            reserves_info: dict,
+            block_number: int = "latest"
+    ):
+        reserve_tokens_info = []
+        for token_address, reserve_info in reserves_info.items():
+            get_reserve_data_call_id = f'getReserveData_{self.name}_{token_address}_{block_number}'.lower()
+            reserve_data = decoded_data.get(get_reserve_data_call_id)
+
+            atoken = reserve_data[8].lower()
+            sdebt_token = reserve_data[9].lower()
+            debt_token = reserve_data[10].lower()
+            decimals_call_id = f"decimals_{token_address}_{block_number}".lower()
+            atoken_total_supply_key = f'totalSupply_{atoken}_{block_number}'.lower()
+            debt_token_total_supply_key = f'totalSupply_{debt_token}_{block_number}'.lower()
+            sdebt_token_total_supply_key = f'totalSupply_{sdebt_token}_{block_number}'.lower()
+
+            reserve_tokens_info.append({
+                'underlying': token_address,
+                'underlying_decimals': decoded_data.get(decimals_call_id),
+                'a_token_supply': decoded_data.get(atoken_total_supply_key),
+                'd_token_supply': decoded_data.get(debt_token_total_supply_key),
+                'sd_token_supply': decoded_data.get(sdebt_token_total_supply_key),
+                'supply_apy': reserve_data[2],
+                'borrow_apy': reserve_data[4],
+                'stable_borrow_apy': reserve_data[5]
+            })
+
+        return reserve_tokens_info
+
+    def get_apy_lending_pool_function_info_deprecated(
             self,
             reserves_info: dict,
             block_number: int = "latest",
@@ -112,7 +144,7 @@ class AaveV3StateService(AaveV2StateService):
 
         return rpc_calls
 
-    def get_apy_lending_pool(
+    def get_apy_lending_pool_deprecated(
             self,
             atokens: dict,
             debt_tokens: dict,
@@ -179,7 +211,7 @@ class AaveV3StateService(AaveV2StateService):
 
         return interest_rate
 
-    def calculate_apy_lending_pool_function_call(
+    def calculate_apy_lending_pool_function_call_deprecated(
             self,
             reserves_info: dict,
             decoded_data: dict,
@@ -237,7 +269,7 @@ class AaveV3StateService(AaveV2StateService):
             for pos in range(len(reserves_info.keys())):
                 token_prices[reserves_info[pos].lower()] = prices[pos] / 10 ** pool_decimals
 
-        data = self.get_apy_lending_pool(
+        data = self.get_apy_lending_pool_deprecated(
             atokens, debt_tokens, decimals, reserves_info, asset_data_tokens, total_supply_tokens, interest_rate,
             token_prices, pool_token_price, pool_decimals
         )
