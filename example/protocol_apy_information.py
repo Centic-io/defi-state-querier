@@ -3,13 +3,13 @@ import json
 from defi_services.jobs.processors.state_processor import StateProcessor
 
 job = StateProcessor(
-    provider_uri="https://rpc.ankr.com/bsc",
-    chain_id="0x38"
+    provider_uri="https://rpc.ankr.com/avalanche",
+    chain_id="0xa86a"
 )
 queries = [
     {
         "query_id": 4,
-        "entity_id": 'apeswap-lending',
+        "entity_id": 'aave-v2',
         "query_type": "protocol_apy"
     }
 ]
