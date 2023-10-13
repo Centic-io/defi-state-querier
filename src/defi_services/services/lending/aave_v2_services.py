@@ -78,20 +78,12 @@ class AaveV2StateService(ProtocolServices):
         rpc_calls = {}
         for token_address, value in reserves_info.items():
             reserve_key = f"getReserveData_{self.name}_{token_address}_{block_number}".lower()
-            atoken_assets_key = f"assets_{value['tToken']}_{block_number}".lower()
-            debt_token_assets_key = f"assets_{value['dToken']}_{block_number}".lower()
-            sdebt_token_assets_key = f"assets_{value['sdToken']}_{block_number}".lower()
             atoken_total_supply_key = f'totalSupply_{value["tToken"]}_{block_number}'.lower()
             debt_token_total_supply_key = f'totalSupply_{value["dToken"]}_{block_number}'.lower()
             sdebt_token_total_supply_key = f'totalSupply_{value["sdToken"]}_{block_number}'.lower()
             decimals_key = f"decimals_{token_address}_{block_number}".lower()
 
             rpc_calls[reserve_key] = self.get_function_lending_pool_info("getReserveData", [token_address])
-            rpc_calls[atoken_assets_key] = self.get_function_incentive_info("assets", [value['tToken']], block_number)
-            rpc_calls[debt_token_assets_key] = self.get_function_incentive_info(
-                "assets", [value['dToken']], block_number)
-            rpc_calls[sdebt_token_assets_key] = self.get_function_incentive_info(
-                "assets", [value['sdToken']], block_number)
             rpc_calls[atoken_total_supply_key] = self.state_service.get_function_info(
                 value["tToken"], ERC20_ABI, "totalSupply", block_number=block_number)
             rpc_calls[debt_token_total_supply_key] = self.state_service.get_function_info(
