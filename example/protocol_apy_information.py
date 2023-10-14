@@ -3,8 +3,8 @@ import json
 from defi_services.jobs.processors.state_processor import StateProcessor
 
 job = StateProcessor(
-    provider_uri="https://rpc.ankr.com/polygon",
-    chain_id="0x89"
+    provider_uri="https://rpc.ankr.com/optimism",
+    chain_id="0xa"
 )
 queries = [
     {

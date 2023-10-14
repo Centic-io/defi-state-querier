@@ -16,6 +16,7 @@ from defi_services.services.lending.lending_info.avalanche.aave_v2_avalanche imp
 from defi_services.services.lending.lending_info.ethereum.aave_v2_eth import AAVE_V2_ETH
 from defi_services.services.lending.lending_info.polygon.aave_v2_polygon import AAVE_V2_POLYGON
 from defi_services.services.protocol_services import ProtocolServices
+from defi_services.utils.apy import apr_to_apy
 
 logger = logging.getLogger("Aave V2 Lending Pool State Service")
 
@@ -213,9 +214,12 @@ class AaveV2StateService(ProtocolServices):
         total_supply = total_supply_t / 10 ** token_info['underlying_decimals']
         total_borrow = total_borrow / 10 ** token_info['underlying_decimals']
 
-        supply_apy = float(token_info['supply_apy']) / 10 ** 27
-        borrow_apy = float(token_info['borrow_apy']) / 10 ** 27
-        stable_borrow_apy = float(token_info['stable_borrow_apy']) / 10 ** 27
+        supply_apr = float(token_info['supply_apy']) / 10 ** 27
+        supply_apy = apr_to_apy(supply_apr)
+        borrow_apr = float(token_info['borrow_apy']) / 10 ** 27
+        borrow_apy = apr_to_apy(borrow_apr)
+        stable_borrow_apr = float(token_info['stable_borrow_apy']) / 10 ** 27
+        stable_borrow_apy = apr_to_apy(stable_borrow_apr)
 
         return {
             DBConst.deposit_apy: supply_apy,
