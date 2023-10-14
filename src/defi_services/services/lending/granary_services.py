@@ -20,6 +20,7 @@ from defi_services.services.lending.lending_info.ethereum.granary_eth import GRA
 from defi_services.services.lending.lending_info.fantom.granary_ftm import GRANARY_FTM
 from defi_services.services.lending.lending_info.optimism.granary_optimism import GRANARY_OPTIMISM
 from defi_services.services.protocol_services import ProtocolServices
+from defi_services.utils.apy import apr_to_apy
 
 logger = logging.getLogger("Granary V1 Lending Pool State Service")
 
@@ -165,8 +166,10 @@ class GranaryStateService(ProtocolServices):
         total_supply = total_supply_t / 10 ** token_info['underlying_decimals']
         total_borrow = total_supply_d / 10 ** token_info['underlying_decimals']
 
-        supply_apy = float(token_info['supply_apy']) / 10 ** 27
-        borrow_apy = float(token_info['borrow_apy']) / 10 ** 27
+        supply_apr = float(token_info['supply_apy']) / 10 ** 27
+        supply_apy = apr_to_apy(supply_apr)
+        borrow_apr = float(token_info['borrow_apy']) / 10 ** 27
+        borrow_apy = apr_to_apy(borrow_apr)
 
         return {
             DBConst.deposit_apy: supply_apy,
