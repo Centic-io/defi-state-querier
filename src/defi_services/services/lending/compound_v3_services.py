@@ -173,10 +173,34 @@ class CompoundV3StateService(CompoundStateService):
         data = {}
         for token_info in reserve_tokens_info:
             underlying_token = token_info['underlying']
-            data[underlying_token] = self._calculate_interest_rates(
+
+            asset_info = self._calculate_interest_rates(
                 token_info, pool_decimals=pool_decimals,
                 apx_block_speed_in_seconds=0
             )
+
+            assets = {
+                underlying_token: {
+                    'deposit_apy': 0,
+                    'borrow_apy': asset_info['borrow_apy'],
+                    'total_deposit': 0,
+                    'total_borrow': asset_info['total_borrow']
+                }
+            }
+            collaterals = asset_info.get('collaterals', {})
+            for collateral_address, total_supply in collaterals.items():
+                if collateral_address not in assets:
+                    assets[collateral_address] = {
+                        'deposit_apy': 0,
+                        'borrow_apy': 0,
+                        'total_deposit': 0,
+                        'total_borrow': 0
+                    }
+                assets[collateral_address]['total_deposit'] += total_supply
+                assets[collateral_address]['deposit_apy'] = asset_info['deposit_apy']
+
+            comet = token_info['token']
+            data[comet] = assets
 
         return data
 

@@ -1,7 +1,5 @@
 import logging
 
-from web3 import Web3
-
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.jobs.queriers.state_querier import StateQuerier

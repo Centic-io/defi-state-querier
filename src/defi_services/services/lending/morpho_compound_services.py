@@ -164,7 +164,7 @@ class MorphoCompoundStateService(ProtocolServices):
                 apx_block_speed_in_seconds=BlockTime.block_time_by_chains[self.chain_id]
             )
 
-        return data
+        return {self.pool_info.get("comptrollerAddress"): data}
 
     @classmethod
     def _calculate_interest_rates(cls, token_info: dict, pool_decimals: int, apx_block_speed_in_seconds: int):

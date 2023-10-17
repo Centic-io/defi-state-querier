@@ -184,10 +184,15 @@ class CompoundStateService(ProtocolServices):
         data = {}
         for token_info in reserve_tokens_info:
             underlying_token = token_info['underlying']
-            data[underlying_token] = self._calculate_interest_rates(
-                token_info, pool_decimals=pool_decimals,
-                apx_block_speed_in_seconds=BlockTime.block_time_by_chains[self.chain_id]
-            )
+            c_token = token_info['token']
+
+            assets = {
+                underlying_token: self._calculate_interest_rates(
+                    token_info, pool_decimals=pool_decimals,
+                    apx_block_speed_in_seconds=BlockTime.block_time_by_chains[self.chain_id]
+                )
+            }
+            data[c_token] = assets
 
         return data
 

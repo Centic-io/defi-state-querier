@@ -144,12 +144,15 @@ class MorphoAaveV2StateService(MorphoCompoundStateService):
         data = {}
         for token_info in reserve_tokens_info:
             underlying_token = token_info['underlying']
-            data[underlying_token] = self._calculate_interest_rates(token_info)
+            data[underlying_token] = self._calculate_interest_rates(
+                token_info, pool_decimals=pool_decimals,
+                apx_block_speed_in_seconds=0
+            )
 
-        return data
+        return {self.pool_info.get("comptrollerAddress"): data}
 
     @classmethod
-    def _calculate_interest_rates(cls, token_info: dict):
+    def _calculate_interest_rates(cls, token_info: dict, pool_decimals: int, apx_block_speed_in_seconds: int):
         decimals = token_info['underlying_decimals']
         total_supply = float(token_info["p2p_supply"]) / 10 ** decimals + float(token_info["pool_supply"]) / 10 ** decimals
         total_borrow = float(token_info["p2p_borrow"]) / 10 ** decimals + float(token_info["pool_borrow"]) / 10 ** decimals

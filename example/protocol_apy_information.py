@@ -9,7 +9,7 @@ job = StateProcessor(
 queries = [
     {
         "query_id": 4,
-        "entity_id": 'silo-finance',
+        "entity_id": 'aave-v2',
         "query_type": "protocol_apy"
     }
 ]

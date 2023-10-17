@@ -202,7 +202,7 @@ class AaveV2StateService(ProtocolServices):
             underlying_token = token_info['underlying']
             data[underlying_token] = self._calculate_interest_rates(token_info)
 
-        return data
+        return {self.pool_info.get("address"): data}
 
     @classmethod
     def _calculate_interest_rates(cls, token_info: dict):
