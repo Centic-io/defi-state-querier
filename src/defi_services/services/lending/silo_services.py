@@ -197,7 +197,7 @@ class SiloStateService(ProtocolServices):
             for asset_info in token_info['assets']:
                 underlying_address = asset_info['underlying']
                 asset_data[underlying_address] = self._calculate_interest_rates(asset_info, pool_decimals)
-                asset_data[underlying_address]['isBase'] = asset_info.get('is_base', False)
+                asset_data[underlying_address]['is_base'] = asset_info.get('is_base', False)
 
             pool_address = token_info['pool']
             data[pool_address] = asset_data

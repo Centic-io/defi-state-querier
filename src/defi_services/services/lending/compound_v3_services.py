@@ -184,7 +184,8 @@ class CompoundV3StateService(CompoundStateService):
                     'deposit_apy': 0,
                     'borrow_apy': asset_info['borrow_apy'],
                     'total_deposit': 0,
-                    'total_borrow': asset_info['total_borrow']
+                    'total_borrow': asset_info['total_borrow'],
+                    'is_base': True
                 }
             }
             collaterals = asset_info.get('collaterals', {})
@@ -194,7 +195,8 @@ class CompoundV3StateService(CompoundStateService):
                         'deposit_apy': 0,
                         'borrow_apy': 0,
                         'total_deposit': 0,
-                        'total_borrow': 0
+                        'total_borrow': 0,
+                        'is_base': False
                     }
                 assets[collateral_address]['total_deposit'] += total_supply
                 assets[collateral_address]['deposit_apy'] = asset_info['deposit_apy']
