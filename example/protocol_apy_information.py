@@ -3,13 +3,13 @@ import json
 from defi_services.jobs.processors.state_processor import StateProcessor
 
 job = StateProcessor(
-    provider_uri="https://rpc.ankr.com/arbitrum",
-    chain_id="0xa4b1"
+    provider_uri="https://rpc.ankr.com/eth",
+    chain_id="0x1"
 )
 queries = [
     {
         "query_id": 4,
-        "entity_id": 'silo-finance',
+        "entity_id": 'morpho-aavev3',
         "query_type": "protocol_apy"
     }
 ]
