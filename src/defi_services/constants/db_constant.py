@@ -77,3 +77,4 @@ class DBConst:
     disabled = "disabled"
     mint_paused = "mint_paused"
     borrow_paused = "borrow_paused"
+    collaterals = 'collaterals'

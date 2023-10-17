@@ -9,7 +9,7 @@ job = StateProcessor(
 queries = [
     {
         "query_id": 4,
-        "entity_id": 'uwu-lend',
+        "entity_id": 'compound-v3',
         "query_type": "protocol_apy"
     }
 ]
