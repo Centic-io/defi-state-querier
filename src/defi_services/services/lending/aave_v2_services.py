@@ -143,10 +143,10 @@ class AaveV2StateService(ProtocolServices):
                 DBConst.reward_borrow_apy: borrow_apr})
             # update liquidity
             liquidity_log = {
-                DBConst.total_borrow: {
+                'total_borrow': {
                     DBConst.amount: total_supply_d,
                     DBConst.value_in_usd: total_supply_d_in_usd},
-                DBConst.total_deposit: {
+                'total_deposit': {
                     DBConst.amount: total_supply_t,
                     DBConst.value_in_usd: total_supply_t_in_usd}
             }
@@ -222,11 +222,11 @@ class AaveV2StateService(ProtocolServices):
         stable_borrow_apy = apr_to_apy(stable_borrow_apr)
 
         return {
-            DBConst.deposit_apy: supply_apy,
-            DBConst.borrow_apy: borrow_apy,
-            DBConst.stable_borrow_apy: stable_borrow_apy,
-            DBConst.total_deposit: total_supply,
-            DBConst.total_borrow: total_borrow
+            'deposit_apy': supply_apy,
+            'borrow_apy': borrow_apy,
+            'stable_borrow_apy': stable_borrow_apy,
+            'total_deposit': total_supply,
+            'total_borrow': total_borrow
         }
 
     def calculate_apy_lending_pool_function_call_deprecated(
@@ -249,9 +249,9 @@ class AaveV2StateService(ProtocolServices):
             lower_address = token_address.lower()
             reserve_data = reserves_data[lower_address]
             interest_rate[lower_address] = {
-                DBConst.deposit_apy: float(reserve_data[3]) / 10 ** 27,
-                DBConst.borrow_apy: float(reserve_data[4]) / 10 ** 27,
-                DBConst.stable_borrow_apy: float(reserve_data[5]) / 10 ** 27}
+                'deposit_apy': float(reserve_data[3]) / 10 ** 27,
+                'borrow_apy': float(reserve_data[4]) / 10 ** 27,
+                'stable_borrow_apy': float(reserve_data[5]) / 10 ** 27}
             atoken = reserve_data[7].lower()
             sdebt_token = reserve_data[8].lower()
             debt_token = reserve_data[9].lower()

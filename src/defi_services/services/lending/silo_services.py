@@ -7,7 +7,6 @@ from defi_services.abis.lending.silo.silo_repository_abi import SILO_REPOSITORY_
 from defi_services.abis.lending.silo.silo_reward_abi import SILO_REWARD_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
-from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
@@ -218,10 +217,10 @@ class SiloStateService(ProtocolServices):
         borrow_apy = float(token_info["borrow_apy"]) / 10 ** pool_decimals
 
         return {
-            DBConst.deposit_apy: supply_apy,
-            DBConst.borrow_apy: borrow_apy,
-            DBConst.total_deposit: total_supply,
-            DBConst.total_borrow: total_borrow
+            'deposit_apy': supply_apy,
+            'borrow_apy': borrow_apy,
+            'total_deposit': total_supply,
+            'total_borrow': total_borrow
         }
 
     # REWARDS BALANCE

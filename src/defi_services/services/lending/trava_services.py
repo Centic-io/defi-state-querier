@@ -149,10 +149,10 @@ class TravaStateService(ProtocolServices):
         borrow_apy = float(token_info['borrow_apy']) / 10 ** 27
 
         return {
-            DBConst.deposit_apy: supply_apy,
-            DBConst.borrow_apy: borrow_apy,
-            DBConst.total_deposit: total_supply,
-            DBConst.total_borrow: total_borrow
+            'deposit_apy': supply_apy,
+            'borrow_apy': borrow_apy,
+            'total_deposit': total_supply,
+            'total_borrow': total_borrow
         }
 
     @staticmethod
@@ -198,10 +198,10 @@ class TravaStateService(ProtocolServices):
                 DBConst.reward_borrow_apy: borrow_apr})
             # update liquidity
             liquidity_log = {
-                DBConst.total_borrow: {
+                'total_borrow': {
                     DBConst.amount: total_supply_d,
                     DBConst.value_in_usd: total_supply_d * token_price},
-                DBConst.total_deposit: {
+                'total_deposit': {
                     DBConst.amount: total_supply_t,
                     DBConst.value_in_usd: total_supply_t * token_price}
             }
@@ -229,8 +229,8 @@ class TravaStateService(ProtocolServices):
             lower_address = token_address.lower()
             reserve_data = reserves_data[lower_address]
             interest_rate[lower_address] = {
-                DBConst.deposit_apy: float(reserve_data[3]) / 10 ** 27,
-                DBConst.borrow_apy: float(reserve_data[4]) / 10 ** 27}
+                'deposit_apy': float(reserve_data[3]) / 10 ** 27,
+                'borrow_apy': float(reserve_data[4]) / 10 ** 27}
             atoken = reserve_data[6].lower()
             debt_token = reserve_data[7].lower()
             decimals_call_id = f"decimals_{token_address}_{block_number}".lower()

@@ -3,7 +3,6 @@ from defi_services.abis.lending.compound_v3.comet_ext_abi import COMET_EXT_ABI
 from defi_services.abis.lending.compound_v3.reward_abi import REWARD_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
-from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.time_constant import TimeConstants
 from defi_services.constants.token_constant import Token
@@ -204,11 +203,11 @@ class CompoundV3StateService(CompoundStateService):
             interests[lending_type] = interest_rate
 
         return {
-            DBConst.deposit_apy: interests['supply'],
-            DBConst.borrow_apy: interests['borrow'],
-            DBConst.total_deposit: None,
-            DBConst.total_borrow: total_borrow,
-            DBConst.collaterals: collaterals
+            'deposit_apy': interests['supply'],
+            'borrow_apy': interests['borrow'],
+            'total_deposit': None,
+            'total_borrow': total_borrow,
+            'collaterals': collaterals
         }
 
     # REWARDS BALANCE

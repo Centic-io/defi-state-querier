@@ -8,7 +8,6 @@ from defi_services.abis.lending.liqee.liqee_lending_data_abi import LIQEE_LENDIN
 from defi_services.abis.lending.liqee.liqee_token_abi import LIQEE_TOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain, BlockTime
-from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.time_constant import TimeConstants
 from defi_services.constants.token_constant import Token
@@ -160,10 +159,10 @@ class LiqeeStateService(CompoundStateService):
         borrow_apy = ((token_info["borrow_rate"] / 10 ** pool_decimals) * block_per_day + 1) ** 365 - 1
 
         return {
-            DBConst.deposit_apy: supply_apy,
-            DBConst.borrow_apy: borrow_apy,
-            DBConst.total_deposit: total_supply,
-            DBConst.total_borrow: total_borrow
+            'deposit_apy': supply_apy,
+            'borrow_apy': borrow_apy,
+            'total_deposit': total_supply,
+            'total_borrow': total_borrow
         }
 
     # REWARDS BALANCE

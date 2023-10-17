@@ -8,7 +8,6 @@ from defi_services.abis.lending.aave_v2_and_forlks.oracle_abi import ORACLE_ABI
 from defi_services.abis.lending.aave_v2_and_forlks.uwu_incentives_abi import UWU_INCENTIVES_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
-from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.ethereum.uwu_eth import UWU_ETH
@@ -147,10 +146,10 @@ class UwuStateService(ProtocolServices):
         borrow_apy = apr_to_apy(borrow_apr)
 
         return {
-            DBConst.deposit_apy: supply_apy,
-            DBConst.borrow_apy: borrow_apy,
-            DBConst.total_deposit: total_supply,
-            DBConst.total_borrow: total_borrow
+            'deposit_apy': supply_apy,
+            'borrow_apy': borrow_apy,
+            'total_deposit': total_supply,
+            'total_borrow': total_borrow
         }
 
     # WALLET DEPOSIT BORROW BALANCE

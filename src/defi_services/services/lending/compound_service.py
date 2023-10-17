@@ -205,10 +205,10 @@ class CompoundStateService(ProtocolServices):
         borrow_apy = ((token_info["borrow_rate"] / 10 ** pool_decimals) * block_per_day + 1) ** 365 - 1
 
         return {
-            DBConst.deposit_apy: supply_apy,
-            DBConst.borrow_apy: borrow_apy,
-            DBConst.total_deposit: total_supply,
-            DBConst.total_borrow: total_borrow
+            'deposit_apy': supply_apy,
+            'borrow_apy': borrow_apy,
+            'total_deposit': total_supply,
+            'total_borrow': total_borrow
         }
 
     @staticmethod
@@ -238,11 +238,11 @@ class CompoundStateService(ProtocolServices):
         borrow_apy = ((token_info["borrow_rate"] / 10 ** pool_decimals) * block_per_day + 1) ** 365 - 1
 
         liquidity_log = {
-            DBConst.total_borrow: {
+            'total_borrow': {
                 DBConst.amount: total_borrow,
                 DBConst.value_in_usd: total_borrow_usd
             },
-            DBConst.total_deposit: {
+            'total_deposit': {
                 DBConst.amount: total_supply,
                 DBConst.value_in_usd: total_supply_usd
             }
@@ -250,8 +250,8 @@ class CompoundStateService(ProtocolServices):
         return {
             DBConst.reward_borrow_apy: borrow_apr,
             DBConst.reward_deposit_apy: supply_apr,
-            DBConst.deposit_apy: supply_apy,
-            DBConst.borrow_apy: borrow_apy,
+            'deposit_apy': supply_apy,
+            'borrow_apy': borrow_apy,
             DBConst.liquidity_change_logs: liquidity_log,
             DBConst.mint_paused: token_info[DBConst.mint_paused],
             DBConst.borrow_paused: token_info[DBConst.borrow_paused]

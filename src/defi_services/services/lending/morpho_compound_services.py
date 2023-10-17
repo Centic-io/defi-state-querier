@@ -9,7 +9,6 @@ from defi_services.abis.lending.morpho.morpho_compound_lens_abi import MORPHO_CO
 from defi_services.abis.token.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain, BlockTime
-from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.time_constant import TimeConstants
 from defi_services.constants.token_constant import ContractAddresses, Token
@@ -179,10 +178,10 @@ class MorphoCompoundStateService(ProtocolServices):
         borrow_apy = ((token_info["borrow_rate"] / 10 ** pool_decimals) * block_per_day + 1) ** 365 - 1
 
         return {
-            DBConst.deposit_apy: supply_apy,
-            DBConst.borrow_apy: borrow_apy,
-            DBConst.total_deposit: total_supply,
-            DBConst.total_borrow: total_borrow
+            'deposit_apy': supply_apy,
+            'borrow_apy': borrow_apy,
+            'total_deposit': total_supply,
+            'total_borrow': total_borrow
         }
 
     # REWARDS BALANCE

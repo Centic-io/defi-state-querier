@@ -10,7 +10,6 @@ from defi_services.abis.lending.morpho.morpho_aave_v2_comptroller_abi import MOR
 from defi_services.abis.lending.morpho.morpho_aave_v2_lens_abi import MORPHO_AAVE_V2_LENS_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
-from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.aave_v2_services import AaveInfo
@@ -161,10 +160,10 @@ class MorphoAaveV2StateService(MorphoCompoundStateService):
         borrow_apy = apr_to_apy(borrow_apr)
 
         return {
-            DBConst.deposit_apy: supply_apy,
-            DBConst.borrow_apy: borrow_apy,
-            DBConst.total_deposit: total_supply,
-            DBConst.total_borrow: total_borrow
+            'deposit_apy': supply_apy,
+            'borrow_apy': borrow_apy,
+            'total_deposit': total_supply,
+            'total_borrow': total_borrow
         }
 
     # REWARDS BALANCE

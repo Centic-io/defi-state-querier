@@ -2,7 +2,6 @@ import logging
 
 from defi_services.abis.lending.radiant_v2.radiant_v2_incentive_abi import RADIANT_V2_INCENTIVE_ABI
 from defi_services.constants.chain_constant import Chain
-from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.arbitrum.radiant_arbitrum import RADIANT_ARB
@@ -52,10 +51,10 @@ class RadiantStateService(ValasStateService):
         borrow_apy = apr_to_apy(borrow_apr)
 
         return {
-            DBConst.deposit_apy: supply_apy,
-            DBConst.borrow_apy: borrow_apy,
-            DBConst.total_deposit: total_supply,
-            DBConst.total_borrow: total_borrow
+            'deposit_apy': supply_apy,
+            'borrow_apy': borrow_apy,
+            'total_deposit': total_supply,
+            'total_borrow': total_borrow
         }
 
     # REWARDS BALANCE
