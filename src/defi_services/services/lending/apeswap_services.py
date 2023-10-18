@@ -5,7 +5,7 @@ from web3 import Web3
 from defi_services.abis.lending.apeswape.apeswap_comptroller_abi import APESWAP_COMPTROLLER_ABI
 from defi_services.abis.lending.apeswape.apeswap_lens_abi import APESWAP_LENS_ABI
 from defi_services.abis.lending.apeswape.apswap_ctoken_abi import APESWAP_CTOKEN_ABI
-from defi_services.constants.chain_constant import Chain
+from defi_services.constants.chain_constant import Chain, BlockTime
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.token_constant import ContractAddresses
 from defi_services.jobs.queriers.state_querier import StateQuerier
@@ -69,6 +69,38 @@ class ApeSwapStateService(CompoundStateService):
 
         return reserves_info
 
+    # PROTOCOL APY
+    def calculate_apy_lending_pool_function_call(
+            self,
+            reserves_info: dict,
+            decoded_data: dict,
+            token_prices: dict,
+            pool_token_price: float,
+            pool_decimals: int = 18,
+            block_number: int = "latest",
+    ):
+        reserve_tokens_info = self.get_reserve_tokens_metadata(decoded_data, reserves_info, block_number)
+
+        if self.chain_id == Chain.bsc:
+            apx_block_speed_in_seconds = 1  # Change for ApeSwap Lending
+        else:
+            apx_block_speed_in_seconds = BlockTime.block_time_by_chains[self.chain_id]
+
+        data = {}
+        for token_info in reserve_tokens_info:
+            underlying_token = token_info['underlying']
+            c_token = token_info['token']
+
+            assets = {
+                underlying_token: self._calculate_interest_rates(
+                    token_info, pool_decimals=pool_decimals,
+                    apx_block_speed_in_seconds=apx_block_speed_in_seconds
+                )
+            }
+            data[c_token] = assets
+
+        return data
+
     # REWARDS BALANCE
     def get_rewards_balance_function_info(
             self,
@@ -82,8 +114,7 @@ class ApeSwapStateService(CompoundStateService):
             self, decoded_data: dict, wallet: str, block_number: int = "latest"):
         return {}
 
-    def get_ctoken_function_info(self, ctoken: str, fn_name: str, fn_paras: list, block_number: int = "latest"):
+    def get_ctoken_function_info(self, ctoken: str, fn_name: str, fn_paras: list = None, block_number: int = "latest"):
         return self.state_service.get_function_info(
             ctoken, APESWAP_CTOKEN_ABI, fn_name, fn_paras, block_number
         )
-

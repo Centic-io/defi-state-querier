@@ -1,5 +1,4 @@
 import logging
-import time
 
 from web3 import Web3
 
@@ -7,13 +6,12 @@ from defi_services.abis.lending.onyx.onyx_comptroller_abi import ONYX_COMPTROLLE
 from defi_services.abis.lending.onyx.onyx_lens_abi import ONYX_LENS_ABI
 from defi_services.abis.lending.onyx.onyx_token_abi import ONYX_TOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
-from defi_services.constants.chain_constant import Chain
+from defi_services.constants.chain_constant import Chain, BlockTime
 from defi_services.constants.entities.lending_constant import Lending
-from defi_services.constants.query_constant import Query
 from defi_services.constants.token_constant import ContractAddresses, Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
+from defi_services.services.lending.compound_service import CompoundStateService
 from defi_services.services.lending.lending_info.ethereum.onyx_eth import ONYX_ETH
-from defi_services.services.protocol_services import ProtocolServices
 
 logger = logging.getLogger("Onyx Lending Pool State Service")
 
@@ -24,9 +22,9 @@ class OnyxInfo:
     }
 
 
-class OnyxStateService(ProtocolServices):
+class OnyxStateService(CompoundStateService):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
-        super().__init__()
+        super().__init__(state_service, chain_id)
         self.name = f"{chain_id}_{Lending.onyx}"
         self.chain_id = chain_id
         self.pool_info = OnyxInfo.mapping.get(chain_id)
@@ -75,6 +73,74 @@ class OnyxStateService(ProtocolServices):
             }
 
         return reserves_info
+
+    # PROTOCOL APY
+    def get_reserve_tokens_metadata(
+            self,
+            decoded_data: dict,
+            reserves_info: dict,
+            block_number: int = "latest"
+    ):
+        reserve_tokens_info = []
+        for token_address, reserve_info in reserves_info.items():
+            if token_address != Token.native_token:
+                underlying_decimals_query_id = f"decimals_{token_address}_{block_number}".lower()
+                underlying_decimals = decoded_data.get(underlying_decimals_query_id)
+            else:
+                underlying_decimals = Chain.native_decimals.get(self.chain_id, 18)
+
+            ctoken = reserve_info.get("cToken")
+            ctoken_decimals_query_id = f"decimals_{ctoken}_{block_number}".lower()
+            total_supply_query_id = f"totalSupply_{ctoken}_{block_number}".lower()
+            total_borrow_query_id = f"totalBorrows_{ctoken}_{block_number}".lower()
+            supply_rate_query_id = f"supplyRatePerBlock_{ctoken}_{block_number}".lower()
+            borrow_rate_query_id = f"borrowRatePerBlock_{ctoken}_{block_number}".lower()
+            exchange_rate_query_id = f"exchangeRateStored_{ctoken}_{block_number}".lower()
+
+            ctoken_decimals = decoded_data.get(ctoken_decimals_query_id)
+            reserve_tokens_info.append({
+                "token": ctoken,
+                "token_decimals": ctoken_decimals,
+                "borrow_rate": decoded_data.get(borrow_rate_query_id),
+                "supply_rate": decoded_data.get(supply_rate_query_id),
+                "supply": decoded_data.get(total_supply_query_id),
+                "borrow": decoded_data.get(total_borrow_query_id),
+                "exchange_rate": decoded_data.get(exchange_rate_query_id),
+                "underlying_decimals": underlying_decimals or 8,  # Onyx protocol support NFT as reserves
+                "underlying": token_address
+            })
+        return reserve_tokens_info
+
+    def calculate_apy_lending_pool_function_call(
+            self,
+            reserves_info: dict,
+            decoded_data: dict,
+            token_prices: dict,
+            pool_token_price: float,
+            pool_decimals: int = 18,
+            block_number: int = "latest",
+    ):
+        reserve_tokens_info = self.get_reserve_tokens_metadata(decoded_data, reserves_info, block_number)
+
+        if self.chain_id == Chain.ethereum:
+            apx_block_speed_in_seconds = 15  # Changed for onyx protocol
+        else:
+            apx_block_speed_in_seconds = BlockTime.block_time_by_chains[self.chain_id]
+
+        data = {}
+        for token_info in reserve_tokens_info:
+            underlying_token = token_info['underlying']
+            c_token = token_info['token']
+
+            assets = {
+                underlying_token: self._calculate_interest_rates(
+                    token_info, pool_decimals=pool_decimals,
+                    apx_block_speed_in_seconds=apx_block_speed_in_seconds
+                )
+            }
+            data[c_token] = assets
+
+        return data
 
     # REWARDS BALANCE
     def get_rewards_balance_function_info(
@@ -294,18 +360,3 @@ class OnyxStateService(ProtocolServices):
                 result[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
                 result[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
         return result
-
-    def get_lens_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
-        return self.state_service.get_function_info(
-            self.pool_info['lensAddress'], self.lens_abi, fn_name, fn_paras, block_number
-        )
-
-    def get_comptroller_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
-        return self.state_service.get_function_info(
-            self.pool_info['comptrollerAddress'], self.comptroller_abi, fn_name, fn_paras, block_number
-        )
-
-    def get_ctoken_function_info(self, ctoken: str, fn_name: str, fn_paras: list, block_number: int = "latest"):
-        return self.state_service.get_function_info(
-            ctoken, self.token_abi, fn_name, fn_paras, block_number
-        )

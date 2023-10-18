@@ -8,3 +8,20 @@ class Chain:
     optimism = "0xa"
     avalanche = "0xa86a"
     tron = "0x2b6653dc"
+
+    native_decimals = {
+        tron: 6
+    }
+
+
+class BlockTime:
+    block_time_by_chains = {
+        Chain.bsc: 3,
+        Chain.ethereum: 12,
+        Chain.fantom: 2,
+        Chain.polygon: 2,
+        Chain.arbitrum: 0.3,
+        Chain.optimism: 1,  # TODO: check
+        Chain.avalanche: 2,
+        Chain.tron: 3
+    }

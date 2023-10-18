@@ -1,4 +1,3 @@
-import json
 import os
 from dotenv import load_dotenv
 from defi_services.jobs.processors.state_processor import StateProcessor
@@ -16,7 +15,8 @@ def test_processor_job():
         '0xfa': os.environ.get("FANTOM_PROVIDER"),
         '0xa4b1': os.environ.get("ARBITRUM_PROVIDER"),
         '0xa': os.environ.get("OPTIMISM_PROVIDER"),
-        '0xa86a': os.environ.get("AVALANCHE_PROVIDER")
+        '0xa86a': os.environ.get("AVALANCHE_PROVIDER"),
+        '0x2b6653dc': os.environ.get("TRON_PROVIDER")
     }
     address = '0xf1df824419879bb8a7e758173523f88efb7af193'
 
@@ -42,6 +42,12 @@ def test_processor_job():
                     "query_type": "protocol_reward",
                     "reserves_list": p.get("protocol_info", {}).get("reservesList")
                 })
+                queries.append({
+                    "query_id": f'{p_id}_protocol_apy',
+                    "entity_id": p_id,
+                    "query_type": "protocol_apy",
+                    "reserves_list": p.get("protocol_info", {}).get("reservesList")
+                })
 
         error = False
         try:
@@ -49,12 +55,10 @@ def test_processor_job():
             data[chain_id] = result
         except Exception as ex:
             logger.exception(ex)
+            logger.error(f'Exception on chain {chain_id}')
             error = True
 
         assert not error
-
-    with open('lib_service_data.json', 'w') as f:
-        json.dump(data, f, indent=2)
 
 
 if __name__ == "__main__":

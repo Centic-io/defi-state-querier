@@ -5,18 +5,17 @@ from web3 import Web3
 from defi_services.abis.lending.wepiggy.wepiggy_comptroller_abi import WEPIGGY_COMPTROLLER_ABI
 from defi_services.abis.lending.wepiggy.wepiggy_distribution_abi import WEPIGGY_DISTRIBUTION_ABI
 from defi_services.abis.lending.wepiggy.wepiggy_lens_abi import WEPIGGY_LENS_ABI
-from defi_services.abis.token.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
-from defi_services.constants.chain_constant import Chain
+from defi_services.constants.chain_constant import Chain, BlockTime
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.token_constant import ContractAddresses, Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
+from defi_services.services.lending.compound_service import CompoundStateService
 from defi_services.services.lending.lending_info.arbitrum.wepiggy_arbitrum import WEPIGGY_ARB
 from defi_services.services.lending.lending_info.bsc.wepiggy_bsc import WEPIGGY_BSC
 from defi_services.services.lending.lending_info.ethereum.wepiggy_eth import WEPIGGY_ETH
 from defi_services.services.lending.lending_info.optimism.wepiggy_optimism import WEPIGGY_OPTIMISM
 from defi_services.services.lending.lending_info.polygon.wepiggy_polygon import WEPIGGY_POLYGON
-from defi_services.services.protocol_services import ProtocolServices
 
 logger = logging.getLogger("Compound Lending Pool State Service")
 
@@ -31,9 +30,9 @@ class WepiggyInfo:
     }
 
 
-class WepiggyStateService(ProtocolServices):
+class WepiggyStateService(CompoundStateService):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
-        super().__init__()
+        super().__init__(state_service, chain_id)
         self.name = f"{chain_id}_{Lending.wepiggy}"
         self.chain_id = chain_id
         self.pool_info = WepiggyInfo.mapping.get(chain_id)
@@ -86,6 +85,42 @@ class WepiggyStateService(ProtocolServices):
             }
 
         return reserves_info
+
+    # PROTOCOL APY
+    def calculate_apy_lending_pool_function_call(
+            self,
+            reserves_info: dict,
+            decoded_data: dict,
+            token_prices: dict,
+            pool_token_price: float,
+            pool_decimals: int = 18,
+            block_number: int = "latest",
+    ):
+        reserve_tokens_info = self.get_reserve_tokens_metadata(decoded_data, reserves_info, block_number)
+
+        if self.chain_id == Chain.ethereum:
+            apx_block_speed_in_seconds = 15  # Change for wipiggy
+        elif self.chain_id == Chain.arbitrum:
+            apx_block_speed_in_seconds = 15
+        elif self.chain_id == Chain.optimism:
+            apx_block_speed_in_seconds = 15
+        else:
+            apx_block_speed_in_seconds = BlockTime.block_time_by_chains[self.chain_id]
+
+        data = {}
+        for token_info in reserve_tokens_info:
+            underlying_token = token_info['underlying']
+            c_token = token_info['token']
+
+            assets = {
+                underlying_token: self._calculate_interest_rates(
+                    token_info, pool_decimals=pool_decimals,
+                    apx_block_speed_in_seconds=apx_block_speed_in_seconds
+                )
+            }
+            data[c_token] = assets
+
+        return data
 
     # REWARDS BALANCE
     def get_rewards_balance_function_info(
@@ -301,9 +336,4 @@ class WepiggyStateService(ProtocolServices):
     def get_comptroller_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
         return self.state_service.get_function_info(
             self.pool_info['comptrollerAddress'], self.comptroller_abi, fn_name, fn_paras, block_number
-        )
-
-    def get_ctoken_function_info(self, ctoken: str, fn_name: str, fn_paras: list, block_number: int = "latest"):
-        return self.state_service.get_function_info(
-            ctoken, CTOKEN_ABI, fn_name, fn_paras, block_number
         )
