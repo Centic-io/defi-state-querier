@@ -117,7 +117,7 @@ class StateProcessor:
     def run(self, address: str, queries: list, block_number: int = 'latest',
             batch_size: int = 100, max_workers: int = 8, ignore_error=False, token_prices=None):
         wallet = address
-        if self.chain_id == Chain.tron and not self.check_address(address):
+        if self.chain_id == Chain.tron and address and not self.check_address(address):
             wallet = base58_to_hex(address)
         if token_prices is None:
             token_prices = {}

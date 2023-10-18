@@ -19,6 +19,7 @@ from defi_services.services.lending.lending_info.ethereum.granary_eth import GRA
 from defi_services.services.lending.lending_info.fantom.granary_ftm import GRANARY_FTM
 from defi_services.services.lending.lending_info.optimism.granary_optimism import GRANARY_OPTIMISM
 from defi_services.services.protocol_services import ProtocolServices
+from defi_services.utils.apy import apr_to_apy
 
 logger = logging.getLogger("Granary V1 Lending Pool State Service")
 
@@ -86,6 +87,95 @@ class GranaryStateService(ProtocolServices):
             tokens.append(token)
         logger.info(f"Get token list related in {time.time() - begin}s")
         return tokens
+
+    # CALCULATE APY LENDING POOL
+    def get_apy_lending_pool_function_info(
+            self,
+            reserves_info: dict,
+            block_number: int = "latest"
+    ):
+        rpc_calls = {}
+        for token_address, value in reserves_info.items():
+            reserve_key = f"getReserveData_{self.name}_{token_address}_{block_number}".lower()
+            atoken_total_supply_key = f'totalSupply_{value["tToken"]}_{block_number}'.lower()
+            debt_token_total_supply_key = f'totalSupply_{value["dToken"]}_{block_number}'.lower()
+            decimals_key = f"decimals_{token_address}_{block_number}".lower()
+
+            rpc_calls[reserve_key] = self.get_function_lending_pool_info("getReserveData", [token_address])
+            rpc_calls[atoken_total_supply_key] = self.state_service.get_function_info(
+                value["tToken"], ERC20_ABI, "totalSupply", block_number=block_number)
+            rpc_calls[debt_token_total_supply_key] = self.state_service.get_function_info(
+                value["dToken"], ERC20_ABI, "totalSupply", block_number=block_number)
+            rpc_calls[decimals_key] = self.state_service.get_function_info(
+                token_address, ERC20_ABI, "decimals", block_number=block_number)
+
+        return rpc_calls
+
+    def get_reserve_tokens_metadata(
+            self,
+            decoded_data: dict,
+            reserves_info: dict,
+            block_number: int = "latest"
+    ):
+        reserve_tokens_info = []
+        for token_address, reserve_info in reserves_info.items():
+            get_reserve_data_call_id = f'getReserveData_{self.name}_{token_address}_{block_number}'.lower()
+            reserve_data = decoded_data.get(get_reserve_data_call_id)
+
+            atoken = reserve_data[7].lower()
+            debt_token = reserve_data[9].lower()
+            decimals_call_id = f"decimals_{token_address}_{block_number}".lower()
+            atoken_total_supply_key = f'totalSupply_{atoken}_{block_number}'.lower()
+            debt_token_total_supply_key = f'totalSupply_{debt_token}_{block_number}'.lower()
+
+            reserve_tokens_info.append({
+                'underlying': token_address,
+                'underlying_decimals': decoded_data.get(decimals_call_id),
+                'a_token_supply': decoded_data.get(atoken_total_supply_key),
+                'd_token_supply': decoded_data.get(debt_token_total_supply_key),
+                'supply_apy': reserve_data[3],
+                'borrow_apy': reserve_data[4]
+            })
+
+        return reserve_tokens_info
+
+    def calculate_apy_lending_pool_function_call(
+            self,
+            reserves_info: dict,
+            decoded_data: dict,
+            token_prices: dict,
+            pool_token_price: float,
+            pool_decimals: int = 18,
+            block_number: int = 'latest',
+    ):
+        reserve_tokens_info = self.get_reserve_tokens_metadata(decoded_data, reserves_info, block_number)
+
+        data = {}
+        for token_info in reserve_tokens_info:
+            underlying_token = token_info['underlying']
+            data[underlying_token] = self._calculate_interest_rates(token_info)
+
+        return {self.pool_info.get("address"): data}
+
+    @classmethod
+    def _calculate_interest_rates(cls, token_info: dict):
+        total_supply_t = token_info.get('a_token_supply')
+        total_supply_d = token_info.get('d_token_supply')
+
+        total_supply = total_supply_t / 10 ** token_info['underlying_decimals']
+        total_borrow = total_supply_d / 10 ** token_info['underlying_decimals']
+
+        supply_apr = float(token_info['supply_apy']) / 10 ** 27
+        supply_apy = apr_to_apy(supply_apr)
+        borrow_apr = float(token_info['borrow_apy']) / 10 ** 27
+        borrow_apy = apr_to_apy(borrow_apr)
+
+        return {
+            'deposit_apy': supply_apy,
+            'borrow_apy': borrow_apy,
+            'total_deposit': total_supply,
+            'total_borrow': total_borrow
+        }
 
     # WALLET DEPOSIT BORROW BALANCE
     def get_wallet_deposit_borrow_balance_function_info(

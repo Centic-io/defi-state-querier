@@ -71,7 +71,8 @@ class LendingServices:
     avalanche = {
         Lending.aave_v3: AaveV3StateService,
         Lending.aave_v2: AaveV2StateService,
-        Lending.granary: GranaryStateService
+        Lending.granary: GranaryStateService,
+        Lending.iron_bank: IronBankStateService
     }
 
     polygon = {

@@ -11,11 +11,11 @@ Return the asset list of an address in a blockchain. These assets are native tok
 ## Input
 - address: str (lower case or upper case)
 - block_number: int
-- chain_id: string. Eg: 0x1, 0x38
+- chain_id: string. Eg: `0x1`, `0x38`
 - query: array
   + query_id: id of query
-  + entity_id: token address, nft or id of protocols like aave-v2, compound, and pancakeswap-amm
-  + query_type: one of keywords - token_balance, ntf_balance, deposit_borrow, protocol_reward.
+  + entity_id: token address, nft or id of protocols like `aave-v2`, `compound`, and `pancakeswap-amm`
+  + query_type: one of keywords - `token_balance`, `ntf_balance`, `deposit_borrow`, `protocol_reward`, and `protocol_apy`.
 
 ## Output
 ```
@@ -56,6 +56,21 @@ Return the asset list of an address in a blockchain. These assets are native tok
     "protocol_reward": {
       "<reward_address>": {
         "amount": 1.4
+      }
+    }
+  },
+  {
+    "query_id": "<query_id>",
+    "entity_id": "<protocol_id>",
+    "query_type": "protocol_apy",
+    "deposit_borrow": {
+      "<protocol_address>": {
+        "<asset_address_1>": {
+          "total_deposit": 331.5,
+          "total_borrow": 184.4,
+          "deposit_apy": 0.051,
+          "borrow_apy": 0.067,
+        }
       }
     }
   }

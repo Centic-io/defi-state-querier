@@ -103,6 +103,126 @@ class SiloStateService(ProtocolServices):
         tokens = list(set(tokens))
         return tokens
 
+    # CALCULATE APY LENDING POOL
+    def get_apy_lending_pool_function_info(
+            self,
+            reserves_info: dict,
+            block_number: int = "latest"
+    ):
+        rpc_calls = {}
+        for token_address, reserve_info in reserves_info.items():
+            pool_address = reserve_info.get("pool")
+            assets_state_query_id = f"getAssetsWithState_{pool_address}_{block_number}".lower()
+            rpc_calls[assets_state_query_id] = self.get_pool_function_info(
+                pool=pool_address,
+                fn_name='getAssetsWithState',
+                block_number=block_number
+            )
+
+            for asset_address in reserve_info['assets']:
+                params = [pool_address, asset_address]
+
+                decimals_query_id = f"decimals_{asset_address}_{block_number}".lower()
+                rpc_calls[decimals_query_id] = self.state_service.get_function_info(asset_address, ERC20_ABI, "decimals", [], block_number)
+
+                borrow_apy_query_id = f"borrowAPY_{self.pool_info['lensAddress']}_{params}_{block_number}".lower()
+                rpc_calls[borrow_apy_query_id] = self.get_lens_function_info(
+                    fn_name='borrowAPY',
+                    fn_paras=params,
+                    block_number=block_number
+                )
+
+                deposit_apy_query_id = f"depositAPY_{self.pool_info['lensAddress']}_{params}_{block_number}".lower()
+                rpc_calls[deposit_apy_query_id] = self.get_lens_function_info(
+                    fn_name='depositAPY',
+                    fn_paras=params,
+                    block_number=block_number
+                )
+
+        return rpc_calls
+
+    def get_reserve_tokens_metadata(
+            self,
+            decoded_data: dict,
+            reserves_info: dict,
+            block_number: int = "latest"
+    ):
+        reserve_tokens_info = []
+        for token_address, reserve_info in reserves_info.items():
+            pool_address = reserve_info.get("pool")
+
+            assets_state_query_id = f"getAssetsWithState_{pool_address}_{block_number}".lower()
+            assets_state = decoded_data.get(assets_state_query_id)
+
+            assets = []
+            for asset_address, state in zip(assets_state[0], assets_state[1]):
+                asset_address = asset_address.lower()
+
+                params = [pool_address, asset_address]
+                decimals_query_id = f"decimals_{asset_address}_{block_number}".lower()
+                borrow_apy_query_id = f"borrowAPY_{self.pool_info['lensAddress']}_{params}_{block_number}".lower()
+                deposit_apy_query_id = f"depositAPY_{self.pool_info['lensAddress']}_{params}_{block_number}".lower()
+
+                assets.append({
+                    'underlying': asset_address,
+                    'underlying_decimals': decoded_data.get(decimals_query_id),
+                    'supply_apy': decoded_data.get(deposit_apy_query_id),
+                    'borrow_apy': decoded_data.get(borrow_apy_query_id),
+                    'total_supply': state[3],
+                    'total_only_deposit': state[4],
+                    'total_borrow': state[5],
+                    'is_base': asset_address == token_address
+                })
+
+            reserve_tokens_info.append({
+                "pool": pool_address,
+                "assets": assets,
+            })
+        return reserve_tokens_info
+
+    def calculate_apy_lending_pool_function_call(
+            self,
+            reserves_info: dict,
+            decoded_data: dict,
+            token_prices: dict,
+            pool_token_price: float,
+            pool_decimals: int = 18,
+            block_number: int = "latest",
+    ):
+        reserve_tokens_info = self.get_reserve_tokens_metadata(decoded_data, reserves_info, block_number)
+
+        data = {}
+        for token_info in reserve_tokens_info:
+            asset_data = {}
+            for asset_info in token_info['assets']:
+                underlying_address = asset_info['underlying']
+                asset_data[underlying_address] = self._calculate_interest_rates(asset_info, pool_decimals)
+                asset_data[underlying_address]['is_base'] = asset_info.get('is_base', False)
+
+            pool_address = token_info['pool']
+            data[pool_address] = asset_data
+
+        return data
+
+    @classmethod
+    def _calculate_interest_rates(cls, token_info: dict, pool_decimals: int):
+        decimals = int(token_info["underlying_decimals"])
+
+        total_borrow = float(token_info["total_borrow"]) / 10 ** decimals
+        total_deposit = float(token_info["total_supply"]) / 10 ** decimals
+        collateral_only_deposit = float(token_info["total_only_deposit"]) / 10 ** decimals
+        total_supply = total_deposit + collateral_only_deposit
+
+        supply_apy = float(token_info["supply_apy"]) / 10 ** pool_decimals
+        borrow_apy = float(token_info["borrow_apy"]) / 10 ** pool_decimals
+
+        return {
+            'deposit_apy': supply_apy,
+            'borrow_apy': borrow_apy,
+            'total_deposit': total_supply,
+            'total_borrow': total_borrow
+        }
+
     # REWARDS BALANCE
     def get_rewards_balance_function_info(
             self,
@@ -263,7 +383,12 @@ class SiloStateService(ProtocolServices):
 
         return {"health_factor": data["health_factor"]}
 
-    def get_lens_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
+    def get_lens_function_info(self, fn_name: str, fn_paras: list = None, block_number: int = "latest"):
         return self.state_service.get_function_info(
             self.pool_info['lensAddress'], self.lens_abi, fn_name, fn_paras, block_number
+        )
+
+    def get_pool_function_info(self, pool: str, fn_name: str, fn_paras: list = None, block_number: int = "latest"):
+        return self.state_service.get_function_info(
+            pool, self.silo_abi, fn_name, fn_paras, block_number
         )

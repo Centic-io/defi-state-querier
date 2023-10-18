@@ -69,12 +69,35 @@ class MorphoAaveV3StateService(MorphoCompoundStateService):
             if key in markets:
                 reserves_info[key] = {}
                 reserves_info[key]["tToken"] = value[8].lower()
-                reserves_info[key]["dToken"] = value[9].lower()
-                reserves_info[key]["sdToken"] = value[10].lower()
+                reserves_info[key]["sdToken"] = value[9].lower()
+                reserves_info[key]["dToken"] = value[10].lower()
                 risk_param = bin(value[0][0])[2:]
                 reserves_info[key]["liquidationThreshold"] = int(risk_param[-31:-16], 2) / 10 ** 4
         logger.info(f"Get reserves information in {time.time() - begin}s")
         return reserves_info
+
+    # CALCULATE APY LENDING POOL
+    def get_apy_lending_pool_function_info(
+            self,
+            reserves_info: dict,
+            block_number: int = "latest"
+    ):
+        rpc_calls = {}
+        # TODO: get rpc call for Morpho Aave V2 total supply, total borrow, and APY
+        return rpc_calls
+
+    def calculate_apy_lending_pool_function_call(
+            self,
+            reserves_info: dict,
+            decoded_data: dict,
+            token_prices: dict,
+            pool_token_price: float,
+            pool_decimals: int = 18,
+            block_number: int = 'latest',
+    ):
+        data = {}
+        # TODO: get calculate Morpho Aave V2 total supply, total borrow, and APY
+        return data
 
     # REWARDS BALANCE
     def get_rewards_balance_function_info(
@@ -159,3 +182,8 @@ class MorphoAaveV3StateService(MorphoCompoundStateService):
                 data[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
             result.update(data)
         return {pool_address.lower(): result}
+
+    def get_function_lending_pool_info(self, fn_name: str, fn_paras=None, block_number: int = 'latest'):
+        return self.state_service.get_function_info(
+            self.aave_info['address'], self.lending_abi, fn_name, fn_paras, block_number
+        )

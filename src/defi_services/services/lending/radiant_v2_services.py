@@ -7,6 +7,7 @@ from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.arbitrum.radiant_arbitrum import RADIANT_ARB
 from defi_services.services.lending.lending_info.bsc.radiant_bsc import RADIANT_BSC
 from defi_services.services.lending.valas_services import ValasStateService
+from defi_services.utils.apy import apr_to_apy
 
 logger = logging.getLogger("Radiant Lending Pool State Service")
 
@@ -34,6 +35,27 @@ class RadiantStateService(ValasStateService):
             }
         }
         return info
+
+    # PROTOCOL APY
+    @classmethod
+    def _calculate_interest_rates(cls, token_info: dict):
+        total_supply_t = token_info.get('a_token_supply')
+        total_supply_d = token_info.get('d_token_supply')
+
+        total_supply = total_supply_t / 10 ** token_info['underlying_decimals']
+        total_borrow = total_supply_d / 10 ** token_info['underlying_decimals']
+
+        supply_apr = float(token_info['supply_apy']) / 10 ** 27
+        supply_apy = apr_to_apy(supply_apr)
+        borrow_apr = float(token_info['borrow_apy']) / 10 ** 27
+        borrow_apy = apr_to_apy(borrow_apr)
+
+        return {
+            'deposit_apy': supply_apy,
+            'borrow_apy': borrow_apy,
+            'total_deposit': total_supply,
+            'total_borrow': total_borrow
+        }
 
     # REWARDS BALANCE
     def get_rewards_balance_function_info(

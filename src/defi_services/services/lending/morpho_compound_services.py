@@ -1,5 +1,4 @@
 import logging
-import time
 
 from web3 import Web3
 
@@ -7,10 +6,11 @@ from defi_services.abis.lending.cream.cream_comptroller_abi import CREAM_COMPTRO
 from defi_services.abis.lending.cream.cream_lens_abi import CREAM_LENS_ABI
 from defi_services.abis.lending.morpho.morpho_compound_comptroller_abi import MORPHO_COMPOUND_COMPTROLLER_ABI
 from defi_services.abis.lending.morpho.morpho_compound_lens_abi import MORPHO_COMPOUND_LENS_ABI
+from defi_services.abis.token.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
-from defi_services.constants.chain_constant import Chain
+from defi_services.constants.chain_constant import Chain, BlockTime
 from defi_services.constants.entities.lending_constant import Lending
-from defi_services.constants.query_constant import Query
+from defi_services.constants.time_constant import TimeConstants
 from defi_services.constants.token_constant import ContractAddresses, Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.compound_service import CompoundInfo
@@ -80,6 +80,109 @@ class MorphoCompoundStateService(ProtocolServices):
             }
 
         return reserves_info
+
+    # CALCULATE APY LENDING POOL
+    def get_apy_lending_pool_function_info(
+            self,
+            reserves_info: dict,
+            block_number: int = "latest"
+    ):
+        rpc_calls = {}
+        for token_address, value in reserves_info.items():
+            if token_address != Token.native_token:
+                decimals_key = f"decimals_{token_address}_{block_number}".lower()
+                rpc_calls[decimals_key] = self.state_service.get_function_info(
+                    token_address, ERC20_ABI, "decimals", block_number=block_number)
+
+            c_token = value['cToken']
+            market_data_query_id = f"getMainMarketData_{self.name}_{c_token}_{block_number}".lower()
+            rpc_calls[market_data_query_id] = self.get_lens_function_info(
+                'getMainMarketData', [c_token], block_number=block_number)
+
+            ctoken = value.get("cToken")
+            for fn_name in ['supplyRatePerBlock', 'borrowRatePerBlock']:
+                query_id = f"{fn_name}_{ctoken}_{block_number}".lower()
+                rpc_calls[query_id] = self.get_ctoken_function_info(
+                    ctoken=ctoken,
+                    fn_name=fn_name,
+                    block_number=block_number
+                )
+
+        return rpc_calls
+
+    def get_reserve_tokens_metadata(
+            self,
+            decoded_data: dict,
+            reserves_info: dict,
+            block_number: int = "latest"
+    ):
+        reserve_tokens_info = []
+        for token_address, reserve_info in reserves_info.items():
+            if token_address != Token.native_token:
+                underlying_decimals_query_id = f"decimals_{token_address}_{block_number}".lower()
+                underlying_decimals = decoded_data.get(underlying_decimals_query_id)
+            else:
+                underlying_decimals = Chain.native_decimals.get(self.chain_id, 18)
+
+            ctoken = reserve_info.get("cToken")
+
+            supply_rate_query_id = f"supplyRatePerBlock_{ctoken}_{block_number}".lower()
+            borrow_rate_query_id = f"borrowRatePerBlock_{ctoken}_{block_number}".lower()
+
+            market_data_query_id = f"getMainMarketData_{self.name}_{ctoken}_{block_number}".lower()
+            market_data = decoded_data.get(market_data_query_id)
+
+            reserve_tokens_info.append({
+                'underlying': token_address,
+                'underlying_decimals': underlying_decimals,
+                "borrow_rate": decoded_data.get(borrow_rate_query_id),
+                "supply_rate": decoded_data.get(supply_rate_query_id),
+                'p2p_supply': market_data[2],
+                'p2p_borrow': market_data[3],
+                'pool_supply': market_data[4],
+                'pool_borrow': market_data[5]
+            })
+
+        return reserve_tokens_info
+
+    def calculate_apy_lending_pool_function_call(
+            self,
+            reserves_info: dict,
+            decoded_data: dict,
+            token_prices: dict,
+            pool_token_price: float,
+            pool_decimals: int = 18,
+            block_number: int = 'latest',
+    ):
+        reserve_tokens_info = self.get_reserve_tokens_metadata(decoded_data, reserves_info, block_number)
+
+        data = {}
+        for token_info in reserve_tokens_info:
+            underlying_token = token_info['underlying']
+            data[underlying_token] = self._calculate_interest_rates(
+                token_info, pool_decimals=pool_decimals,
+                apx_block_speed_in_seconds=BlockTime.block_time_by_chains[self.chain_id]
+            )
+
+        return {self.pool_info.get("comptrollerAddress"): data}
+
+    @classmethod
+    def _calculate_interest_rates(cls, token_info: dict, pool_decimals: int, apx_block_speed_in_seconds: int):
+        block_per_day = int(TimeConstants.A_DAY / apx_block_speed_in_seconds)
+
+        decimals = token_info['underlying_decimals']
+        total_supply = float(token_info["p2p_supply"]) / 10 ** decimals + float(token_info["pool_supply"]) / 10 ** decimals
+        total_borrow = float(token_info["p2p_borrow"]) / 10 ** decimals + float(token_info["pool_borrow"]) / 10 ** decimals
+
+        supply_apy = ((token_info["supply_rate"] / 10 ** pool_decimals) * block_per_day + 1) ** 365 - 1
+        borrow_apy = ((token_info["borrow_rate"] / 10 ** pool_decimals) * block_per_day + 1) ** 365 - 1
+
+        return {
+            'deposit_apy': supply_apy,
+            'borrow_apy': borrow_apy,
+            'total_deposit': total_supply,
+            'total_borrow': total_borrow
+        }
 
     # REWARDS BALANCE
     def get_rewards_balance_function_info(
@@ -238,4 +341,9 @@ class MorphoCompoundStateService(ProtocolServices):
     def get_comptroller_function_info(self, fn_name: str, fn_paras: list, block_number: int = "latest"):
         return self.state_service.get_function_info(
             self.pool_info['comptrollerAddress'], self.comptroller_abi, fn_name, fn_paras, block_number
+        )
+
+    def get_ctoken_function_info(self, ctoken: str, fn_name: str, fn_paras: list = None, block_number: int = "latest"):
+        return self.state_service.get_function_info(
+            ctoken, CTOKEN_ABI, fn_name, fn_paras, block_number
         )
