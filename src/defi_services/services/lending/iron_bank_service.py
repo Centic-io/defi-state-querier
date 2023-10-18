@@ -116,7 +116,7 @@ class IronBankStateService(CompoundStateService):
             reserves_info: dict = None,
             block_number: int = "latest",
     ):
-        if Chain.optimism == self.chain_id:
+        if self.chain_id in [Chain.optimism, Chain.avalanche]:
             return {}
         rpc_call = self.get_comptroller_function_info("compAccrued", [wallet], block_number)
         get_reward_id = f"compAccrued_{self.name}_{wallet}_{block_number}".lower()
@@ -127,7 +127,7 @@ class IronBankStateService(CompoundStateService):
             decoded_data: dict,
             wallet: str,
             block_number: int = "latest"):
-        if Chain.optimism == self.chain_id:
+        if self.chain_id in [Chain.optimism, Chain.avalanche]:
             return {}
         get_reward_id = f"compAccrued_{self.name}_{wallet}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
