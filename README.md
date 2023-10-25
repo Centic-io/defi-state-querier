@@ -63,7 +63,7 @@ Return the asset list of an address in a blockchain. These assets are native tok
     "query_id": "<query_id>",
     "entity_id": "<protocol_id>",
     "query_type": "protocol_apy",
-    "deposit_borrow": {
+    "protocol_apy": {
       "<protocol_address>": {
         "<asset_address_1>": {
           "total_deposit": 331.5,
