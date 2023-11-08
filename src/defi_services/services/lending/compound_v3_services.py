@@ -8,12 +8,16 @@ from defi_services.constants.time_constant import TimeConstants
 from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.compound_service import CompoundStateService
+from defi_services.services.lending.lending_info.arbitrum.compound_v3_arbitrum import COMPOUND_V3_ARBITRUM
 from defi_services.services.lending.lending_info.ethereum.compound_v3_eth import COMPOUND_V3_ETH
+from defi_services.services.lending.lending_info.polygon.compound_v3_polygon import COMPOUND_V3_POLYGON
 
 
 class CompoundV3Info:
     mapping = {
-        Chain.ethereum: COMPOUND_V3_ETH
+        Chain.ethereum: COMPOUND_V3_ETH,
+        Chain.polygon: COMPOUND_V3_POLYGON,
+        Chain.arbitrum: COMPOUND_V3_ARBITRUM
     }
 
 
