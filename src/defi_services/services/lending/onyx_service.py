@@ -52,9 +52,9 @@ class OnyxStateService(CompoundStateService):
             address=_w3.toChecksumAddress(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
         ctokens = []
         for token in comptroller_contract.functions.getAllMarkets().call(block_identifier=block_number):
-            if token in [ContractAddresses.LUNA.lower(), ContractAddresses.UST.lower(), ContractAddresses.LUNA,
-                         ContractAddresses.UST]:
-                continue
+            # if token in [ContractAddresses.LUNA.lower(), ContractAddresses.UST.lower(), ContractAddresses.LUNA,
+            #              ContractAddresses.UST]:
+            #     continue
             ctokens.append(token)
 
         lens_contract = _w3.eth.contract(
@@ -180,8 +180,6 @@ class OnyxStateService(CompoundStateService):
 
         for token, value in reserves_info.items():
             underlying = token
-            ctoken = value.get('cToken')
-            ctokens.append(Web3.toChecksumAddress(ctoken))
 
             if token == Token.native_token:
                 underlying = Token.wrapped_token.get(self.chain_id)
@@ -191,9 +189,9 @@ class OnyxStateService(CompoundStateService):
             rpc_calls[underlying_decimals_key] = self.state_service.get_function_info(
                 underlying, ERC20_ABI, "decimals", [], block_number
             )
-        key = f"oTokenBalancesAll_{self.name}_{wallet}_{block_number}".lower()
-        rpc_calls[key] = self.get_lens_function_info(
-            "oTokenBalancesAll", [ctokens, Web3.toChecksumAddress(wallet)])
+            key = f"oTokenBalances_{self.name}_{wallet}_{token}_{block_number}".lower()
+            rpc_calls[key] = self.get_lens_function_info(
+                "oTokenBalances", [value.get("cToken"), Web3.toChecksumAddress(wallet)])
         return rpc_calls
 
     def calculate_wallet_deposit_borrow_balance(
@@ -210,14 +208,9 @@ class OnyxStateService(CompoundStateService):
             token_prices = {}
         result = {}
         total_borrow, total_collateral = 0, 0
-        key = f"oTokenBalancesAll_{self.name}_{wallet}_{block_number}".lower()
-        ctoken_balance = {}
-        for item in decoded_data.get(key):
-            ctoken_balance[item[0]] = {
-                "borrow": item[2],
-                "supply": item[3]
-            }
         for token, value in reserves_info.items():
+            key = f"oTokenBalances_{self.name}_{wallet}_{token}_{block_number}".lower()
+            ctoken_balance = decoded_data.get(key)
             data = {}
             underlying = token
             ctoken = value.get("cToken")
@@ -226,12 +219,8 @@ class OnyxStateService(CompoundStateService):
 
             get_decimals_id = f"decimals_{underlying}_{block_number}".lower()
             decimals = decoded_data.get(get_decimals_id, 0)
-            if decimals:
-                deposit_amount = ctoken_balance[ctoken]["supply"] / 10 ** decimals
-                borrow_amount = ctoken_balance[ctoken]["borrow"] / 10 ** decimals
-            else:
-                deposit_amount = ctoken_balance[ctoken]["supply"]
-                borrow_amount = ctoken_balance[ctoken]["borrow"]
+            deposit_amount = ctoken_balance[3] / 10 ** decimals
+            borrow_amount = ctoken_balance[2] / 10 ** decimals
             data[token] = {
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
