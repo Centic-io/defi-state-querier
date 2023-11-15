@@ -63,7 +63,7 @@ Return the asset list of an address in a blockchain. These assets are native tok
     "query_id": "<query_id>",
     "entity_id": "<protocol_id>",
     "query_type": "protocol_apy",
-    "deposit_borrow": {
+    "protocol_apy": {
       "<protocol_address>": {
         "<asset_address_1>": {
           "total_deposit": 331.5,
@@ -83,7 +83,7 @@ Return the asset list of an address in a blockchain. These assets are native tok
 
 Get some information of protocols in their github or documents.
 
-[1] Create abi files having format like [erc20 token abi](src/defi_services/abis/token/erc20_abi.py) or [aave v3 lending abi](src/defi_services/abis/lending/aave_v3/aave_v3_lending_pool_abi.py).
+[1] Create abi files having format like [erc20 token abi](src/defi_services/abis/token/erc20_abi.py) or [aave v3 lending abi](src/defi_services/abis/lending/aave/aave_v3/aave_v3_lending_pool_abi.py).
 
 [2] Get basic information of protocols and save in a python file like [aave_v2_eth.py](src/defi_services/services/lending/lending_info/ethereum/aave_v2_eth.py).
 **![](images/basic_information.png)** 

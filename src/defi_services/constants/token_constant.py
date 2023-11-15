@@ -1,4 +1,5 @@
 from defi_services.constants.chain_constant import Chain
+from defi_services.constants.entities.lending_constant import Lending
 
 
 class Token:
@@ -43,3 +44,11 @@ class ContractAddresses:
     LUNA = "0xb91A659E88B51474767CD97EF3196A3e7cEDD2c8"
     UST = "0x78366446547D062f45b4C0f320cDaa6d710D87bb"
     BISWAP_FARM = "0xdbc1a13490deef9c3c12b44fe77b503c1b061739"
+
+
+class ProtocolNFT:
+    nft = {
+        "0x60e4d786628fea6478f785a6d7e704777c86a7c6": Lending.onyx,
+        "0xb7f7f6c52f2e2fdb1963eab30438024864c313f6": Lending.onyx,
+        "0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d": Lending.onyx
+    }

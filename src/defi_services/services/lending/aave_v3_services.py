@@ -2,9 +2,9 @@ import logging
 
 from web3 import Web3
 
-from defi_services.abis.lending.aave_v3.aave_v3_incentives_abi import AAVE_V3_INCENTIVES_ABI
-from defi_services.abis.lending.aave_v3.aave_v3_lending_pool_abi import AAVE_V3_LENDING_POOL_ABI
-from defi_services.abis.lending.aave_v3.aave_v3_oracle_abi import AAVE_V3_ORACLE_ABI
+from defi_services.abis.lending.aave.aave_v3.aave_v3_incentives_abi import AAVE_V3_INCENTIVES_ABI
+from defi_services.abis.lending.aave.aave_v3.aave_v3_lending_pool_abi import AAVE_V3_LENDING_POOL_ABI
+from defi_services.abis.lending.aave.aave_v3.aave_v3_oracle_abi import AAVE_V3_ORACLE_ABI
 from defi_services.abis.lending.morpho.morpho_aave_v3_comptroller_abi import MORPHO_AAVE_V3_COMPTROLLER_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain

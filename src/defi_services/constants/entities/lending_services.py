@@ -78,7 +78,8 @@ class LendingServices:
     polygon = {
         Lending.aave_v2: AaveV2StateService,
         Lending.aave_v3: AaveV3StateService,
-        Lending.wepiggy: WepiggyStateService
+        Lending.wepiggy: WepiggyStateService,
+        Lending.compound_v3: CompoundV3StateService
     }
 
     optimism = {
@@ -93,7 +94,8 @@ class LendingServices:
         Lending.aave_v3: AaveV3StateService,
         Lending.wepiggy: WepiggyStateService,
         Lending.granary: GranaryStateService,
-        Lending.silo: SiloStateService
+        Lending.silo: SiloStateService,
+        Lending.compound_v3: CompoundV3StateService
     }
 
     tron = {
