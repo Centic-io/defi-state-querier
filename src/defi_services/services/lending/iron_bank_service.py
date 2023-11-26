@@ -3,7 +3,9 @@ import logging
 from web3 import Web3
 
 from defi_services.abis.lending.cream.cream_comptroller_abi import CREAM_COMPTROLLER_ABI
+from defi_services.abis.lending.iron_bank.iron_comptroller_abi import IRON_COMPTROLLER_ABI
 from defi_services.abis.lending.iron_bank.iron_lens_abi import IRON_LENS_ABI
+from defi_services.abis.lending.iron_bank.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain, BlockTime
 from defi_services.constants.entities.lending_constant import Lending
@@ -33,7 +35,8 @@ class IronBankStateService(CompoundStateService):
         self.pool_info = IronBankInfo.mapping.get(chain_id)
         self.state_service = state_service
         self.lens_abi = IRON_LENS_ABI
-        self.comptroller_abi = CREAM_COMPTROLLER_ABI
+        self.comptroller_abi = IRON_COMPTROLLER_ABI
+        self.ctoken_abi = CTOKEN_ABI
 
     # BASIC FUNCTIONS
     def get_service_info(self):
@@ -63,17 +66,26 @@ class IronBankStateService(CompoundStateService):
             address=Web3.toChecksumAddress(self.pool_info.get("lensAddress")), abi=self.lens_abi
         )
         tokens = [Web3.toChecksumAddress(i) for i in ctokens]
-        metadata = lens_contract.functions.cTokenMetadataAll(tokens).call(block_identifier=block_number)
-
         reserves_info = {}
-        for data in metadata:
-            underlying = data[12].lower()
-            ctoken = data[0].lower()
-            lt = data[11] / 10 ** 18
-            reserves_info[underlying] = {
-                "cToken": ctoken,
-                "liquidationThreshold": lt
+        queries = {}
+        for token in tokens:
+            key = f"underlying_{token}_latest".lower()
+            queries[key] = {
+                "address": token,
+                "abi": self.ctoken_abi,
+                "params": [],
+                "function": "underlying",
+                "block_number": "latest"
             }
+            markets = f"markets_{token}_latest".lower()
+            queries[markets] = self.get_comptroller_function_info("markets", [token])
+        decoded_data = self.state_service.query_state_data(queries)
+        for token in tokens:
+            key = f"underlying_{token}_latest".lower()
+            underlying = decoded_data.get(key).lower()
+            markets = f"markets_{token}_latest".lower()
+            liquidation_threshold = decoded_data.get(markets)[1] / 10 ** 18
+            reserves_info[underlying] = {'cToken': token.lower(), "liquidationThreshold": liquidation_threshold}
 
         return reserves_info
 
