@@ -78,7 +78,12 @@ class VenusStateService(CompoundStateService):
             underlying = decoded_data.get(key).lower()
             markets = f"markets_{token}_latest".lower()
             liquidation_threshold = decoded_data.get(markets)[1] / 10 ** 18
-            reserves_info[underlying] = {'cToken': token.lower(), "liquidationThreshold": liquidation_threshold}
+            ltv = liquidation_threshold
+            reserves_info[underlying] = {
+                'cToken': token.lower(),
+                "liquidationThreshold": liquidation_threshold,
+                "loanToValue": ltv
+            }
         return reserves_info
 
     # LENDING APY
