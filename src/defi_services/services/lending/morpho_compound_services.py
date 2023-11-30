@@ -74,9 +74,11 @@ class MorphoCompoundStateService(ProtocolServices):
             underlying = data[11].lower()
             ctoken = data[0].lower()
             lt = data[10] / 10 ** 18
+            ltv = data[10] / 10 ** 18
             reserves_info[underlying] = {
                 "cToken": ctoken,
-                "liquidationThreshold": lt
+                "liquidationThreshold": lt,
+                "loanToValue": ltv
             }
 
         return reserves_info
