@@ -65,9 +65,11 @@ class LiqeeStateService(CompoundStateService):
             underlying = contract.functions.underlying().call(block_identifier=block_number)
             liquidation_threshold = comptroller_contract.functions.markets(address).call(block_identifier=block_number)
             liquidation_threshold = liquidation_threshold[0] / 10**18
+
             reserves_info[underlying.lower()] = {
                 "cToken": token.lower(),
-                "liquidationThreshold": liquidation_threshold
+                "liquidationThreshold": liquidation_threshold,
+                "loanToValue": liquidation_threshold
             }
 
         return reserves_info

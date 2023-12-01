@@ -70,7 +70,9 @@ class AaveV3StateService(AaveV2StateService):
             reserves_info[token]["tToken"] = reserve_data[8].lower()
             reserves_info[token]["sdToken"] = reserve_data[9].lower()
             reserves_info[token]["dToken"] = reserve_data[10].lower()
+
             risk_param = bin(reserve_data[0][0])[2:]
+            reserves_info[token]["loanToValue"] = int(risk_param[-15:], 2) / 10 ** 4
             reserves_info[token]["liquidationThreshold"] = int(risk_param[-31:-16], 2) / 10 ** 4
 
         return reserves_info
