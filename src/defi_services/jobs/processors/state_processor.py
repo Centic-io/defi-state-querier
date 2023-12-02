@@ -3,9 +3,11 @@ import logging
 from web3 import Web3
 
 from defi_services.constants.chain_constant import Chain
+from defi_services.constants.entities.dex_services import DexServices
 from defi_services.constants.entities.lending_services import LendingServices
 from defi_services.constants.query_constant import Query
 from defi_services.jobs.queriers.state_querier import StateQuerier
+from defi_services.services.dex.dex_protocol_services import DexProtocolServices
 from defi_services.services.nft_services import NFTServices
 from defi_services.services.protocol_services import ProtocolServices
 from defi_services.services.token_services import TokenServices
@@ -23,6 +25,7 @@ class StateProcessor:
         self.token_service = TokenServices(self.state_querier, chain_id)
         self.nft_service = NFTServices(self.state_querier, chain_id)
         self.lending_services = LendingServices.mapping.get(chain_id)
+        self.dex_services = DexServices.mapping.get(chain_id)
 
     def get_service_info(self):
         info = self.nft_service.get_service_info()
@@ -41,8 +44,7 @@ class StateProcessor:
         return Web3.toChecksumAddress(address)
 
     def init_rpc_call_information(
-            self, wallet: str, query_id: str, entity_id: str, query_type: str, block_number: int = 'latest',
-            **kwargs):
+            self, wallet: str, query_id: str, entity_id: str, query_type: str, block_number: int = 'latest', **kwargs):
         queries = {}
         tokens = []
         rpc_calls = {}
@@ -59,7 +61,7 @@ class StateProcessor:
                 ))
 
         if entity_id in self.services:
-            entity_service: ProtocolServices = self.services.get(entity_id)
+            entity_service = self.services.get(entity_id)
             rpc_calls.update(entity_service.get_function_info([query_type], wallet, block_number, **kwargs))
             tokens += entity_service.get_token_list()
         queries[entity_id] = rpc_calls
@@ -108,6 +110,10 @@ class StateProcessor:
                 entity_service: ProtocolServices = self.services.get(entity)
                 data = entity_service.get_data(
                     [query_type], wallet, entity_value, block_number, **kwargs)
+
+            elif entity in self.dex_services:
+                entity_service: DexProtocolServices = self.services.get(entity)
+                data = entity_service.get_data([query_type], wallet, entity_value, block_number, **kwargs)
             else:
                 continue
             result[query_type] = data

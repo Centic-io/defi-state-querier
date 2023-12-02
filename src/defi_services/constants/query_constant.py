@@ -7,6 +7,10 @@ class Query:
     module = "module"
 
     # query types
+    lp_token_list = 'lp_token_list'
+    lp_token_info = 'lp_token_info'
+    dex_user_info = 'dex_user_info'
+    token_pair_balance = 'token_pair_balance'
     token_balance = 'token_balance'
     nft_balance = 'nft_balance'
     deposit_borrow = 'deposit_borrow'

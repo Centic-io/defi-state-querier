@@ -47,9 +47,9 @@ class ApeSwapStateService(CompoundStateService):
             address=_w3.toChecksumAddress(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
         ctokens = []
         for token in comptroller_contract.functions.getAllMarkets().call(block_identifier=block_number):
-            if token in [ContractAddresses.LUNA.lower(), ContractAddresses.UST.lower(), ContractAddresses.LUNA,
-                         ContractAddresses.UST]:
-                continue
+            # if token in [ContractAddresses.LUNA.lower(), ContractAddresses.UST.lower(), ContractAddresses.LUNA,
+            #              ContractAddresses.UST]:
+            #     continue
             ctokens.append(token)
 
         lens_contract = _w3.eth.contract(
@@ -62,9 +62,11 @@ class ApeSwapStateService(CompoundStateService):
             underlying = data[13].lower()
             ctoken = data[0].lower()
             lt = data[10] / 10 ** 18
+            ltv = data[10] / 10 ** 18
             reserves_info[underlying] = {
                 "cToken": ctoken,
-                "liquidationThreshold": lt
+                "liquidationThreshold": lt,
+                "loanToValue": ltv
             }
 
         return reserves_info

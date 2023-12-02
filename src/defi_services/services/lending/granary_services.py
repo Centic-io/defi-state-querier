@@ -72,7 +72,9 @@ class GranaryStateService(ProtocolServices):
             reserves_info[key]["tToken"] = value[7].lower()
             reserves_info[key]["dToken"] = value[9].lower()
             reserves_info[key]["sdToken"] = value[8].lower()
+
             risk_param = bin(value[0][0])[2:]
+            reserves_info[key]["loanToValue"] = int(risk_param[-15:], 2) / 10 ** 4
             reserves_info[key]["liquidationThreshold"] = int(risk_param[-31:-16], 2) / 10 ** 4
         logger.info(f"Get reserves information in {time.time() - begin}s")
         return reserves_info

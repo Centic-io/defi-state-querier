@@ -17,7 +17,7 @@ mongo_klg = KLG("")
 class PancakeswapInfo:
     mapping = {
         Chain.bsc: [PANCAKESWAP_V0_BSC_INFO, PANCAKESWAP_V2_BSC_INFO]
-        }
+    }
 
 
 class PancakeswapServices(DexProtocolServices):
@@ -31,8 +31,8 @@ class PancakeswapServices(DexProtocolServices):
         self.token_price = {}
         self.token_decimal = {}
 
-    def get_version(self, version:int=None):
-        self.version= version
+    def get_version(self, version: int = None):
+        self.version = version
         if version == 2:
             self.masterchef_addr = PancakeswapInfo.mapping.get(self.chain_id)[1]['masterchef_address']
             self.masterchef_abi = PancakeswapInfo.mapping.get(self.chain_id)[1]['masterchef_abi']
@@ -50,17 +50,17 @@ class PancakeswapServices(DexProtocolServices):
         rpc_calls = {}
 
         if self.version == 0:
-            for pid in range(0, int(pool_length/10)):
+            for pid in range(0, int(pool_length / 10)):
                 query_id = f'poolInfo_{pid}_'
                 rpc_calls[query_id] = self.state_service.get_function_info(
                     address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="poolInfo", fn_paras=[pid]
-                    )
+                )
         else:
-            for pid in range(0, int(pool_length/10)):
+            for pid in range(0, int(pool_length / 10)):
                 query_id = f'lpToken_{pid}_'
                 rpc_calls[query_id] = self.state_service.get_function_info(
                     address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="lpToken", fn_paras=[pid]
-                    )
+                )
 
         return rpc_calls
 
@@ -99,7 +99,7 @@ class PancakeswapServices(DexProtocolServices):
         return rpc_calls
 
     def get_lp_token_price_info(self, lp_token_list, list_farms_info,
-            block_number: int = "latest"):
+                                block_number: int = "latest"):
         for pid, lp_token in lp_token_list.items():
             total_supply = list_farms_info.get(f'totalsupply_{lp_token}_{block_number}_{self.chain_id}'.lower(), 0)
             token0 = list_farms_info.get(f'token0_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
@@ -162,10 +162,11 @@ class PancakeswapServices(DexProtocolServices):
                 list_farms_info[rpc_call_id] = value / 10 ** decimal
 
     ### USER
-    def get_user_info_function(self, user: str, lp_token:str, pid: str= None, stake:bool= True, block_number: int = "latest", ):
+    def get_user_info_function(
+            self, user: str, lp_token: str, pid: str = None, stake: bool = True, block_number: int = "latest", ):
         rpc_calls = {}
 
-            # lượng token đang hold trong ví
+        # lượng token đang hold trong ví
 
         query_id = f'hold_{user}_{lp_token}_{block_number}_{self.chain_id}'.lower()
         rpc_calls[query_id] = self.state_service.get_function_info(
@@ -173,7 +174,7 @@ class PancakeswapServices(DexProtocolServices):
             fn_paras=[user],
             block_number=block_number)
 
-            # lượng token ví đang stake
+        # lượng token ví đang stake
         if stake:
             for fn_name in ["userInfo", "pendingCake"]:
                 query_id = f'{fn_name}_{user}_{lp_token}_{pid}_{block_number}'.lower()
@@ -200,40 +201,41 @@ class PancakeswapServices(DexProtocolServices):
             print(f"lp_token {lp_token} error")
             return 0, 0
 
-    def update_stake_token_amount_of_wallet(self,user,  user_info, list_farms_info):
+    def update_stake_token_amount_of_wallet(self, user, user_info, list_farms_info):
 
-        user_info_token_amount={}
+        user_info_token_amount = {}
         for query_id, amount in user_info.items():
             query_id_split = query_id.split("_")
-            fn_name= query_id_split[0]
-            lp_token= query_id_split[2]
+            fn_name = query_id_split[0]
+            lp_token = query_id_split[2]
 
-            if fn_name== "hold":
-                if amount>0:
+            if fn_name == "hold":
+                if amount > 0:
                     decimal = list_farms_info[f'decimals_{lp_token}_latest_{self.chain_id}'.lower()]
                     amount = amount / 10 ** decimal
                     user_info.update({query_id: amount})
-                    token0_amount, token1_amount= self.cal_token_amount_lp_token(lp_token, amount, list_farms_info)
+                    token0_amount, token1_amount = self.cal_token_amount_lp_token(lp_token, amount, list_farms_info)
                     user_info_token_amount.update({f'hold0_{user}_{lp_token}_{self.chain_id}'.lower(): token0_amount})
                     user_info_token_amount.update({f'hold1_{user}_{lp_token}_{self.chain_id}'.lower(): token1_amount})
-                    query_id=f'totallp_{user}_{lp_token}'.lower()
+                    query_id = f'totallp_{user}_{lp_token}'.lower()
                     if query_id not in user_info_token_amount:
-                        user_info_token_amount[query_id]= amount
-                        user_info_token_amount[f'total0_{user}_{lp_token}_{self.chain_id}'.lower()]= token0_amount
-                        user_info_token_amount[f'total1_{user}_{lp_token}_{self.chain_id}'.lower()]= token1_amount
+                        user_info_token_amount[query_id] = amount
+                        user_info_token_amount[f'total0_{user}_{lp_token}_{self.chain_id}'.lower()] = token0_amount
+                        user_info_token_amount[f'total1_{user}_{lp_token}_{self.chain_id}'.lower()] = token1_amount
                     else:
-                        user_info_token_amount[query_id]+= amount
-                        user_info_token_amount[f'total0_{user}_{lp_token}_{self.chain_id}'.lower()]+= token0_amount
-                        user_info_token_amount[f'total1_{user}_{lp_token}_{self.chain_id}'.lower()]+= token1_amount
+                        user_info_token_amount[query_id] += amount
+                        user_info_token_amount[f'total0_{user}_{lp_token}_{self.chain_id}'.lower()] += token0_amount
+                        user_info_token_amount[f'total1_{user}_{lp_token}_{self.chain_id}'.lower()] += token1_amount
 
             elif fn_name == 'userinfo':
                 pid = int(query_id_split[3])
                 stake_amount = amount[0]
 
-                if stake_amount>0:
+                if stake_amount > 0:
                     decimal = list_farms_info[f'decimals_{lp_token}_latest_{self.chain_id}'.lower()]
 
-                    user_info_token_amount.update({f'stake_{user}_{lp_token}_{pid}_{self.chain_id}'.lower(): stake_amount/10**decimal})
+                    user_info_token_amount.update(
+                        {f'stake_{user}_{lp_token}_{pid}_{self.chain_id}'.lower(): stake_amount / 10 ** decimal})
                     token0_amount, token1_amount = self.cal_token_amount_lp_token(lp_token, amount[0], list_farms_info)
                     user_info_token_amount.update({f'stake0_{user}_{pid}_{self.chain_id}'.lower(): token0_amount})
                     user_info_token_amount.update({f'stake1_{user}_{pid}_{self.chain_id}'.lower(): token1_amount})
@@ -247,4 +249,3 @@ class PancakeswapServices(DexProtocolServices):
                         user_info_token_amount[f'total0_{user}_{pid}_{self.chain_id}'.lower()] += token0_amount
                         user_info_token_amount[f'total1_{user}_{pid}_{self.chain_id}'.lower()] += token1_amount
         user_info.update(user_info_token_amount)
-

@@ -13,7 +13,7 @@ class MongoDBConfig:
     DATABASE = os.getenv('MONGODB_DATABASE', 'knowledge_graph')
 
 class MongoDbKLGConfig:
-    HOST = "mongodb://klgReaderAnalysis:klgReaderAnalysis_4Lc4kjBs5yykHHbZ@35.198.222.97:27017,34.124.133.164:27017,34.124.205.24:27017/"
+    HOST = ""
     USERNAME = "root"
     PASSWORD = "dev123"
     # KLG_DATABASE = "klg_database"

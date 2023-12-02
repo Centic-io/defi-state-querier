@@ -2,9 +2,9 @@ import logging
 
 from web3 import Web3
 
-from defi_services.abis.lending.aave_v3.aave_v3_incentives_abi import AAVE_V3_INCENTIVES_ABI
-from defi_services.abis.lending.aave_v3.aave_v3_lending_pool_abi import AAVE_V3_LENDING_POOL_ABI
-from defi_services.abis.lending.aave_v3.aave_v3_oracle_abi import AAVE_V3_ORACLE_ABI
+from defi_services.abis.lending.aave.aave_v3.aave_v3_incentives_abi import AAVE_V3_INCENTIVES_ABI
+from defi_services.abis.lending.aave.aave_v3.aave_v3_lending_pool_abi import AAVE_V3_LENDING_POOL_ABI
+from defi_services.abis.lending.aave.aave_v3.aave_v3_oracle_abi import AAVE_V3_ORACLE_ABI
 from defi_services.abis.lending.morpho.morpho_aave_v3_comptroller_abi import MORPHO_AAVE_V3_COMPTROLLER_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
@@ -70,7 +70,9 @@ class AaveV3StateService(AaveV2StateService):
             reserves_info[token]["tToken"] = reserve_data[8].lower()
             reserves_info[token]["sdToken"] = reserve_data[9].lower()
             reserves_info[token]["dToken"] = reserve_data[10].lower()
+
             risk_param = bin(reserve_data[0][0])[2:]
+            reserves_info[token]["loanToValue"] = int(risk_param[-15:], 2) / 10 ** 4
             reserves_info[token]["liquidationThreshold"] = int(risk_param[-31:-16], 2) / 10 ** 4
 
         return reserves_info

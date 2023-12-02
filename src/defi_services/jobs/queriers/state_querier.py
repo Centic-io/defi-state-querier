@@ -8,7 +8,7 @@ from web3 import Web3
 from web3.middleware import geth_poa_middleware
 
 from defi_services.constants.query_constant import Query
-from defi_services.constants.token_constant import Token
+from defi_services.constants.token_constant import Token, ProtocolNFT
 from defi_services.utils.thread_proxy import ThreadLocalProxy, get_provider_from_uri
 
 logger = logging.getLogger("StateQuerier")
@@ -137,7 +137,7 @@ class StateQuerier:
                 decoded_datum = response_datum.decode_result()
             except Exception as e:
                 decoded_datum = self.check_data(call_id, response_datum)
-                if decoded_datum:
+                if decoded_datum is not None:
                     decoded_data[call_id] = decoded_datum
                     continue
                 if not ignore_error:
@@ -168,7 +168,10 @@ class StateQuerier:
 
     @staticmethod
     def check_data(call_id: str, data):
-        fn = call_id.split("_")[0]
+        keys = call_id.split("_")
+        fn = keys[0]
         if fn == "underlying" and data.result == "0x":
             return Token.native_token
+        if fn == "decimals" and keys[1] in ProtocolNFT.nft:
+            return 0
         return None
