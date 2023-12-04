@@ -8,6 +8,7 @@ class Chain:
     optimism = "0xa"
     avalanche = "0xa86a"
     tron = "0x2b6653dc"
+    cronos = "0x19"
 
     native_decimals = {
         tron: 6
@@ -23,5 +24,6 @@ class BlockTime:
         Chain.arbitrum: 0.3,
         Chain.optimism: 1,  # TODO: check
         Chain.avalanche: 2,
-        Chain.tron: 3
+        Chain.tron: 3,
+        Chain.cronos: 6
     }

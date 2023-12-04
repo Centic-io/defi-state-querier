@@ -68,7 +68,7 @@ class SubstrateStateProcessor:
         return result
 
     def run(self, wallet: str, queries: list, block_number: int = 'latest', token_prices=None):
-        all_rpc_calls = {}, []
+        all_rpc_calls = {}
         for query in queries:
             query_id = query.get("query_id")
             entity_id = query.get("entity_id")
