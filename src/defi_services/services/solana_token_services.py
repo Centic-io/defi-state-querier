@@ -16,11 +16,13 @@ class SolanaTokenServices:
         }
         return info
 
-    def get_function_info(self, wallet: str, token: str):
-        result = self.get_function_balance_info(wallet, token)
+    def get_function_info(self, wallet: str, token: str,  block_number: int = 'latest'):
+        result = self.get_function_balance_info(wallet, token, block_number)
         return result
 
-    def get_function_balance_info(self, wallet, token):
+    def get_function_balance_info(self, wallet, token, block_number: int = 'latest'):
+        # TODO: handle block number
+
         key = f"balanceOf_{wallet}_{token}".lower()
         if token == Token.native_token:
             params = [wallet]
