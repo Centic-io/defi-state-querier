@@ -1,30 +1,49 @@
 import logging
+
 from defi_services.abis.dex.pancakeswap.pancakeswap_lp_token_abi import LP_TOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.dex_constant import Dex
 from defi_services.jobs.queriers.state_querier import StateQuerier
-from defi_services.services.dex.dex_info.sushiswap_info import (SUSHISWAP_V0_ETH_INFO)
+from defi_services.services.dex.dex_info.sushiswap_info import (SUSHISWAP_V2_ETH_INFO, SUSHISWAP_FANTOM_INFO,
+                                                                SUSHISWAP_POLYGON_INFO, SUSHISWAP_ARBITRUM_INFO,
+                                                                SUSHISWAP_AVALANCHE_INFO, SUSHISWAP_OPTIMISM_INFO)
 from defi_services.services.dex.dex_protocol_services import DexProtocolServices
 
-logger = logging.getLogger("Lending Pool State Service")
+logger = logging.getLogger("SushiSwap V2 State Service")
 
 
-class SushiSwapInfo:
+class SushiSwapV2Info:
     mapping = {
-        Chain.bsc: SUSHISWAP_V0_ETH_INFO
+        Chain.ethereum: SUSHISWAP_V2_ETH_INFO,
+        Chain.fantom: SUSHISWAP_FANTOM_INFO,
+        Chain.polygon: SUSHISWAP_POLYGON_INFO,
+        Chain.optimism: SUSHISWAP_OPTIMISM_INFO,
+        Chain.avalanche: SUSHISWAP_AVALANCHE_INFO,
+        Chain.arbitrum: SUSHISWAP_ARBITRUM_INFO
     }
 
 
-class SushiswapServices(DexProtocolServices):
-    def __init__(self, state_service: StateQuerier, chain_id: str = '0x38'):
+class SushiSwapV2Services(DexProtocolServices):
+    def __init__(self, state_service: StateQuerier,    chain_id: str = '0x1'):
         super().__init__()
         self.chain_id = chain_id
         self.state_service = state_service
-        self.pool_info = SushiSwapInfo.mapping.get(chain_id)
+        self.pool_info = SushiSwapV2Info.mapping.get(chain_id)
         self.masterchef_addr = self.pool_info['masterchef_address']
         self.masterchef_abi = self.pool_info['masterchef_abi']
 
+    def get_service_info(self):
+        info = {
+            Dex.sushi_v2: {
+                "chain_id": self.chain_id,
+                "type": "dex",
+                "pool_info": self.pool_info
+            }
+        }
+        return info
+
+    # Get all lp tokens
     def get_all_supported_lp_token(self):
         web3 = self.state_service.get_w3()
         if web3.isAddress(self.masterchef_addr):
@@ -33,27 +52,18 @@ class SushiswapServices(DexProtocolServices):
         pool_length = master_chef_contract.functions.poolLength().call()
         rpc_calls = {}
         for pid in range(0, int(pool_length)):
-            query_id = f'poolInfo_{pid}_'
+            query_id = f'lpToken_{pid}_'
             rpc_calls[query_id] = self.state_service.get_function_info(
-                address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="poolInfo", fn_paras=[pid]
+                address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="lpToken", fn_paras=[pid]
             )
 
         return rpc_calls
 
-    def get_service_info(self):
-        info = {
-            Dex.pancake: {
-                "chain_id": self.chain_id,
-                "type": "dex",
-                "pool_info": self.pool_info
-            }
-        }
-        return info
     def decode_all_supported_lp_token(self, response_data):
         result = {}
         for key, value in response_data.items():
             pid = key.split("_")[1]
-            result[value[0]] = {
+            result[value] = {
                 "pid": pid}
 
         return result
@@ -296,7 +306,7 @@ class SushiswapServices(DexProtocolServices):
         amount = 0
         for lp_token, value in lp_token_info.items():
             pid = value.get("pid")
-            query_id = f'pendingSushi_{user}_{lp_token}_{pid}_{block_number}'.lower()
+            query_id = f'pendingCake_{user}_{lp_token}_{pid}_{block_number}'.lower()
             amount += decoded_data.get(query_id) / 10 ** 18
         result = {self.pool_info.get("rewardToken"): amount}
         return result

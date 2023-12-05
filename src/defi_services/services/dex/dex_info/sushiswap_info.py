@@ -13,7 +13,7 @@ SUSHISWAP_V2_ETH_INFO= {
     }
 
 SUSHISWAP_BSC_INFO= {
-'masterchef_address': '0xef0881ec094552b2e128cf945ef17a6752b4ec5d',
+'masterchef_address': '0x5219c5e32b9fff87f29d5a833832c29134464aaa',
     'masterchef_abi': SUSHISWAP_MINICHEF_ABI
     }
 

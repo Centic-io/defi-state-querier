@@ -6,6 +6,9 @@ from defi_services.constants.token_constant import Token
 logger = logging.getLogger("Dex Protocol State Service")
 
 
+
+
+
 class DexProtocolServices:
     # BASIC FUNCTIONS
     def get_service_info(self):
@@ -22,15 +25,14 @@ class DexProtocolServices:
         rpc_calls = {}
         lp_token_info = kwargs.get("lp_token_info", {})
         if Query.lp_token_list in query_types:
-            limit_ = kwargs.get("number_lp", 0)
-            rpc_calls.update(self.get_all_supported_lp_token(limit_))
+            rpc_calls.update(self.get_all_supported_lp_token())
         if Query.lp_token_info in query_types:
-            lp_token_list = {key: value.get("pid") for key, value in lp_token_info}
+            lp_token_list = {key: value.get("pid") for key, value in lp_token_info.items()}
             rpc_calls.update(self.get_lp_token_function_info(lp_token_list, block_number))
         if Query.dex_user_info in query_types and wallet and wallet != Token.native_token:
             stake = kwargs.get("stake", False)
             rpc_calls.update(self.get_user_info_function(wallet, lp_token_info, stake, block_number))
-        if Query.token_pair_balance:
+        if Query.token_pair_balance in query_types:
             rpc_calls.update(self.get_balance_of_token_function_info(lp_token_info, block_number))
         if Query.protocol_reward in query_types and wallet and wallet != Token.native_token:
             rpc_calls.update(self.get_rewards_balance_function_info(wallet, lp_token_info, block_number))
@@ -48,19 +50,20 @@ class DexProtocolServices:
         result = {}
         lp_token_info = kwargs.get("lp_token_info", {})
         stake = kwargs.get("stake", False)
-        token_price = kwargs.get("token_price", {})
+        token_price = kwargs.get("token_prices", {})
         if Query.lp_token_list in query_types:
             result.update(self.decode_all_supported_lp_token(decoded_data))
+
         if Query.lp_token_info in query_types:
-            lp_token_list = {key: value.get("pid") for key, value in lp_token_info}
-            result.update(self.decode_lp_token_info(lp_token_list, block_number))
+            lp_token_list = {key: value.get("pid") for key, value in lp_token_info.items()}
+            result.update(self.decode_lp_token_info(lp_token_list, decoded_data,  block_number))
         if Query.dex_user_info in query_types and wallet and wallet != Token.native_token:
             result.update(self.decode_user_info_function(
                 wallet, lp_token_info, decoded_data, token_price, stake, block_number))
-        if Query.token_pair_balance:
+        if Query.token_pair_balance in query_types:
             result.update(self.decode_balance_of_token_function_info(
                 lp_token_info, decoded_data, token_price, block_number))
-        if Query.protocol_reward:
+        if Query.protocol_reward in query_types and wallet and wallet != Token.native_token:
             result.update(self.calculate_rewards_balance(wallet, lp_token_info, decoded_data, block_number))
 
         return result
@@ -90,7 +93,7 @@ class DexProtocolServices:
         return {}
 
     # Get lp list
-    def get_all_supported_lp_token(self, limit: int = 10):
+    def get_all_supported_lp_token(self):
         return {}
 
     def decode_all_supported_lp_token(self, response_data):
@@ -107,4 +110,7 @@ class DexProtocolServices:
             decoded_data: dict,
             block_number: int = "latest"
     ) -> dict:
+        return {}
+
+    def get_token_list(self):
         return {}

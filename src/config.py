@@ -13,9 +13,9 @@ class MongoDBConfig:
     DATABASE = os.getenv('MONGODB_DATABASE', 'knowledge_graph')
 
 class MongoDbKLGConfig:
-    HOST = ""
-    USERNAME = "root"
-    PASSWORD = "dev123"
+    HOST =os.environ.get("MONGODB_KLG_HOST", '0.0.0.0')
+    USERNAME = os.environ.get("MONGODB_USERNAME", "root")
+    PASSWORD = os.environ.get("MONGODB_PASSWORD", "dev123")
     # KLG_DATABASE = "klg_database"
     KLG_DATABASE = "knowledge_graph"
     KLG = "knowledge_graph"

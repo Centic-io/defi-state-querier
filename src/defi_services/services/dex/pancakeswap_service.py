@@ -5,71 +5,68 @@ from web3 import Web3
 from defi_services.abis.dex.pancakeswap.pancakeswap_lp_token_abi import LP_TOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
+from defi_services.constants.entities.dex_constant import Dex
 from defi_services.jobs.queriers.state_querier import StateQuerier
-from defi_services.databases.mongodb_klg import MongoDB as KLG
 from defi_services.services.dex.dex_info.pancakeswap_info import PANCAKESWAP_V0_BSC_INFO, PANCAKESWAP_V2_BSC_INFO
 from defi_services.services.dex.dex_protocol_services import DexProtocolServices
 
 logger = logging.getLogger("Lending Pool State Service")
-mongo_klg = KLG("")
 
 
-class PancakeswapInfo:
+class PancakeSwapInfo:
     mapping = {
-        Chain.bsc: [PANCAKESWAP_V0_BSC_INFO, PANCAKESWAP_V2_BSC_INFO]
+        Chain.bsc: PANCAKESWAP_V0_BSC_INFO
     }
 
 
 class PancakeswapServices(DexProtocolServices):
-    def __init__(self, state_service: StateQuerier, provider, mongo_klg: KLG() = None, chain_id: str = '0x38'):
+    def __init__(self, state_service: StateQuerier, chain_id: str = '0x38'):
         super().__init__()
-        self.version = None
         self.chain_id = chain_id
         self.state_service = state_service
-        self.provider = provider
-        self.mongo_klg = mongo_klg
-        self.token_price = {}
-        self.token_decimal = {}
+        self.pool_info = PancakeSwapInfo.mapping.get(chain_id)
+        self.masterchef_addr = self.pool_info['masterchef_address']
+        self.masterchef_abi = self.pool_info['masterchef_abi']
 
-    def get_version(self, version: int = None):
-        self.version = version
-        if version == 2:
-            self.masterchef_addr = PancakeswapInfo.mapping.get(self.chain_id)[1]['masterchef_address']
-            self.masterchef_abi = PancakeswapInfo.mapping.get(self.chain_id)[1]['masterchef_abi']
-
-        else:
-            self.masterchef_addr = PancakeswapInfo.mapping.get(self.chain_id)[0]['masterchef_address']
-            self.masterchef_abi = PancakeswapInfo.mapping.get(self.chain_id)[0]['masterchef_abi']
-
-    def get_all_lptoken(self):
-        web3 = Web3(Web3.HTTPProvider(self.provider))
+    def get_all_supported_lp_token(self):
+        web3 = self.state_service.get_w3()
         if web3.isAddress(self.masterchef_addr):
             self.masterchef_addr = web3.toChecksumAddress(self.masterchef_addr)
         master_chef_contract = web3.eth.contract(abi=self.masterchef_abi, address=self.masterchef_addr)
         pool_length = master_chef_contract.functions.poolLength().call()
         rpc_calls = {}
-
-        if self.version == 0:
-            for pid in range(0, int(pool_length / 10)):
-                query_id = f'poolInfo_{pid}_'
-                rpc_calls[query_id] = self.state_service.get_function_info(
-                    address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="poolInfo", fn_paras=[pid]
-                )
-        else:
-            for pid in range(0, int(pool_length / 10)):
-                query_id = f'lpToken_{pid}_'
-                rpc_calls[query_id] = self.state_service.get_function_info(
-                    address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="lpToken", fn_paras=[pid]
-                )
+        for pid in range(0, int(pool_length )):
+            query_id = f'poolInfo_{pid}_'
+            rpc_calls[query_id] = self.state_service.get_function_info(
+                address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="poolInfo", fn_paras=[pid]
+            )
 
         return rpc_calls
 
+    def get_service_info(self):
+        info = {
+            Dex.pancake: {
+                "chain_id": self.chain_id,
+                "type": "dex",
+                "pool_info": self.pool_info
+            }
+        }
+        return info
+    def decode_all_supported_lp_token(self, response_data):
+        result = {}
+        for key, value in response_data.items():
+            pid = key.split("_")[1]
+            result[value[0]] = {
+                "pid": pid}
+
+        return result
+
+    # Get lp token info
     def get_lp_token_function_info(self, lp_token_list, block_number: int = "latest"):
         rpc_calls = {}
-        for pid, lp_token in lp_token_list.items():
+        for lp_token, pid in lp_token_list.items():
             for fn_name in ["decimals", "totalSupply", "token0", "token1", "name"]:
                 query_id = f"{fn_name}_{lp_token}_{block_number}_{self.chain_id}".lower()
-
                 rpc_calls[query_id] = self.state_service.get_function_info(
                     address=lp_token, abi=LP_TOKEN_ABI, fn_name=fn_name, fn_paras=None,
                     block_number=block_number)
@@ -85,167 +82,225 @@ class PancakeswapServices(DexProtocolServices):
                 block_number=block_number)
         return rpc_calls
 
-    def get_balance_of_token_function_info(self, list_farms_info, block_number: int = "latest"):
+    def decode_lp_token_info(self, lp_token_list, response_data, block_number: int = "latest"):
+        result = {}
+        for lp_token, pid in lp_token_list.items():
+            token0 = response_data.get(f'token0_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
+            token1 = response_data.get(f'token1_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
+            decimals = response_data.get(f'decimals_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
+            name = response_data.get(f'name_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
+            total_supply = response_data.get(f'totalsupply_{lp_token}_{block_number}_{self.chain_id}'.lower(), 0)/ 10** decimals
+            masterchef_balance = response_data.get(f'balanceOf_{lp_token}_{block_number}_{self.chain_id}'.lower())/ 10** decimals
+            accCakePerShare = response_data.get(f'poolInfo_{lp_token}_{block_number}_{self.chain_id}'.lower())[0]
+            result[lp_token] = {
+                "pid": pid,
+                "totalSupply": total_supply,
+                "token0": token0,
+                "token1": token1,
+                "decimals": decimals,
+                "name": name,
+                "stakeBalance": masterchef_balance ,
+                "poolInfo": accCakePerShare
+            }
+        return result
+
+    # Get balance of token
+    def get_balance_of_token_function_info(self, lp_token_info, block_number: int = "latest"):
         rpc_calls = {}
-        for lp_token_info, value in list_farms_info.items():
-            query_params = lp_token_info.split("_")
-            fn_name = query_params[0]
-            if fn_name == "token0" or fn_name == "token1":
-                lp_token = query_params[1]
-                query_id = f'amount{fn_name[-1]}_{lp_token}_{block_number}_{self.chain_id}'.lower()
-                rpc_calls[query_id] = self.state_service.get_function_info(
-                    address=value, abi=ERC20_ABI, fn_name="balanceOf", fn_paras=[lp_token],
-                    block_number=block_number)
+        for key, value in lp_token_info.items():
+            for fn_name in ["token0", "token1"]:
+                token = value.get(fn_name, None)
+                if token is not None:
+                    query_id = f'balanceOf_{key}_{token}_{block_number}_{self.chain_id}'.lower()
+                    decimals_query_id = f'decimals_{key}_{token}_{block_number}_{self.chain_id}'.lower()
+                    rpc_calls[query_id] = self.state_service.get_function_info(
+                        address=token, abi=ERC20_ABI, fn_name="balanceOf", fn_paras=[key],
+                        block_number=block_number)
+
+                    rpc_calls[decimals_query_id] = self.state_service.get_function_info(
+                        address=token, abi=ERC20_ABI, fn_name="decimals", block_number=block_number)
+
         return rpc_calls
 
-    def get_lp_token_price_info(self, lp_token_list, list_farms_info,
-                                block_number: int = "latest"):
-        for pid, lp_token in lp_token_list.items():
-            total_supply = list_farms_info.get(f'totalsupply_{lp_token}_{block_number}_{self.chain_id}'.lower(), 0)
-            token0 = list_farms_info.get(f'token0_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
-            token1 = list_farms_info.get(f'token1_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
+    def decode_balance_of_token_function_info(
+            self, lp_token_info, balance_info, token_price, block_number: int = "latest"):
+        lp_token_balance = {}
+        for key, value in lp_token_info.items():
+            lp_token_balance[key] = {}
+            for fn_name in ["token0", "token1"]:
+                token = value.get(fn_name, None)
+                if token is not None:
+                    query_id = f'balanceOf_{key}_{token}_{block_number}_{self.chain_id}'.lower()
+                    decimals_query_id = f'decimals_{key}_{token}_{block_number}_{self.chain_id}'.lower()
+                    lp_token_balance[key][token] = balance_info.get(query_id) / 10 ** balance_info.get(decimals_query_id)
+        result = self.calculate_lp_token_price_info(lp_token_info, lp_token_balance, token_price)
+        return result
 
-            balance_of_token0 = list_farms_info.get(f'amount0_{lp_token}_{block_number}_{self.chain_id}'.lower(), 0)
-            balance_of_token1 = list_farms_info.get(f'amount1_{lp_token}_{block_number}_{self.chain_id}'.lower(), 0)
-            lp_token_stake_amount = list_farms_info.get(f'balanceOf_{lp_token}_{block_number}_{self.chain_id}'.lower(),
-                                                        0)
-            if token0 != "" and token1 != "":
-                token0_price, token0_decimal = self.get_token_info(token0)
-                new_amount0 = balance_of_token0 / (10 ** token0_decimal)
-                token1_price, token1_decimal = self.get_token_info(token1)
-                new_amount1 = balance_of_token1 / (10 ** token1_decimal)
-                list_farms_info.update({f'amount0_{lp_token}_{block_number}_{self.chain_id}'.lower(): new_amount0})
-                list_farms_info.update({f'amount1_{lp_token}_{block_number}_{self.chain_id}'.lower(): new_amount1})
-                if token0_price != 0 and token1_price != 0:
-                    total_of_token0 = new_amount0 * token0_price
-                    total_of_token1 = new_amount1 * token1_price
-                elif token0_price == 0:
-                    total_of_token1 = new_amount1 * token1_price
-                    total_of_token0 = total_of_token1
-                    token0_price = total_of_token0 / new_amount0
-                else:
-                    total_of_token0 = new_amount0 * token0_price
-                    total_of_token1 = total_of_token0
-                    token1_price = total_of_token1 / new_amount1
-                lp_token_price = (total_of_token0 + total_of_token1) / total_supply
-                query_id = f'price_{lp_token}_{block_number}_{self.chain_id}'.lower()
-                list_farms_info.update({query_id: lp_token_price})
-                list_farms_info.update({f'price0_{lp_token}_{block_number}_{self.chain_id}'.lower(): token0_price})
-                list_farms_info.update({f'price1_{lp_token}_{block_number}_{self.chain_id}'.lower(): token1_price})
-                token1_stake_amount = lp_token_stake_amount * lp_token_price / 2 / token1_price
-                token0_stake_amount = lp_token_stake_amount * lp_token_price / 2 / token0_price
-                list_farms_info.update(
-                    {f'stakeamount0_{lp_token}_{block_number}_{self.chain_id}'.lower(): token0_stake_amount})
-                list_farms_info.update(
-                    {f'stakeamount1_{lp_token}_{block_number}_{self.chain_id}'.lower(): token1_stake_amount})
+    # Calculate lp token price
+    def calculate_lp_token_price_info(
+            self, lp_token_info, lp_token_balance, token_price):
+        result = {}
+        for lp_token, value in lp_token_info.items():
+            total_supply = value.get("totalSupply")
+            token0 = value.get("token0", None)
+            token1 = value.get("token1", None)
+            if token0 is not None and token1 is not None:
+                balance_of_token0 = lp_token_balance[lp_token].get(token0, 0)
+                balance_of_token1 =lp_token_balance[lp_token].get(token1, 0)
+                lp_token_stake_amount = value.get("stakeBalance", 0)
+                result[lp_token] = {
+                    "totalSupply": total_supply,
+                    "stakeBalance": lp_token_stake_amount,
+                    "token0Amount": balance_of_token0,
+                    "token1Amount": balance_of_token1
+                }
+                if token0 and token1:
+                    token0_price = token_price.get(token0)
+                    token1_price = token_price.get(token1)
+                    new_amount1 = balance_of_token1
+                    if token0_price != 0 and token1_price != 0:
+                        total_of_token0 = balance_of_token0 * token0_price
+                        total_of_token1 = balance_of_token1 * token1_price
+                    elif token0_price == 0:
+                        total_of_token1 = balance_of_token0 * token1_price
+                        total_of_token0 = total_of_token1
+                        token0_price = total_of_token0 / balance_of_token0
+                    else:
+                        total_of_token0 = balance_of_token1 * token0_price
+                        total_of_token1 = total_of_token0
+                        token1_price = total_of_token1 / new_amount1
+                    lp_token_price = (total_of_token0 + total_of_token1) / total_supply
+                    result[lp_token].update({
+                        "price": lp_token_price,
+                        "stakeAmountToken0": lp_token_stake_amount * lp_token_price / 2 / token0_price,
+                        "stakeAmountToken1": lp_token_stake_amount * lp_token_price / 2 / token1_price
+                    })
 
-    def get_token_info(self, token_address):
-        if token_address not in self.token_price:
-            token_data = self.mongo_klg.get_smart_contract(self.chain_id, token_address)
-            price = token_data.get("price", 0)
-            decimal = token_data.get("decimals", 18)
-            self.token_price[token_address] = price
-            self.token_decimal[token_address] = decimal
-
-        return self.token_price[token_address], self.token_decimal[token_address]
-
-    def update_lp_token_balance_value(self, list_farms_info):
-        for rpc_call_id, value in list_farms_info.items():
-            fn_name = rpc_call_id.split("_")[0]
-            lp_token = rpc_call_id.split("_")[1]
-
-            if fn_name == "balanceof":
-                decimal = list_farms_info.get(f'decimals_{lp_token}_latest', 18)
-                list_farms_info[rpc_call_id] = value / 10 ** decimal
-            if fn_name == "totalsupply":
-                decimal = list_farms_info.get(f'decimals_{lp_token}_latest', 18)
-                list_farms_info[rpc_call_id] = value / 10 ** decimal
+        return result
 
     ### USER
     def get_user_info_function(
-            self, user: str, lp_token: str, pid: str = None, stake: bool = True, block_number: int = "latest", ):
+            self, user: str, lp_token_info, stake: bool = True, block_number: int = "latest"):
         rpc_calls = {}
-
         # lượng token đang hold trong ví
+        for lp_token, value in lp_token_info.items():
+            pid = value.get("pid")
+            query_id = f'balanceOf_{user}_{lp_token}_{block_number}_{self.chain_id}'.lower()
+            rpc_calls[query_id] = self.state_service.get_function_info(
+                address=lp_token, abi=LP_TOKEN_ABI, fn_name="balanceOf",
+                fn_paras=[user],
+                block_number=block_number)
+            decimals_query_id = f'decimals_{user}_{lp_token}_{block_number}_{self.chain_id}'.lower()
+            rpc_calls[decimals_query_id] = self.state_service.get_function_info(
+                address=lp_token, abi=LP_TOKEN_ABI, fn_name="decimals", block_number=block_number)
 
-        query_id = f'hold_{user}_{lp_token}_{block_number}_{self.chain_id}'.lower()
-        rpc_calls[query_id] = self.state_service.get_function_info(
-            address=lp_token, abi=LP_TOKEN_ABI, fn_name="balanceOf",
-            fn_paras=[user],
-            block_number=block_number)
-
-        # lượng token ví đang stake
-        if stake:
-            for fn_name in ["userInfo", "pendingCake"]:
-                query_id = f'{fn_name}_{user}_{lp_token}_{pid}_{block_number}'.lower()
+            # lượng token ví đang stake
+            if stake:
+                query_id = f'userInfo_{user}_{lp_token}_{pid}_{block_number}'.lower()
                 rpc_calls[query_id] = self.state_service.get_function_info(
-                    address=self.masterchef_addr, abi=self.masterchef_abi, fn_name=fn_name,
+                    address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="userInfo",
                     fn_paras=[int(pid), user],
                     block_number=block_number)
 
         return rpc_calls
 
-    def cal_token_amount_lp_token(self, lp_token, lp_token_amount, list_farms_info, block_number: int = "latest"):
-        decimal = list_farms_info.get(f'decimals_{lp_token}_{block_number}_{self.chain_id}'.lower(), 0)
-        token0 = list_farms_info.get(f'token0_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
-        token1 = list_farms_info.get(f'token1_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
-        lp_token_price = list_farms_info.get(f'price_{lp_token}_{block_number}_{self.chain_id}'.lower(), 0)
-        if token0 != "" and token1 != "":
+    def decode_user_info_function(
+            self, user: str, lp_token_info: dict, user_data: dict, token_price: dict = None, stake: bool = True,
+            block_number: int = "latest"):
+        user_info = {}
+        for lp_token, value in lp_token_info.items():
+            pid = value.get("pid")
+            query_id = f'balanceOf_{user}_{lp_token}_{block_number}_{self.chain_id}'.lower()
+            decimals = user_data.get(f'decimals_{user}_{lp_token}_{block_number}_{self.chain_id}'.lower())
+            user_info[lp_token] = {
+                "amount": user_data.get(query_id) / 10** decimals,
+                "decimals": decimals
+            }
+            # lượng token ví đang stake
+            if stake:
+                # for fn_name in ["userInfo", "pendingCake"]:
+                query_id = f'userInfo_{user}_{lp_token}_{pid}_{block_number}'.lower()
+                user_info[lp_token]["userInfo"] = user_data.get(query_id)
 
-            token0_price, _ = self.get_token_info(token0)
-            token1_price, _ = self.get_token_info(token1)
-            token0_amount = lp_token_amount * lp_token_price / 2 / token0_price
-            token1_amount = lp_token_amount * lp_token_price / 2 / token1_price
-            return token0_amount, token1_amount
-        else:
-            print(f"lp_token {lp_token} error")
-            return 0, 0
+        result = self.update_stake_token_amount_of_wallet(user_info, lp_token_info, token_price)
+        return result
 
-    def update_stake_token_amount_of_wallet(self, user, user_info, list_farms_info):
+    def cal_token_amount_lp_token(self, lp_token, lp_token_amount, stake_lp_amount, list_token_info, token_price):
+        token0, token1 = list_token_info.get("token0"), list_token_info.get("token1")
+        result = {}
+        if token0 and token1:
+            token0_price = token_price.get(token0, 0)
+            token1_price = token_price.get(token1, 0)
+            lp_token_price = token_price.get(lp_token, 0)
+            lp_token_amount_in_usd = lp_token_amount * lp_token_price
+            stake_lp_amount_in_usd = stake_lp_amount * lp_token_price
+            token0_amount = lp_token_amount_in_usd / 2 / token0_price
+            token1_amount = lp_token_amount_in_usd / 2 / token1_price
+            result = {
+                "valueInUSD": lp_token_amount_in_usd,
+                "stakeValueInUSD": stake_lp_amount_in_usd,
+                token0: {
+                    "amount": token0_amount,
+                    "stakeAmount": stake_lp_amount_in_usd / 2 / token0_amount,
+                    "valueInUSD": lp_token_amount_in_usd / 2,
+                    "stakeValueInUSD": stake_lp_amount_in_usd / 2,
+                },
+                token1: {
+                    "amount": token1_amount,
+                    "stakeAmount": stake_lp_amount_in_usd / 2 / token1_price,
+                    "valueInUSD": lp_token_amount_in_usd / 2,
+                    "stakeValueInUSD": stake_lp_amount_in_usd / 2,
+                }
+            }
 
+        return result
+
+    def update_stake_token_amount_of_wallet(
+            self, user_info, lp_token_info: dict = None, token_price: dict = None):
         user_info_token_amount = {}
-        for query_id, amount in user_info.items():
-            query_id_split = query_id.split("_")
-            fn_name = query_id_split[0]
-            lp_token = query_id_split[2]
-
-            if fn_name == "hold":
-                if amount > 0:
-                    decimal = list_farms_info[f'decimals_{lp_token}_latest_{self.chain_id}'.lower()]
-                    amount = amount / 10 ** decimal
-                    user_info.update({query_id: amount})
-                    token0_amount, token1_amount = self.cal_token_amount_lp_token(lp_token, amount, list_farms_info)
-                    user_info_token_amount.update({f'hold0_{user}_{lp_token}_{self.chain_id}'.lower(): token0_amount})
-                    user_info_token_amount.update({f'hold1_{user}_{lp_token}_{self.chain_id}'.lower(): token1_amount})
-                    query_id = f'totallp_{user}_{lp_token}'.lower()
-                    if query_id not in user_info_token_amount:
-                        user_info_token_amount[query_id] = amount
-                        user_info_token_amount[f'total0_{user}_{lp_token}_{self.chain_id}'.lower()] = token0_amount
-                        user_info_token_amount[f'total1_{user}_{lp_token}_{self.chain_id}'.lower()] = token1_amount
-                    else:
-                        user_info_token_amount[query_id] += amount
-                        user_info_token_amount[f'total0_{user}_{lp_token}_{self.chain_id}'.lower()] += token0_amount
-                        user_info_token_amount[f'total1_{user}_{lp_token}_{self.chain_id}'.lower()] += token1_amount
-
-            elif fn_name == 'userinfo':
-                pid = int(query_id_split[3])
-                stake_amount = amount[0]
-
+        for lp_token, value in user_info.items():
+            pair_info = lp_token_info.get(lp_token)
+            amount = value.get("amount", 0)
+            user_info_token_amount[lp_token] = {
+                "amount": amount
+            }
+            if value.get("userInfo") and pair_info:
+                pid = pair_info.get("pid")
+                if not pid:
+                    continue
+                stake_amount = value.get("userInfo", [0])[0]
                 if stake_amount > 0:
-                    decimal = list_farms_info[f'decimals_{lp_token}_latest_{self.chain_id}'.lower()]
+                    decimals = value.get("decimals")
+                    user_info_token_amount[lp_token]["stakeAmount"] = stake_amount / 10 ** decimals
+                    if token_price:
+                        token_pair_amount = self.cal_token_amount_lp_token(
+                            lp_token, amount, stake_amount, pair_info, token_price)
+                        user_info_token_amount[lp_token].update(token_pair_amount)
 
-                    user_info_token_amount.update(
-                        {f'stake_{user}_{lp_token}_{pid}_{self.chain_id}'.lower(): stake_amount / 10 ** decimal})
-                    token0_amount, token1_amount = self.cal_token_amount_lp_token(lp_token, amount[0], list_farms_info)
-                    user_info_token_amount.update({f'stake0_{user}_{pid}_{self.chain_id}'.lower(): token0_amount})
-                    user_info_token_amount.update({f'stake1_{user}_{pid}_{self.chain_id}'.lower(): token1_amount})
-                    query_id = f'totallp_{user}_{pid}_{self.chain_id}'.lower()
-                    if query_id not in user_info_token_amount:
-                        user_info_token_amount[query_id] = amount
-                        user_info_token_amount[f'total0_{user}_{pid}_{self.chain_id}'.lower()] = token0_amount
-                        user_info_token_amount[f'total1_{user}_{pid}_{self.chain_id}'.lower()] = token1_amount
-                    else:
-                        user_info_token_amount[query_id] += amount
-                        user_info_token_amount[f'total0_{user}_{pid}_{self.chain_id}'.lower()] += token0_amount
-                        user_info_token_amount[f'total1_{user}_{pid}_{self.chain_id}'.lower()] += token1_amount
-        user_info.update(user_info_token_amount)
+        return user_info_token_amount
+
+    # Reward
+    def get_rewards_balance_function_info(self, user, lp_token_info, block_number: int = "latest"):
+        rpc_calls = {}
+        for lp_token, value in lp_token_info.items():
+            pid = value.get("pid")
+            query_id = f'pendingCake_{user}_{lp_token}_{pid}_{block_number}'.lower()
+            rpc_calls[query_id] = self.state_service.get_function_info(
+                address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="pendingCake",
+                fn_paras=[int(pid), user], block_number=block_number)
+        return rpc_calls
+
+    def calculate_rewards_balance(
+            self,
+            user: str,
+            lp_token_info: dict,
+            decoded_data: dict,
+            block_number: int = "latest"
+    ) -> dict:
+        amount = 0
+        for lp_token, value in lp_token_info.items():
+            pid = value.get("pid")
+            query_id = f'pendingCake_{user}_{lp_token}_{pid}_{block_number}'.lower()
+            amount += decoded_data.get(query_id) / 10 ** 18
+        result = {self.pool_info.get("rewardToken"): amount}
+        return result

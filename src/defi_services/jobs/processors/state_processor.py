@@ -88,8 +88,7 @@ class StateProcessor:
 
         return result
 
-    def process_decoded_data(
-            self, query_id: str, query_type: str, wallet: str,
+    def process_decoded_data(self, query_id: str, query_type: str, wallet: str,
             decoded_data: dict, block_number: int = 'latest', **kwargs):
         result = {
             "query_id": query_id,
@@ -136,9 +135,12 @@ class StateProcessor:
                 entity_id = base58_to_hex(entity_id)
 
             query_type = query.get("query_type")
+            lp_tokens= query.get("lp_tokens", None)
             reserves_list = query.get("reserves_list", None)
+            stake= query.get('stake', None)
+            lp_token_info= query.get('lp_token_info', None)
             rpc_calls, _ = self.init_rpc_call_information(
-                wallet, query_id, entity_id, query_type, block_number, reserve_info=reserves_list)
+                wallet, query_id, entity_id, query_type, block_number,reserves_list= reserves_list, lp_token_info= lp_token_info, stake= stake)
             all_rpc_calls.update(rpc_calls)
         result = []
         decoded_data = self.execute_rpc_calls(all_rpc_calls, batch_size, max_workers, ignore_error=ignore_error)
@@ -146,9 +148,11 @@ class StateProcessor:
             query_id = query.get("query_id")
             query_type = query.get("query_type")
             reserves_list = query.get("reserves_list", None)
+            lp_token_info= query.get('lp_token_info', None)
+            stake= query.get('stake', None)
             processed_data = self.process_decoded_data(
                     query_id, query_type, wallet, decoded_data, block_number,
-                    token_prices=token_prices, reserve_info=reserves_list)
+                    token_prices=token_prices, reserve_info=reserves_list,  lp_token_info= lp_token_info, stake= stake)
             result.append(processed_data)
 
         # if self.chain_id == Chain.tron:
