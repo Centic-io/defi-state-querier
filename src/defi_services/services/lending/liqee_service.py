@@ -60,14 +60,17 @@ class LiqeeStateService(CompoundStateService):
         reserves_info = {}
         for token in ctokens:
             address = _w3.toChecksumAddress(token)
-            contract = _w3.eth.contract(
-                address=address, abi=self.lquee_token_abi)
+            contract = _w3.eth.contract(address=address, abi=self.lquee_token_abi)
             underlying = contract.functions.underlying().call(block_identifier=block_number)
             liquidation_threshold = comptroller_contract.functions.markets(address).call(block_identifier=block_number)
-            liquidation_threshold = liquidation_threshold[0] / 10**18
+            liquidation_threshold = liquidation_threshold[0] / 10 ** 18
+
+            exchange_rate = contract.functions.exchangeRateStored().call(block_identifier=block_number)
+            exchange_rate = exchange_rate / 10 ** 18
 
             reserves_info[underlying.lower()] = {
                 "cToken": token.lower(),
+                "exchangeRate": exchange_rate,
                 "liquidationThreshold": liquidation_threshold,
                 "loanToValue": liquidation_threshold
             }

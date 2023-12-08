@@ -10,7 +10,7 @@ from defi_services.constants.chain_constant import Chain, BlockTime
 from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.time_constant import TimeConstants
-from defi_services.constants.token_constant import ContractAddresses, Token
+from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.ethereum.compound_eth import COMPOUND_ETH
 from defi_services.services.protocol_services import ProtocolServices
@@ -67,10 +67,15 @@ class CompoundStateService(ProtocolServices):
         for data in metadata:
             underlying = data[11].lower()
             ctoken = data[0].lower()
+
             lt = data[10] / 10 ** 18
             ltv = data[10] / 10 ** 18
+
+            underlying_decimal = int(data[13])
+            exchange_rate = data[1] / 10 ** (18 - 8 + underlying_decimal)
             reserves_info[underlying] = {
                 "cToken": ctoken,
+                "exchangeRate": exchange_rate,
                 "liquidationThreshold": lt,
                 "loanToValue": ltv
             }
