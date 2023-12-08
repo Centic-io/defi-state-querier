@@ -2,14 +2,13 @@ import logging
 
 from web3 import Web3
 
-from defi_services.abis.lending.cream.cream_comptroller_abi import CREAM_COMPTROLLER_ABI
 from defi_services.abis.lending.iron_bank.iron_comptroller_abi import IRON_COMPTROLLER_ABI
 from defi_services.abis.lending.iron_bank.iron_lens_abi import IRON_LENS_ABI
 from defi_services.abis.lending.iron_bank.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain, BlockTime
 from defi_services.constants.entities.lending_constant import Lending
-from defi_services.constants.token_constant import ContractAddresses, Token
+from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.compound_service import CompoundStateService
 from defi_services.services.lending.lending_info.avalanche.iron_bank_avalanche import IRON_BANK_AVALANCHE
@@ -77,6 +76,11 @@ class IronBankStateService(CompoundStateService):
                 "function": "underlying",
                 "block_number": "latest"
             }
+
+            exchange_rate_query_id = f'exchangeRateStored_{token}_{block_number}'
+            queries[exchange_rate_query_id] = self.get_ctoken_function_info(
+                ctoken=token, fn_name='exchangeRateStored', block_number=block_number)
+
             markets = f"markets_{token}_latest".lower()
             queries[markets] = self.get_comptroller_function_info("markets", [token])
         decoded_data = self.state_service.query_state_data(queries)
@@ -85,8 +89,18 @@ class IronBankStateService(CompoundStateService):
             underlying = decoded_data.get(key).lower()
             markets = f"markets_{token}_latest".lower()
             liquidation_threshold = decoded_data.get(markets)[1] / 10 ** 18
+
+            if underlying != Token.native_token:
+                underlying_contract = _w3.eth.contract(address=Web3.toChecksumAddress(underlying), abi=ERC20_ABI)
+                underlying_decimal = underlying_contract.functions.decimals().call()
+            else:
+                underlying_decimal = Chain.native_decimals.get(self.chain_id, 18)
+            exchange_rate_query_id = f'exchangeRateStored_{token}_{block_number}'
+            exchange_rate = decoded_data.get(exchange_rate_query_id) / 10 ** (18 - 8 + underlying_decimal)
+
             reserves_info[underlying] = {
                 'cToken': token.lower(),
+                "exchangeRate": exchange_rate,
                 "liquidationThreshold": liquidation_threshold,
                 "loanToValue": liquidation_threshold
             }

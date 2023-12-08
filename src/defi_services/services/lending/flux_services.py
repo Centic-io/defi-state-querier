@@ -7,7 +7,7 @@ from defi_services.abis.lending.cream.cream_lens_abi import CREAM_LENS_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
-from defi_services.constants.token_constant import ContractAddresses, Token
+from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.compound_service import CompoundStateService
 from defi_services.services.lending.lending_info.ethereum.flux_eth import FLUX_ETH
@@ -66,8 +66,12 @@ class FluxStateService(CompoundStateService):
             ctoken = data[0].lower()
             lt = data[10] / 10 ** 18
             ltv = data[10] / 10 ** 18
+
+            underlying_decimal = int(data[13])
+            exchange_rate = data[1] / 10 ** (18 - 8 + underlying_decimal)
             reserves_info[underlying] = {
                 "cToken": ctoken,
+                "exchangeRate": exchange_rate,
                 "liquidationThreshold": lt,
                 "loanToValue": ltv
             }
