@@ -7,11 +7,11 @@ from defi_services.constants.entities.dex_services import DexServices
 from defi_services.constants.entities.lending_services import LendingServices
 from defi_services.constants.query_constant import Query
 from defi_services.jobs.queriers.state_querier import StateQuerier
-from defi_services.services.dex.dex_protocol_services import DexProtocolServices
+from defi_services.services.dex_protocol_services import DexProtocolServices
 from defi_services.services.nft_services import NFTServices
 from defi_services.services.protocol_services import ProtocolServices
 from defi_services.services.token_services import TokenServices
-from defi_services.utils.convert_address import base58_to_hex, convert_address_dict
+from defi_services.utils.convert_address import base58_to_hex
 from defi_services.utils.init_services import init_services
 
 logger = logging.getLogger("StateProcessor")
@@ -120,12 +120,10 @@ class StateProcessor:
         return result
 
     def run(self, address: str, queries: list, block_number: int = 'latest',
-            batch_size: int = 100, max_workers: int = 8, ignore_error=False, token_prices=None):
+            batch_size: int = 100, max_workers: int = 8, ignore_error=False):
         wallet = address
         if self.chain_id == Chain.tron and address and not self.check_address(address):
             wallet = base58_to_hex(address)
-        if token_prices is None:
-            token_prices = {}
         all_rpc_calls = {}
         for query in queries:
             query_type = query.get("query_type")
@@ -135,12 +133,11 @@ class StateProcessor:
                 entity_id = base58_to_hex(entity_id)
 
             query_type = query.get("query_type")
-            lp_tokens= query.get("lp_tokens", None)
             reserves_list = query.get("reserves_list", None)
             stake= query.get('stake', None)
-            lp_token_info= query.get('lp_token_info', None)
+            supplied_data= query.get('supplied_data', None)
             rpc_calls, _ = self.init_rpc_call_information(
-                wallet, query_id, entity_id, query_type, block_number,reserves_list= reserves_list, lp_token_info= lp_token_info, stake= stake)
+                wallet, query_id, entity_id, query_type, block_number,reserves_list= reserves_list, supplied_data= supplied_data, stake= stake)
             all_rpc_calls.update(rpc_calls)
         result = []
         decoded_data = self.execute_rpc_calls(all_rpc_calls, batch_size, max_workers, ignore_error=ignore_error)
@@ -148,11 +145,11 @@ class StateProcessor:
             query_id = query.get("query_id")
             query_type = query.get("query_type")
             reserves_list = query.get("reserves_list", None)
-            lp_token_info= query.get('lp_token_info', None)
+            supplied_data= query.get('supplied_data', None)
+
             stake= query.get('stake', None)
             processed_data = self.process_decoded_data(
-                    query_id, query_type, wallet, decoded_data, block_number,
-                    token_prices=token_prices, reserve_info=reserves_list,  lp_token_info= lp_token_info, stake= stake)
+                    query_id, query_type, wallet, decoded_data, block_number, reserve_info=reserves_list,  supplied_data= supplied_data, stake= stake)
             result.append(processed_data)
 
         # if self.chain_id == Chain.tron:

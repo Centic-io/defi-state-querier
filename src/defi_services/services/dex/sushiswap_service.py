@@ -5,14 +5,14 @@ from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.dex_constant import Dex
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.dex.dex_info.sushiswap_info import (SUSHISWAP_V0_ETH_INFO)
-from defi_services.services.dex.dex_protocol_services import DexProtocolServices
+from defi_services.services.dex_protocol_services import DexProtocolServices
 
-logger = logging.getLogger("Lending Pool State Service")
+logger = logging.getLogger("SushiSwap V0 Pool State Service")
 
 
 class SushiSwapInfo:
     mapping = {
-        Chain.bsc: SUSHISWAP_V0_ETH_INFO
+        Chain.ethereum: SUSHISWAP_V0_ETH_INFO
     }
 
 

@@ -3,40 +3,29 @@ import logging
 from defi_services.abis.dex.pancakeswap.pancakeswap_lp_token_abi import LP_TOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
-from defi_services.constants.entities.dex_constant import Dex
 from defi_services.jobs.queriers.state_querier import StateQuerier
-from defi_services.services.dex.dex_info.pancakeswap_info import PANCAKESWAP_V2_BSC_INFO
+from defi_services.services.dex.dex_info.spookyswap_info import SPOOKY_FTM_V2_INFO
 from defi_services.services.dex_protocol_services import DexProtocolServices
 
-logger = logging.getLogger("PancakeSwap V2 State Service")
+logger = logging.getLogger("Spooky V2 State Service")
 
 
-class PancakeSwapV2Info:
+class SpookySwapV2Info:
     mapping = {
-        Chain.bsc: PANCAKESWAP_V2_BSC_INFO
+        Chain.fantom: SPOOKY_FTM_V2_INFO
     }
 
 
-class PancakeSwapV2Services(DexProtocolServices):
-    def __init__(self, state_service: StateQuerier, chain_id: str = '0x38'):
+class SpookySwapV2Services(DexProtocolServices):
+    def __init__(self, state_service: StateQuerier,    chain_id: str = '0xfa'):
         super().__init__()
         self.chain_id = chain_id
         self.state_service = state_service
-        self.pool_info = PancakeSwapV2Info.mapping.get(chain_id)
+        self.pool_info = SpookySwapV2Info.mapping.get(chain_id)
         self.masterchef_addr = self.pool_info['masterchef_address']
         self.masterchef_abi = self.pool_info['masterchef_abi']
 
-    def get_service_info(self):
-        info = {
-            Dex.pancake_v2: {
-                "chain_id": self.chain_id,
-                "type": "dex",
-                "pool_info": self.pool_info
-            }
-        }
-        return info
 
-    # Get all lp tokens
     def get_all_supported_lp_token(self):
         web3 = self.state_service.get_w3()
         if web3.isAddress(self.masterchef_addr):
@@ -65,8 +54,9 @@ class PancakeSwapV2Services(DexProtocolServices):
     def get_lp_token_function_info(self, supplied_data, block_number: int = "latest"):
         rpc_calls = {}
         lp_token_info = supplied_data['lp_token_info']
+
         for lp_token, value in lp_token_info.items():
-            pid= value.get('pid')
+            pid= value.get("pid")
             for fn_name in ["decimals", "totalSupply", "token0", "token1", "name"]:
                 query_id = f"{fn_name}_{lp_token}_{block_number}_{self.chain_id}".lower()
                 rpc_calls[query_id] = self.state_service.get_function_info(
@@ -78,10 +68,11 @@ class PancakeSwapV2Services(DexProtocolServices):
                 address=lp_token, abi=LP_TOKEN_ABI, fn_name="balanceOf", fn_paras=[self.masterchef_addr],
                 block_number=block_number)
 
-            query_id = f'poolInfo_{lp_token}_{block_number}_{self.chain_id}'.lower()
+            query_id = f'getFarmData_{lp_token}_{block_number}_{self.chain_id}'.lower()
             rpc_calls[query_id] = self.state_service.get_function_info(
-                address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="poolInfo", fn_paras=[int(pid)],
+                address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="getFarmData", fn_paras=[int(pid)],
                 block_number=block_number)
+
         return rpc_calls
 
     def decode_lp_token_info(self, supplied_data, response_data, block_number: int = "latest"):
@@ -89,29 +80,32 @@ class PancakeSwapV2Services(DexProtocolServices):
         lp_token_info = supplied_data['lp_token_info']
 
         for lp_token, value in lp_token_info.items():
-            pid = value.get('pid')
+            pid= value.get('pid')
             token0 = response_data.get(f'token0_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
             token1 = response_data.get(f'token1_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
             decimals = response_data.get(f'decimals_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
             name = response_data.get(f'name_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
-            total_supply = response_data.get(f'totalsupply_{lp_token}_{block_number}_{self.chain_id}'.lower(),
-                                             0) / 10 ** decimals
-            masterchef_balance = response_data.get(
-                f'balanceOf_{lp_token}_{block_number}_{self.chain_id}'.lower()) / 10 ** decimals
-            poolInfo = response_data.get(f'poolInfo_{lp_token}_{block_number}_{self.chain_id}'.lower())
-            acc_cake_per_share = poolInfo[0] /10**18
-            alloc_point= poolInfo[2]
+            total_supply = response_data.get(f'totalsupply_{lp_token}_{block_number}_{self.chain_id}'.lower(), 0)/ 10** decimals
+            masterchef_balance = response_data.get(f'balanceOf_{lp_token}_{block_number}_{self.chain_id}'.lower())/ 10** decimals
+            farm_data = response_data.get(f'getFarmData_{lp_token}_{block_number}_{self.chain_id}'.lower())
+            acc_boo_per_share = farm_data[0][0] / 10**18
+            alloc_point = farm_data[0][2]
+            total_alloc_point= farm_data[1]
+            rewarder_addr = farm_data[2]
             result[lp_token] = {
                 "pid": pid,
                 "totalSupply": total_supply,
                 "token0": token0,
                 "token1": token1,
+
                 "decimals": decimals,
                 "name": name,
-                "stakeBalance": masterchef_balance,
-                "accCakePerShare": acc_cake_per_share,
-                'allocPoint': alloc_point
-                }
+                "stakeBalance": masterchef_balance ,
+                "accBooPerShare": acc_boo_per_share,
+                'allocPoint': alloc_point,
+                'totalAllocPoint': total_alloc_point,
+                'rewarderAddress': rewarder_addr
+            }
         return result
 
     # Get balance of token
@@ -166,8 +160,8 @@ class PancakeSwapV2Services(DexProtocolServices):
                     "token0Amount": balance_of_token0,
                     "token1Amount": balance_of_token1
                 })
-                token0_price = token_price.get(token0).get("price", 0)
-                token1_price = token_price.get(token1).get("price", 0)
+                token0_price = token_price.get(token0).get("price",0)
+                token1_price = token_price.get(token1).get("price",0)
                 new_amount1 = balance_of_token1
                 if token0_price != 0 and token1_price != 0:
                     total_of_token0 = balance_of_token0 * token0_price
@@ -187,7 +181,7 @@ class PancakeSwapV2Services(DexProtocolServices):
                     'token1Price': token1_price,
                     "stakeAmountToken0": lp_token_stake_amount * lp_token_price / 2 / token0_price,
                     "stakeAmountToken1": lp_token_stake_amount * lp_token_price / 2 / token1_price
-                    })
+                })
 
         return lp_token_info
 
@@ -239,6 +233,7 @@ class PancakeSwapV2Services(DexProtocolServices):
         result = self.update_stake_token_amount_of_wallet(user_info, lp_token_info)
         return result
 
+
     def update_stake_token_amount_of_wallet(
             self, user_info, lp_token_info: dict = None):
         user_info_token_amount = {}
@@ -247,13 +242,13 @@ class PancakeSwapV2Services(DexProtocolServices):
             amount = value.get("amount", 0)
             user_info_token_amount[lp_token] = {
                 "amount": amount
-                }
+            }
             if value.get("userInfo") and pair_info:
                 pid = pair_info.get("pid")
                 if not pid:
                     continue
                 decimals = value.get("decimals")
-                stake_amount = value.get("userInfo", [0])[0] / 10 ** decimals
+                stake_amount = value.get("userInfo", [0])[0]/ 10 ** decimals
                 if stake_amount > 0:
                     user_info_token_amount[lp_token]["stakeAmount"] = stake_amount
                     token_pair_amount = self.cal_token_amount_lp_token(
@@ -295,12 +290,12 @@ class PancakeSwapV2Services(DexProtocolServices):
     # Reward
     def get_rewards_balance_function_info(self, user, supplied_data, block_number: int = "latest"):
         rpc_calls = {}
-        lp_token_info= supplied_data.get("lp_token_info")
+        lp_token_info = supplied_data.get("lp_token_info")
         for lp_token, value in lp_token_info.items():
             pid = value.get("pid")
-            query_id = f'pendingCake_{user}_{lp_token}_{pid}_{block_number}'.lower()
+            query_id = f'pendingBoo_{user}_{lp_token}_{pid}_{block_number}'.lower()
             rpc_calls[query_id] = self.state_service.get_function_info(
-                address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="pendingCake",
+                address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="pendingBoo",
                 fn_paras=[int(pid), user], block_number=block_number)
         return rpc_calls
 
@@ -310,12 +305,12 @@ class PancakeSwapV2Services(DexProtocolServices):
             supplied_data: dict,
             decoded_data: dict,
             block_number: int = "latest"
-    ) -> dict:
+            ) -> dict:
         amount = 0
-        lp_token_info= supplied_data.get('lp_token_info')
+        lp_token_info = supplied_data.get('lp_token_info')
         for lp_token, value in lp_token_info.items():
             pid = value.get("pid")
-            query_id = f'pendingCake_{user}_{lp_token}_{pid}_{block_number}'.lower()
+            query_id = f'pendingBoo_{user}_{lp_token}_{pid}_{block_number}'.lower()
             amount += decoded_data.get(query_id) / 10 ** 18
         result = {self.pool_info.get("rewardToken"): amount}
         return result

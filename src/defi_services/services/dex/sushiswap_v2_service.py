@@ -7,8 +7,9 @@ from defi_services.constants.entities.dex_constant import Dex
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.dex.dex_info.sushiswap_info import (SUSHISWAP_V2_ETH_INFO, SUSHISWAP_FANTOM_INFO,
                                                                 SUSHISWAP_POLYGON_INFO, SUSHISWAP_ARBITRUM_INFO,
-                                                                SUSHISWAP_AVALANCHE_INFO, SUSHISWAP_OPTIMISM_INFO)
-from defi_services.services.dex.dex_protocol_services import DexProtocolServices
+                                                                SUSHISWAP_AVALANCHE_INFO, SUSHISWAP_OPTIMISM_INFO,
+                                                                SUSHISWAP_BSC_INFO)
+from defi_services.services.dex_protocol_services import DexProtocolServices
 
 logger = logging.getLogger("SushiSwap V2 State Service")
 
@@ -20,7 +21,8 @@ class SushiSwapV2Info:
         Chain.polygon: SUSHISWAP_POLYGON_INFO,
         Chain.optimism: SUSHISWAP_OPTIMISM_INFO,
         Chain.avalanche: SUSHISWAP_AVALANCHE_INFO,
-        Chain.arbitrum: SUSHISWAP_ARBITRUM_INFO
+        Chain.arbitrum: SUSHISWAP_ARBITRUM_INFO,
+        Chain.bsc: SUSHISWAP_BSC_INFO
     }
 
 
