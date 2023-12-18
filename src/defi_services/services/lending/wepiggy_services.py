@@ -140,7 +140,7 @@ class WepiggyStateService(CompoundStateService):
         get_reward_id = f"wpcAccrued_{self.name}_{wallet}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
-    def calculate_rewards_balance(self, decoded_data: dict, wallet: str, block_number: int = "latest"):
+    def calculate_rewards_balance(self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         get_reward_id = f"wpcAccrued_{self.name}_{wallet}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")

@@ -92,17 +92,17 @@ class JustLendStateService(CompoundStateService):
     # REWARDS BALANCE
     def get_rewards_balance_function_info(
             self,
-            wallets: str,
+            wallet: str,
             reserves_info: dict = None,
             block_number: int = "latest",
     ):
-        rpc_call = self.get_comptroller_function_info("compAccrued", [wallets])
-        get_reward_id = f"compAccrued_{self.name}_{wallets}_{block_number}".lower()
+        rpc_call = self.get_comptroller_function_info("compAccrued", [wallet])
+        get_reward_id = f"compAccrued_{self.name}_{wallet}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
-    def calculate_rewards_balance(self, decoded_data: dict, wallets: str,
-                                  block_number: int = "latest"):
-        get_reward_id = f"compAccrued_{self.name}_{wallets}_{block_number}".lower()
+    def calculate_rewards_balance(
+            self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
+        get_reward_id = f"compAccrued_{self.name}_{wallet}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
         result = {

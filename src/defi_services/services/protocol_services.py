@@ -67,6 +67,11 @@ class ProtocolServices:
         if Query.protocol_apy in query_types:
             rpc_calls.update(self.get_apy_lending_pool_function_info(reserves_info, block_number))
 
+        if Query.staking_reward in query_types and wallet and wallet != Token.native_token:
+            rpc_calls.update(self.get_wallet_staking_balance_function_info(
+                wallet, reserves_info, block_number, return_reward=True
+            ))
+
         logger.info(f"Get encoded rpc calls in {time.time() - begin}s")
         return rpc_calls
 
@@ -92,7 +97,7 @@ class ProtocolServices:
 
         if Query.protocol_reward in query_types and wallet and wallet != Token.native_token:
             result.update(self.calculate_rewards_balance(
-                decoded_data, wallet, block_number
+                wallet, reserves_info, decoded_data, block_number
             ))
 
         if Query.health_factor in query_types:
@@ -109,6 +114,11 @@ class ProtocolServices:
             result.update(self.calculate_apy_lending_pool_function_call(
                 reserves_info, decoded_data, token_prices, pool_token_price, pool_decimals, block_number))
 
+        if Query.staking_reward in query_types and wallet and wallet != Token.native_token:
+            result.update(self.calculate_wallet_staking_balance(
+                wallet, reserves_info, decoded_data, token_prices, block_number, return_reward=True
+            ))
+
         logger.info(f"Process protocol data in {time.time() - begin}")
         return result
 
@@ -123,8 +133,9 @@ class ProtocolServices:
 
     def calculate_rewards_balance(
             self,
-            decoded_data: dict,
             wallet: str,
+            reserves_info: dict,
+            decoded_data: dict,
             block_number: int = "latest"
     ) -> dict:
         return {}
@@ -187,5 +198,26 @@ class ProtocolServices:
             pool_token_price: float,
             pool_decimals: int = 18,
             block_number: int = 'latest',
+    ) -> dict:
+        ...
+
+    # CALCULATE WALLET STAKING BALANCE
+    def get_wallet_staking_balance_function_info(
+            self,
+            wallet: str,
+            reserves_info: dict,
+            block_number: int = "latest",
+            return_reward: bool = False
+    ) -> dict:
+        ...
+
+    def calculate_wallet_staking_balance(
+            self,
+            wallet: str,
+            reserves_info: dict,
+            decoded_data: dict,
+            token_prices: dict,
+            block_number: int = 'latest',
+            return_reward: bool = False
     ) -> dict:
         ...

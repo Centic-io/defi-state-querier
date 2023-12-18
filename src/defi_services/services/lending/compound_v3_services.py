@@ -258,10 +258,7 @@ class CompoundV3StateService(CompoundStateService):
         return result
 
     def calculate_rewards_balance(
-            self,
-            decoded_data: dict,
-            wallet: str,
-            block_number: int = "latest"):
+            self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         reward_amount = 0
         reward_address = self.pool_info.get("rewardAddress")
         for token, value in self.pool_info.get("reservesList").items():

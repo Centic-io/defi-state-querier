@@ -116,7 +116,7 @@ class ApeSwapStateService(CompoundStateService):
         return {}
 
     def calculate_rewards_balance(
-            self, decoded_data: dict, wallet: str, block_number: int = "latest"):
+            self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         return {}
 
     def get_ctoken_function_info(self, ctoken: str, fn_name: str, fn_paras: list = None, block_number: int = "latest"):

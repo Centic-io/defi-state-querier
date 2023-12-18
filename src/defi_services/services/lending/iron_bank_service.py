@@ -153,10 +153,7 @@ class IronBankStateService(CompoundStateService):
         return {get_reward_id: rpc_call}
 
     def calculate_rewards_balance(
-            self,
-            decoded_data: dict,
-            wallet: str,
-            block_number: int = "latest"):
+            self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         if self.chain_id in [Chain.optimism, Chain.avalanche]:
             return {}
         get_reward_id = f"compAccrued_{self.name}_{wallet}_{block_number}".lower()
