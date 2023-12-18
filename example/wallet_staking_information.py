@@ -1,3 +1,5 @@
+import json
+
 from defi_services.constants.query_constant import Query
 from defi_services.jobs.processors.state_processor import StateProcessor
 
@@ -13,4 +15,6 @@ queries = [
     }
 ]
 data = job.run('0x53430f13A3E206c4f2375A68daeB64a087659358', queries)
-print(data)
+
+with open('../test/wallet_staking.json', 'w') as f:
+    json.dump(data, f, indent=2)
