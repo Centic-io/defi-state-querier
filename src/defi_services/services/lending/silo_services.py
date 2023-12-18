@@ -240,7 +240,7 @@ class SiloStateService(ProtocolServices):
         decimals_id = f"decimals_{self.name}_{reward_token}_{block_number}".lower()
         return {get_reward_id: rpc_call, decimals_id: decimals_call}
 
-    def calculate_rewards_balance(self, decoded_data: dict, wallet: str, block_number: int = "latest"):
+    def calculate_rewards_balance(self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         reward_token = self.pool_info.get("rewardToken")
         get_reward_id = f"getUserUnclaimedRewards_{self.name}_{wallet}_{block_number}".lower()
         decimals_id = f"decimals_{self.name}_{reward_token}_{block_number}".lower()

@@ -388,7 +388,7 @@ class TravaStateService(ProtocolServices):
     # REWARDS BALANCE
     def get_rewards_balance_function_info(
             self,
-            wallet_address,
+            wallet,
             reserves_info: dict = None,
             block_number: int = "latest"
     ):
@@ -397,16 +397,16 @@ class TravaStateService(ProtocolServices):
         for token, value in reserves_info.items():
             atoken, debt_token = Web3.toChecksumAddress(value['tToken']), Web3.toChecksumAddress(value['dToken'])
             tokens += [atoken, debt_token]
-        key = f"getRewardsBalance_{self.name}_{wallet_address}_{block_number}".lower()
+        key = f"getRewardsBalance_{self.name}_{wallet}_{block_number}".lower()
         rpc_calls[key] = self.get_function_incentive_info(
-            "getRewardsBalance", [tokens, wallet_address], block_number)
+            "getRewardsBalance", [tokens, wallet], block_number)
 
         return rpc_calls
 
     def calculate_rewards_balance(
-            self, decoded_data: dict, wallet_address: str, block_number: int = "latest"):
+            self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         reward_token = self.pool_info['rewardToken']
-        key = f"getRewardsBalance_{self.name}_{wallet_address}_{block_number}".lower()
+        key = f"getRewardsBalance_{self.name}_{wallet}_{block_number}".lower()
         rewards = decoded_data.get(key) / 10 ** 18
         result = {
             reward_token: {"amount": rewards}

@@ -331,10 +331,7 @@ class GranaryStateService(ProtocolServices):
         return rpc_calls
 
     def calculate_rewards_balance(
-            self,
-            decoded_data: dict,
-            wallet: str,
-            block_number: int = "latest"):
+            self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         reward_tokens = self.pool_info.get("rewardToken")
         if not reward_tokens:
             return {}

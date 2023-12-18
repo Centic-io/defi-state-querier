@@ -299,7 +299,7 @@ class AaveV3StateService(AaveV2StateService):
         return rpc_calls
 
     def calculate_rewards_balance(
-            self, decoded_data: dict, wallet: str, block_number: int = "latest"):
+            self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         key = f"getAllUserRewards_{self.name}_{wallet}_{block_number}".lower()
         rewards = decoded_data.get(key)
         result = dict(zip(*rewards))
