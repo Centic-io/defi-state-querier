@@ -4,16 +4,21 @@ from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.abis.vault.trava_vault_abi import TRAVA_VAULT_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.vault_constant import Vault
+from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.protocol_services import ProtocolServices
 from defi_services.services.vault.vault_info.bsc.trava_bsc import TRAVA_VAULT_BSC
+from defi_services.services.vault.vault_info.ethereum.trava_eth import TRAVA_VAULT_ETH
+from defi_services.services.vault.vault_info.fantom.trava_ftm import TRAVA_VAULT_FTM
 
 logger = logging.getLogger("Trava Vault State Service")
 
 
 class TravaVaultInfo:
     mapping = {
-        Chain.bsc: TRAVA_VAULT_BSC
+        Chain.bsc: TRAVA_VAULT_BSC,
+        Chain.ethereum: TRAVA_VAULT_ETH,
+        Chain.fantom: TRAVA_VAULT_FTM
     }
 
 
@@ -37,6 +42,25 @@ class TravaVaultStateService(ProtocolServices):
             }
         }
         return info
+
+    def get_token_list(self):
+        reward_token = self.pool_info.get('rewardToken')
+
+        tokens = []
+        if isinstance(reward_token, list):
+            tokens += reward_token
+        elif isinstance(reward_token, str):
+            tokens.append(reward_token)
+
+        for token, info in self.pool_info.get("reservesList", {}).items():
+            asset_address = info['tokenIn']
+            if asset_address == Token.native_token:
+                tokens.append(Token.wrapped_token.get(self.chain_id))
+            else:
+                tokens.append(asset_address)
+
+        tokens = list(set(tokens))
+        return tokens
 
     # WALLET STAKING BALANCE
     def get_wallet_staking_balance_function_info(

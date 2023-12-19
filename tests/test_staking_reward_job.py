@@ -3,11 +3,11 @@ from dotenv import load_dotenv
 from defi_services.jobs.processors.state_processor import StateProcessor
 from defi_services.utils.logger_utils import get_logger
 
-logger = get_logger('Test processor job')
+logger = get_logger('Test staking reward job')
 load_dotenv()
 
 
-def test_processor_job():
+def test_staking_reward_job():
     providers = {
         '0x1': os.environ.get("ETHEREUM_PROVIDER"),
         '0x38': os.environ.get("BSC_PROVIDER"),
@@ -29,37 +29,26 @@ def test_processor_job():
         queries = []
         info = job.get_service_info()
         for p_id, p in info.items():
-            if p['type'] == 'lending':
+            if p['type'] == 'vault':
                 queries.append({
-                    "query_id": f'{p_id}_deposit_borrow',
+                    "query_id": f'{p_id}_staking_reward',
                     "entity_id": p_id,
-                    "query_type": "deposit_borrow",
-                    "reserves_list": p.get("protocol_info", {}).get("reservesList")
-                })
-                queries.append({
-                    "query_id": f'{p_id}_protocol_reward',
-                    "entity_id": p_id,
-                    "query_type": "protocol_reward",
-                    "reserves_list": p.get("protocol_info", {}).get("reservesList")
-                })
-                queries.append({
-                    "query_id": f'{p_id}_protocol_apy',
-                    "entity_id": p_id,
-                    "query_type": "protocol_apy",
+                    "query_type": "staking_reward",
                     "reserves_list": p.get("protocol_info", {}).get("reservesList")
                 })
 
-        error = False
-        try:
-            result = job.run(address, queries, batch_size=100, ignore_error=True)
-            data[chain_id] = result
-        except Exception as ex:
-            logger.exception(ex)
-            logger.error(f'Exception on chain {chain_id}')
-            error = True
+        if queries:
+            error = False
+            try:
+                result = job.run(address, queries, batch_size=100, ignore_error=True)
+                data[chain_id] = result
+            except Exception as ex:
+                logger.exception(ex)
+                logger.error(f'Exception on chain {chain_id}')
+                error = True
 
-        assert not error
+            assert not error
 
 
 if __name__ == "__main__":
-    test_processor_job()
+    test_staking_reward_job()
