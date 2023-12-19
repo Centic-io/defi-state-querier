@@ -25,14 +25,14 @@ class SushiswapServices(DexProtocolServices):
         self.masterchef_addr = self.pool_info['masterchef_address']
         self.masterchef_abi = self.pool_info['masterchef_abi']
 
-    def get_all_supported_lp_token(self):
+    def get_all_supported_lp_token(self, limit: int = 1):
         web3 = self.state_service.get_w3()
         if web3.isAddress(self.masterchef_addr):
             self.masterchef_addr = web3.toChecksumAddress(self.masterchef_addr)
         master_chef_contract = web3.eth.contract(abi=self.masterchef_abi, address=self.masterchef_addr)
         pool_length = master_chef_contract.functions.poolLength().call()
         rpc_calls = {}
-        for pid in range(0, int(pool_length)):
+        for pid in range(0, int(pool_length/ limit)):
             query_id = f'poolInfo_{pid}_'
             rpc_calls[query_id] = self.state_service.get_function_info(
                 address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="poolInfo", fn_paras=[pid]
@@ -49,6 +49,7 @@ class SushiswapServices(DexProtocolServices):
             }
         }
         return info
+
     def decode_all_supported_lp_token(self, response_data):
         result = {}
         for key, value in response_data.items():
@@ -59,9 +60,10 @@ class SushiswapServices(DexProtocolServices):
         return result
 
     # Get lp token info
-    def get_lp_token_function_info(self, lp_token_list, block_number: int = "latest"):
+    def get_lp_token_function_info(self, supplied_data, block_number: int = "latest"):
         rpc_calls = {}
-        for lp_token, pid in lp_token_list.items():
+        lp_token_info = supplied_data['lp_token_info']
+        for lp_token, pid in lp_token_info.items():
             for fn_name in ["decimals", "totalSupply", "token0", "token1", "name"]:
                 query_id = f"{fn_name}_{lp_token}_{block_number}_{self.chain_id}".lower()
                 rpc_calls[query_id] = self.state_service.get_function_info(
@@ -79,16 +81,19 @@ class SushiswapServices(DexProtocolServices):
                 block_number=block_number)
         return rpc_calls
 
-    def decode_lp_token_info(self, lp_token_list, response_data, block_number: int = "latest"):
+    def decode_lp_token_info(self, supplied_data, response_data, block_number: int = "latest"):
+        lp_token_info = supplied_data['lp_token_info']
         result = {}
-        for lp_token, pid in lp_token_list.items():
+        for lp_token, pid in lp_token_info.items():
             token0 = response_data.get(f'token0_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
             token1 = response_data.get(f'token1_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
             decimals = response_data.get(f'decimals_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
             name = response_data.get(f'name_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
-            total_supply = response_data.get(f'totalsupply_{lp_token}_{block_number}_{self.chain_id}'.lower(), 0)/ 10** decimals
-            masterchef_balance = response_data.get(f'balanceOf_{lp_token}_{block_number}_{self.chain_id}'.lower())/ 10** decimals
-            accCakePerShare = response_data.get(f'poolInfo_{lp_token}_{block_number}_{self.chain_id}'.lower())[0]
+            total_supply = response_data.get(f'totalsupply_{lp_token}_{block_number}_{self.chain_id}'.lower(),
+                                             0) / 10 ** decimals
+            masterchef_balance = response_data.get(
+                f'balanceOf_{lp_token}_{block_number}_{self.chain_id}'.lower()) / 10 ** decimals
+            acc_cake_per_share = response_data.get(f'poolInfo_{lp_token}_{block_number}_{self.chain_id}'.lower())[0]
             result[lp_token] = {
                 "pid": pid,
                 "totalSupply": total_supply,
@@ -96,14 +101,15 @@ class SushiswapServices(DexProtocolServices):
                 "token1": token1,
                 "decimals": decimals,
                 "name": name,
-                "stakeBalance": masterchef_balance ,
-                "poolInfo": accCakePerShare
+                "stakeBalance": masterchef_balance,
+                "poolInfo": acc_cake_per_share
             }
         return result
 
     # Get balance of token
-    def get_balance_of_token_function_info(self, lp_token_info, block_number: int = "latest"):
+    def get_balance_of_token_function_info(self, supplied_data, block_number: int = "latest"):
         rpc_calls = {}
+        lp_token_info = supplied_data['lp_token_info']
         for key, value in lp_token_info.items():
             for fn_name in ["token0", "token1"]:
                 token = value.get(fn_name, None)
@@ -120,8 +126,10 @@ class SushiswapServices(DexProtocolServices):
         return rpc_calls
 
     def decode_balance_of_token_function_info(
-            self, lp_token_info, balance_info, token_price, block_number: int = "latest"):
+            self, supplied_data, balance_info, block_number: int = "latest"):
         lp_token_balance = {}
+        lp_token_info = supplied_data['lp_token_info']
+        token_info = supplied_data['token_info']
         for key, value in lp_token_info.items():
             lp_token_balance[key] = {}
             for fn_name in ["token0", "token1"]:
@@ -129,8 +137,9 @@ class SushiswapServices(DexProtocolServices):
                 if token is not None:
                     query_id = f'balanceOf_{key}_{token}_{block_number}_{self.chain_id}'.lower()
                     decimals_query_id = f'decimals_{key}_{token}_{block_number}_{self.chain_id}'.lower()
-                    lp_token_balance[key][token] = balance_info.get(query_id) / 10 ** balance_info.get(decimals_query_id)
-        result = self.calculate_lp_token_price_info(lp_token_info, lp_token_balance, token_price)
+                    lp_token_balance[key][token] = balance_info.get(query_id) / 10 ** balance_info.get(
+                        decimals_query_id)
+        result = self.calculate_lp_token_price_info(lp_token_info, lp_token_balance, token_info)
         return result
 
     # Calculate lp token price
@@ -141,9 +150,9 @@ class SushiswapServices(DexProtocolServices):
             total_supply = value.get("totalSupply")
             token0 = value.get("token0", None)
             token1 = value.get("token1", None)
-            if token0 is not None and token1 is not None:
+            if token0 and token1:
                 balance_of_token0 = lp_token_balance[lp_token].get(token0, 0)
-                balance_of_token1 =lp_token_balance[lp_token].get(token1, 0)
+                balance_of_token1 = lp_token_balance[lp_token].get(token1, 0)
                 lp_token_stake_amount = value.get("stakeBalance", 0)
                 result[lp_token] = {
                     "totalSupply": total_supply,
@@ -152,8 +161,8 @@ class SushiswapServices(DexProtocolServices):
                     "token1Amount": balance_of_token1
                 }
                 if token0 and token1:
-                    token0_price = token_price.get(token0)
-                    token1_price = token_price.get(token1)
+                    token0_price = token_price.get(token0).get("price", 0)
+                    token1_price = token_price.get(token1).get("price", 0)
                     new_amount1 = balance_of_token1
                     if token0_price != 0 and token1_price != 0:
                         total_of_token0 = balance_of_token0 * token0_price
@@ -169,17 +178,20 @@ class SushiswapServices(DexProtocolServices):
                     lp_token_price = (total_of_token0 + total_of_token1) / total_supply
                     result[lp_token].update({
                         "price": lp_token_price,
+                        'token0Price': token0_price,
+                        'token1Price': token1_price,
                         "stakeAmountToken0": lp_token_stake_amount * lp_token_price / 2 / token0_price,
                         "stakeAmountToken1": lp_token_stake_amount * lp_token_price / 2 / token1_price
                     })
 
         return result
 
-    ### USER
+    # USER ##
     def get_user_info_function(
-            self, user: str, lp_token_info, stake: bool = True, block_number: int = "latest"):
+            self, user: str, supplied_data, stake: bool = True, block_number: int = "latest"):
         rpc_calls = {}
         # lượng token đang hold trong ví
+        lp_token_info = supplied_data['lp_token_info']
         for lp_token, value in lp_token_info.items():
             pid = value.get("pid")
             query_id = f'balanceOf_{user}_{lp_token}_{block_number}_{self.chain_id}'.lower()
@@ -202,15 +214,16 @@ class SushiswapServices(DexProtocolServices):
         return rpc_calls
 
     def decode_user_info_function(
-            self, user: str, lp_token_info: dict, user_data: dict, token_price: dict = None, stake: bool = True,
+            self, user: str, supplied_data: dict, user_data: dict, token_price: dict = None, stake: bool = True,
             block_number: int = "latest"):
         user_info = {}
+        lp_token_info = supplied_data['lp_token_info']
         for lp_token, value in lp_token_info.items():
             pid = value.get("pid")
             query_id = f'balanceOf_{user}_{lp_token}_{block_number}_{self.chain_id}'.lower()
             decimals = user_data.get(f'decimals_{user}_{lp_token}_{block_number}_{self.chain_id}'.lower())
             user_info[lp_token] = {
-                "amount": user_data.get(query_id) / 10** decimals,
+                "amount": user_data.get(query_id) / 10 ** decimals,
                 "decimals": decimals
             }
             # lượng token ví đang stake
@@ -218,16 +231,38 @@ class SushiswapServices(DexProtocolServices):
                 query_id = f'userInfo_{user}_{lp_token}_{pid}_{block_number}'.lower()
                 user_info[lp_token]["userInfo"] = user_data.get(query_id)
 
-        result = self.update_stake_token_amount_of_wallet(user_info, lp_token_info, token_price)
+        result = self.update_stake_token_amount_of_wallet(user_info, lp_token_info)
         return result
 
-    def cal_token_amount_lp_token(self, lp_token, lp_token_amount, stake_lp_amount, list_token_info, token_price):
+    def update_stake_token_amount_of_wallet(
+            self, user_info, lp_token_info: dict = None):
+        user_info_token_amount = {}
+        for lp_token, value in user_info.items():
+            pair_info = lp_token_info.get(lp_token)
+            amount = value.get("amount", 0)
+            user_info_token_amount[lp_token] = {
+                "amount": amount
+            }
+            if value.get("userInfo") and pair_info:
+                pid = pair_info.get("pid")
+                if not pid:
+                    continue
+                decimals = value.get("decimals")
+                stake_amount = value.get("userInfo", [0])[0] / 10 ** decimals
+                if stake_amount > 0:
+                    user_info_token_amount[lp_token]["stakeAmount"] = stake_amount
+                    token_pair_amount = self.cal_token_amount_lp_token(
+                        amount, stake_amount, pair_info)
+                    user_info_token_amount[lp_token].update(token_pair_amount)
+
+        return user_info_token_amount
+
+    def cal_token_amount_lp_token(self, lp_token_amount, stake_lp_amount, list_token_info):
         token0, token1 = list_token_info.get("token0"), list_token_info.get("token1")
         result = {}
         if token0 and token1:
-            token0_price = token_price.get(token0, 0)
-            token1_price = token_price.get(token1, 0)
-            lp_token_price = token_price.get(lp_token, 0)
+            token0_price, token1_price = list_token_info.get('token0Price'), list_token_info.get('token1Price')
+            lp_token_price = list_token_info.get("price")
             lp_token_amount_in_usd = lp_token_amount * lp_token_price
             stake_lp_amount_in_usd = stake_lp_amount * lp_token_price
             token0_amount = lp_token_amount_in_usd / 2 / token0_price
@@ -237,7 +272,7 @@ class SushiswapServices(DexProtocolServices):
                 "stakeValueInUSD": stake_lp_amount_in_usd,
                 token0: {
                     "amount": token0_amount,
-                    "stakeAmount": stake_lp_amount_in_usd / 2 / token0_amount,
+                    "stakeAmount": stake_lp_amount_in_usd / 2 / token0_price,
                     "valueInUSD": lp_token_amount_in_usd / 2,
                     "stakeValueInUSD": stake_lp_amount_in_usd / 2,
                 },
@@ -251,33 +286,10 @@ class SushiswapServices(DexProtocolServices):
 
         return result
 
-    def update_stake_token_amount_of_wallet(
-            self, user_info, lp_token_info: dict = None, token_price: dict = None):
-        user_info_token_amount = {}
-        for lp_token, value in user_info.items():
-            pair_info = lp_token_info.get(lp_token)
-            amount = value.get("amount", 0)
-            user_info_token_amount[lp_token] = {
-                "amount": amount
-            }
-            if value.get("userInfo") and pair_info:
-                pid = pair_info.get("pid")
-                if not pid:
-                    continue
-                stake_amount = value.get("userInfo", [0])[0]
-                if stake_amount > 0:
-                    decimals = value.get("decimals")
-                    user_info_token_amount[lp_token]["stakeAmount"] = stake_amount / 10 ** decimals
-                    if token_price:
-                        token_pair_amount = self.cal_token_amount_lp_token(
-                            lp_token, amount, stake_amount, pair_info, token_price)
-                        user_info_token_amount[lp_token].update(token_pair_amount)
-
-        return user_info_token_amount
-
     # Reward
-    def get_rewards_balance_function_info(self, user, lp_token_info, block_number: int = "latest"):
+    def get_rewards_balance_function_info(self, user, supplied_data, block_number: int = "latest"):
         rpc_calls = {}
+        lp_token_info = supplied_data.get("lp_token_info")
         for lp_token, value in lp_token_info.items():
             pid = value.get("pid")
             query_id = f'pendingSushi_{user}_{lp_token}_{pid}_{block_number}'.lower()

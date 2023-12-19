@@ -87,7 +87,7 @@ def test_stake_token_pair():
 def get_token_info():
     mongo_klg= KLG()
     res={}
-    tokens= mongo_klg.get_top_1000_token()
+    tokens= mongo_klg.get_top_1000_token(chain_id)
     for token in tokens:
         token_addr = token.get("address")
         decimals = token.get("decimals")

@@ -5,15 +5,15 @@ from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.dex_constant import Dex
 from defi_services.jobs.queriers.state_querier import StateQuerier
-from defi_services.services.dex.dex_info.uniswap_info import UNISWAP_ETH_INFO
+from defi_services.services.dex.dex_info.quickswap_info import QUICKSWAP_POLYGON_V2_INFO
 from defi_services.services.dex_protocol_services import DexProtocolServices
 
-logger = logging.getLogger("UniSwap V2 State Service")
+logger = logging.getLogger("QuickSwap V2 State Service")
 
 
-class UniswapV2Info:
+class QuickSwapV2Info:
     mapping = {
-        Chain.ethereum: UNISWAP_ETH_INFO
+        Chain.polygon: QUICKSWAP_POLYGON_V2_INFO
     }
 
 
@@ -22,13 +22,13 @@ class UniswapV2Services(DexProtocolServices):
         super().__init__()
         self.chain_id = chain_id
         self.state_service = state_service
-        self.pool_info = UniswapV2Info.mapping.get(chain_id)
+        self.pool_info = QuickSwapV2Info.mapping.get(chain_id)
         self.masterchef_addr = self.pool_info['factory_address']
         self.masterchef_abi = self.pool_info['factory_abi']
 
     def get_service_info(self):
         info = {
-            Dex.uniswap_v2: {
+            Dex.quickswap_v2: {
                 "chain_id": self.chain_id,
                 "type": "dex",
                 "pool_info": self.pool_info

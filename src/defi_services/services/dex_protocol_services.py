@@ -6,9 +6,6 @@ from defi_services.constants.token_constant import Token
 logger = logging.getLogger("Dex Protocol State Service")
 
 
-
-
-
 class DexProtocolServices:
     # BASIC FUNCTIONS
     def get_service_info(self):
@@ -26,7 +23,8 @@ class DexProtocolServices:
         supplied_data = kwargs.get("supplied_data", {})
 
         if Query.lp_token_list in query_types:
-            rpc_calls.update(self.get_all_supported_lp_token())
+            limit_ = kwargs.get("number_lp", 1)
+            rpc_calls.update(self.get_all_supported_lp_token(limit_))
 
         if Query.important_lp_token_list in query_types:
             rpc_calls.update(self.get_important_lp_token(supplied_data, block_number=block_number))
@@ -38,7 +36,7 @@ class DexProtocolServices:
             rpc_calls.update(self.get_balance_of_token_function_info(supplied_data, block_number))
 
         if Query.dex_user_nft in query_types and wallet and wallet != Token.native_token:
-            rpc_calls.update(self.get_all_nft_token_of_user_function( wallet, block_number))
+            rpc_calls.update(self.get_all_nft_token_of_user_function(wallet, block_number))
 
         if Query.dex_user_info in query_types and wallet and wallet != Token.native_token:
             stake = kwargs.get("stake", False)
@@ -62,19 +60,19 @@ class DexProtocolServices:
             result.update(self.decode_all_supported_lp_token(decoded_data))
 
         if Query.important_lp_token_list in query_types:
-            result.update(self.decode_important_lp_token( supplied_data, decoded_data,  block_number))
+            result.update(self.decode_important_lp_token(supplied_data, decoded_data, block_number))
         if Query.lp_token_info in query_types:
-            result.update(self.decode_lp_token_info(supplied_data, decoded_data,  block_number))
+            result.update(self.decode_lp_token_info(supplied_data, decoded_data, block_number))
         if Query.token_pair_balance in query_types:
             result.update(self.decode_balance_of_token_function_info(
-                supplied_data, decoded_data,  block_number))
+                supplied_data, decoded_data, block_number))
 
         if Query.dex_user_nft in query_types and wallet and wallet != Token.native_token:
             result.update(self.decode_all_nft_token_of_user_function(decoded_data))
         if Query.dex_user_info in query_types and wallet and wallet != Token.native_token:
             stake = kwargs.get("stake", False)
-            result.update(self.decode_user_info_function( wallet, supplied_data, decoded_data, stake,
-            block_number))
+            result.update(self.decode_user_info_function(wallet, supplied_data, decoded_data, stake,
+                                                         block_number))
 
         if Query.protocol_reward in query_types and wallet and wallet != Token.native_token:
             result.update(self.calculate_rewards_balance(wallet, supplied_data, decoded_data, block_number))
@@ -94,7 +92,7 @@ class DexProtocolServices:
         return {}
 
     def decode_user_info_function(
-            self, user: str, supplied_data: dict, user_data: dict,  stake: bool = True,
+            self, user: str, supplied_data: dict, user_data: dict, stake: bool = True,
             block_number: int = "latest"):
         return {}
 
@@ -114,17 +112,17 @@ class DexProtocolServices:
         return {}
 
     # Get lp list
-    def get_all_supported_lp_token(self):
+    def get_all_supported_lp_token(self, limit: int = 10):
         return {}
 
     def decode_all_supported_lp_token(self, response_data):
         return {}
 
     ## uniswap
-    def get_important_lp_token(self,  lp_token_list, block_number):
+    def get_important_lp_token(self, lp_token_list, block_number):
         return {}
 
-    def decode_important_lp_token(self, supplied_data, response_data,  block_number: int = "latest" ):
+    def decode_important_lp_token(self, supplied_data, response_data, block_number: int = "latest"):
         return {}
 
     # Reward
@@ -142,4 +140,3 @@ class DexProtocolServices:
 
     def get_token_list(self):
         return {}
-

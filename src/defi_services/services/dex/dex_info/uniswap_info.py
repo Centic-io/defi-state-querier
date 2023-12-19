@@ -9,5 +9,4 @@ UNISWAP_V3_ETH_INFO= {
     'factory_address': '0x1F98431c8aD98523631AE4a59f267346ea31F984',
     'staker_address': '0xe34139463bA50bD61336E0c446Bd8C0867c6fE65',
     'NFT_manager_address' : '0xC36442b4a4522E871399CD717aBDD847Ab11FE88',
-
     }

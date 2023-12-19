@@ -132,7 +132,7 @@ class MongoDB:
 
         return projection_statements
 
-    def get_top_1000_token(self, ):
-        res=  self._configs_col.find_one({"_id":"top_tokens_v2_0x1"})
+    def get_top_1000_token(self,chain_id ):
+        res=  self._configs_col.find_one({"_id":f"top_tokens_v2_{chain_id}"})
         return res.get("tokens")
 

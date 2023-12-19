@@ -96,11 +96,11 @@ class StateQuerier:
             list_rpc_call.append(eth_call)
 
         response_data = self.client_querier.sent_batch_to_provider(list_rpc_call, batch_size, workers)
-        filtered_response_data={}
+        filtered_response_data = {}
         # loại bỏ những phần tử không có data
         for key, value in response_data.items():
             if value is not None:
-                filtered_response_data[key]= value
+                filtered_response_data[key] = value
             else:
                 print(key)
         filtered_keys = list(filtered_response_data.keys())

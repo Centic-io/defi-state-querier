@@ -17,7 +17,7 @@ class SpookySwapV2Info:
 
 
 class SpookySwapV2Services(DexProtocolServices):
-    def __init__(self, state_service: StateQuerier,    chain_id: str = '0xfa'):
+    def __init__(self, state_service: StateQuerier, chain_id: str = '0xfa'):
         super().__init__()
         self.chain_id = chain_id
         self.state_service = state_service
@@ -25,15 +25,14 @@ class SpookySwapV2Services(DexProtocolServices):
         self.masterchef_addr = self.pool_info['masterchef_address']
         self.masterchef_abi = self.pool_info['masterchef_abi']
 
-
-    def get_all_supported_lp_token(self):
+    def get_all_supported_lp_token(self, limit: int = 1):
         web3 = self.state_service.get_w3()
         if web3.isAddress(self.masterchef_addr):
             self.masterchef_addr = web3.toChecksumAddress(self.masterchef_addr)
         master_chef_contract = web3.eth.contract(abi=self.masterchef_abi, address=self.masterchef_addr)
         pool_length = master_chef_contract.functions.poolLength().call()
         rpc_calls = {}
-        for pid in range(0, int(pool_length)):
+        for pid in range(0, int(pool_length/limit)):
             query_id = f'lpToken_{pid}_'
             rpc_calls[query_id] = self.state_service.get_function_info(
                 address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="lpToken", fn_paras=[pid]
@@ -56,7 +55,7 @@ class SpookySwapV2Services(DexProtocolServices):
         lp_token_info = supplied_data['lp_token_info']
 
         for lp_token, value in lp_token_info.items():
-            pid= value.get("pid")
+            pid = value.get("pid")
             for fn_name in ["decimals", "totalSupply", "token0", "token1", "name"]:
                 query_id = f"{fn_name}_{lp_token}_{block_number}_{self.chain_id}".lower()
                 rpc_calls[query_id] = self.state_service.get_function_info(
@@ -80,17 +79,19 @@ class SpookySwapV2Services(DexProtocolServices):
         lp_token_info = supplied_data['lp_token_info']
 
         for lp_token, value in lp_token_info.items():
-            pid= value.get('pid')
+            pid = value.get('pid')
             token0 = response_data.get(f'token0_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
             token1 = response_data.get(f'token1_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
             decimals = response_data.get(f'decimals_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
             name = response_data.get(f'name_{lp_token}_{block_number}_{self.chain_id}'.lower(), "")
-            total_supply = response_data.get(f'totalsupply_{lp_token}_{block_number}_{self.chain_id}'.lower(), 0)/ 10** decimals
-            masterchef_balance = response_data.get(f'balanceOf_{lp_token}_{block_number}_{self.chain_id}'.lower())/ 10** decimals
+            total_supply = response_data.get(f'totalsupply_{lp_token}_{block_number}_{self.chain_id}'.lower(),
+                                             0) / 10 ** decimals
+            masterchef_balance = response_data.get(
+                f'balanceOf_{lp_token}_{block_number}_{self.chain_id}'.lower()) / 10 ** decimals
             farm_data = response_data.get(f'getFarmData_{lp_token}_{block_number}_{self.chain_id}'.lower())
-            acc_boo_per_share = farm_data[0][0] / 10**18
+            acc_boo_per_share = farm_data[0][0] / 10 ** 18
             alloc_point = farm_data[0][2]
-            total_alloc_point= farm_data[1]
+            total_alloc_point = farm_data[1]
             rewarder_addr = farm_data[2]
             result[lp_token] = {
                 "pid": pid,
@@ -100,7 +101,7 @@ class SpookySwapV2Services(DexProtocolServices):
 
                 "decimals": decimals,
                 "name": name,
-                "stakeBalance": masterchef_balance ,
+                "stakeBalance": masterchef_balance,
                 "accBooPerShare": acc_boo_per_share,
                 'allocPoint': alloc_point,
                 'totalAllocPoint': total_alloc_point,
@@ -138,7 +139,8 @@ class SpookySwapV2Services(DexProtocolServices):
                 if token is not None:
                     query_id = f'balanceOf_{key}_{token}_{block_number}_{self.chain_id}'.lower()
                     decimals_query_id = f'decimals_{key}_{token}_{block_number}_{self.chain_id}'.lower()
-                    lp_token_balance[key][token] = balance_info.get(query_id) / 10 ** balance_info.get(decimals_query_id)
+                    lp_token_balance[key][token] = balance_info.get(query_id) / 10 ** balance_info.get(
+                        decimals_query_id)
         result = self.calculate_lp_token_price_info(lp_token_info, lp_token_balance, token_info)
         return result
 
@@ -152,7 +154,7 @@ class SpookySwapV2Services(DexProtocolServices):
             if token0 and token1:
 
                 balance_of_token0 = lp_token_balance[lp_token].get(token0, 0)
-                balance_of_token1 =lp_token_balance[lp_token].get(token1, 0)
+                balance_of_token1 = lp_token_balance[lp_token].get(token1, 0)
                 lp_token_stake_amount = value.get("stakeBalance", 0)
                 lp_token_info[lp_token].update({
                     "totalSupply": total_supply,
@@ -160,8 +162,8 @@ class SpookySwapV2Services(DexProtocolServices):
                     "token0Amount": balance_of_token0,
                     "token1Amount": balance_of_token1
                 })
-                token0_price = token_price.get(token0).get("price",0)
-                token1_price = token_price.get(token1).get("price",0)
+                token0_price = token_price.get(token0).get("price", 0)
+                token1_price = token_price.get(token1).get("price", 0)
                 new_amount1 = balance_of_token1
                 if token0_price != 0 and token1_price != 0:
                     total_of_token0 = balance_of_token0 * token0_price
@@ -222,7 +224,7 @@ class SpookySwapV2Services(DexProtocolServices):
             query_id = f'balanceOf_{user}_{lp_token}_{block_number}_{self.chain_id}'.lower()
             decimals = user_data.get(f'decimals_{user}_{lp_token}_{block_number}_{self.chain_id}'.lower())
             user_info[lp_token] = {
-                "amount": user_data.get(query_id) / 10** decimals,
+                "amount": user_data.get(query_id) / 10 ** decimals,
                 "decimals": decimals
             }
             # lượng token ví đang stake
@@ -232,7 +234,6 @@ class SpookySwapV2Services(DexProtocolServices):
 
         result = self.update_stake_token_amount_of_wallet(user_info, lp_token_info)
         return result
-
 
     def update_stake_token_amount_of_wallet(
             self, user_info, lp_token_info: dict = None):
@@ -248,16 +249,16 @@ class SpookySwapV2Services(DexProtocolServices):
                 if not pid:
                     continue
                 decimals = value.get("decimals")
-                stake_amount = value.get("userInfo", [0])[0]/ 10 ** decimals
+                stake_amount = value.get("userInfo", [0])[0] / 10 ** decimals
                 if stake_amount > 0:
                     user_info_token_amount[lp_token]["stakeAmount"] = stake_amount
                     token_pair_amount = self.cal_token_amount_lp_token(
-                        lp_token, amount, stake_amount, pair_info)
+                        amount, stake_amount, pair_info)
                     user_info_token_amount[lp_token].update(token_pair_amount)
 
         return user_info_token_amount
 
-    def cal_token_amount_lp_token(self, lp_token, lp_token_amount, stake_lp_amount, list_token_info):
+    def cal_token_amount_lp_token(self, lp_token_amount, stake_lp_amount, list_token_info):
         token0, token1 = list_token_info.get("token0"), list_token_info.get("token1")
         result = {}
         if token0 and token1:
@@ -286,7 +287,6 @@ class SpookySwapV2Services(DexProtocolServices):
 
         return result
 
-
     # Reward
     def get_rewards_balance_function_info(self, user, supplied_data, block_number: int = "latest"):
         rpc_calls = {}
@@ -305,7 +305,7 @@ class SpookySwapV2Services(DexProtocolServices):
             supplied_data: dict,
             decoded_data: dict,
             block_number: int = "latest"
-            ) -> dict:
+    ) -> dict:
         amount = 0
         lp_token_info = supplied_data.get('lp_token_info')
         for lp_token, value in lp_token_info.items():

@@ -7,4 +7,4 @@ class Dex:
     uniswap_v2 = 'uniswap_v2'
     spooky_v2 = 'spookyswap_v2'
     spooky_v3 = 'spookyswap_v3'
-    quickswap = 'quickswap'
+    quickswap_v2 = 'quickswap_v2'
