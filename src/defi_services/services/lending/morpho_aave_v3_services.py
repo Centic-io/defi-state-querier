@@ -111,10 +111,7 @@ class MorphoAaveV3StateService(MorphoCompoundStateService):
         return {}
 
     def calculate_rewards_balance(
-            self,
-            decoded_data: dict,
-            wallet: str,
-            block_number: int = "latest"):
+            self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         return {}
 
     # WALLET DEPOSIT BORROW BALANCE

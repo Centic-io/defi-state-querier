@@ -438,7 +438,7 @@ class AaveV2StateService(ProtocolServices):
         return rpc_calls
 
     def calculate_rewards_balance(
-            self, decoded_data: dict, wallet: str, block_number: int = "latest"):
+            self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         reward_token = self.pool_info['rewardToken']
         key = f"getRewardsBalance_{self.name}_{wallet}_{block_number}".lower()
         rewards = decoded_data.get(key) / 10 ** 18

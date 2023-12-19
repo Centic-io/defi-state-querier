@@ -5,6 +5,7 @@ from web3 import Web3
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.dex_services import DexServices
 from defi_services.constants.entities.lending_services import LendingServices
+from defi_services.constants.entities.vault_services import VaultServices
 from defi_services.constants.query_constant import Query
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.dex_protocol_services import DexProtocolServices
@@ -26,6 +27,7 @@ class StateProcessor:
         self.nft_service = NFTServices(self.state_querier, chain_id)
         self.lending_services = LendingServices.mapping.get(chain_id)
         self.dex_services = DexServices.mapping.get(chain_id)
+        self.vault_services = VaultServices.mapping.get(chain_id, {})
 
     def get_service_info(self):
         info = self.nft_service.get_service_info()
@@ -105,7 +107,7 @@ class StateProcessor:
                 if Query.nft_balance == query_type:
                     data = self.nft_service.get_data(wallet, entity, entity_value, block_number)
 
-            elif entity in self.lending_services:
+            elif (entity in self.lending_services) or (entity in self.vault_services):
                 entity_service: ProtocolServices = self.services.get(entity)
                 data = entity_service.get_data(
                     [query_type], wallet, entity_value, block_number, **kwargs)

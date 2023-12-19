@@ -13,6 +13,8 @@ class Token:
     wrapped_matic = '0x0000000000000000000000000000000000001010'
     wrapped_sol = 'So11111111111111111111111111111111111111112'
     wrapped_tron = '0x891cdb91d149f23b1a45d9c5ca78a88d0cb44c18'
+    wrapped_cro = '0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23'
+
     wrapped_token = {
         Chain.solana: wrapped_sol,
         Chain.ethereum: wrapped_ethereum,
@@ -22,7 +24,8 @@ class Token:
         Chain.optimism: wrapped_eth_optimism,
         Chain.arbitrum: wrapped_eth_arbitrum,
         Chain.polygon: wrapped_matic,
-        Chain.tron: wrapped_tron
+        Chain.tron: wrapped_tron,
+        Chain.cronos: wrapped_cro
     }
 
 

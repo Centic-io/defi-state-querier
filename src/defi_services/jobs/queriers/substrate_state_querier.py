@@ -27,7 +27,7 @@ class SubstrateStateQuerier:
 
         return data
 
-    def query_state_data(self, queries: dict):
+    def query_state_data(self, queries: dict, batch_size: int = 100, workers: int = 5, ignore_error: bool = False):
         """
         Args:
             queries: dict - defi state queries
@@ -37,6 +37,8 @@ class SubstrateStateQuerier:
                         function: str - name of the function,
                         params: list - list parameters of function
                     }
+            batch_size: int - number of query in each batch queries
+            workers: int - maximum number of vCPU used in queries
             ignore_error: bool - ignore error when decode result or not
 
         Return:
@@ -57,14 +59,26 @@ class SubstrateStateQuerier:
             eth_call = self.add_rpc_call(module=module, fn_name=fn_name, fn_paras=fn_paras)
             list_call_id.append(key)
             rpc_call[block_number].append(eth_call)
+
+        # TODO: query by batch with batch size and workers
+
         decoded_data = {}
         for block_number, list_rpc_call in rpc_call.items():
-            if block_number != "latest":
-                response_data = self.client_querier.query_multi(list_rpc_call, block_hash.get(block_number))
-            else:
-                response_data = self.client_querier.query_multi(list_rpc_call)
+            try:
+                if block_number != "latest":
+                    response_data = self.client_querier.query_multi(list_rpc_call, block_hash.get(block_number))
+                else:
+                    response_data = self.client_querier.query_multi(list_rpc_call)
 
-            decoded_data.update(self.decode_response_data(response_data, block_number))
+                decoded_data.update(self.decode_response_data(response_data, block_number))
+            except Exception as e:
+                if not ignore_error:
+                    logger.error(f"An exception when decode data from provider: {e}")
+                    raise
+                else:
+                    logger.error(f"[Ignored] An exception when decode data from provider: {e}")
+                    continue
+
         return decoded_data
 
     def add_rpc_call(self, module: str, fn_name: str, fn_paras: list = None):

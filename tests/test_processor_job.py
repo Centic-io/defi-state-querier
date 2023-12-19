@@ -28,7 +28,7 @@ def test_processor_job():
         queries = []
         info = job.get_service_info()
         for p_id, p in info.items():
-            if p_id not in ['token', 'nft']:
+            if p['type'] == 'lending':
                 queries.append({
                     "query_id": f'{p_id}_deposit_borrow',
                     "entity_id": p_id,

@@ -16,6 +16,7 @@ class Query:
     token_balance = 'token_balance'
     nft_balance = 'nft_balance'
     deposit_borrow = 'deposit_borrow'
+    staking_reward = 'staking_reward'
     protocol_reward = 'protocol_reward'
     protocol_apy = 'protocol_apy'
     health_factor = 'health_factor'

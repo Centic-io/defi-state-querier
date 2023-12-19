@@ -7,7 +7,7 @@ from defi_services.abis.lending.cream.cream_lens_abi import CREAM_LENS_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
-from defi_services.constants.token_constant import ContractAddresses, Token
+from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.compound_service import CompoundStateService
 from defi_services.services.lending.lending_info.ethereum.flux_eth import FLUX_ETH
@@ -66,8 +66,12 @@ class FluxStateService(CompoundStateService):
             ctoken = data[0].lower()
             lt = data[10] / 10 ** 18
             ltv = data[10] / 10 ** 18
+
+            underlying_decimal = int(data[13])
+            exchange_rate = data[1] / 10 ** (18 - 8 + underlying_decimal)
             reserves_info[underlying] = {
                 "cToken": ctoken,
+                "exchangeRate": exchange_rate,
                 "liquidationThreshold": lt,
                 "loanToValue": ltv
             }
@@ -85,10 +89,7 @@ class FluxStateService(CompoundStateService):
         return {get_reward_id: rpc_call}
 
     def calculate_rewards_balance(
-            self,
-            decoded_data: dict,
-            wallet: str,
-            block_number: int = "latest"):
+            self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         get_reward_id = f"compAccrued_{self.name}_{wallet}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")

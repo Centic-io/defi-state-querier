@@ -59,6 +59,11 @@ class JustLendStateService(CompoundStateService):
                 "function": "underlying",
                 "block_number": "latest"
             }
+
+            exchange_rate_query_id = f'exchangeRateStored_{token}_{block_number}'
+            queries[exchange_rate_query_id] = self.get_ctoken_function_info(
+                ctoken=token, fn_name='exchangeRateStored', block_number=block_number)
+
             markets = f"markets_{token}_latest".lower()
             queries[markets] = self.get_comptroller_function_info("markets", [token])
         decoded_data = self.state_service.query_state_data(queries)
@@ -67,8 +72,18 @@ class JustLendStateService(CompoundStateService):
             markets = f"markets_{token}_latest".lower()
             underlying = decoded_data.get(key).lower()
             liquidation_threshold = decoded_data.get(markets)[1] / 10 ** 18
+
+            if underlying != Token.native_token:
+                underlying_contract = _w3.eth.contract(address=Web3.toChecksumAddress(underlying), abi=ERC20_ABI)
+                underlying_decimal = underlying_contract.functions.decimals().call()
+            else:
+                underlying_decimal = Chain.native_decimals.get(self.chain_id, 18)
+            exchange_rate_query_id = f'exchangeRateStored_{token}_{block_number}'
+            exchange_rate = decoded_data.get(exchange_rate_query_id) / 10 ** (18 - 8 + underlying_decimal)
+
             reserves_info[underlying] = {
                 'cToken': token.lower(),
+                "exchangeRate": exchange_rate,
                 "liquidationThreshold": liquidation_threshold,
                 "loanToValue": liquidation_threshold
             }
@@ -77,17 +92,17 @@ class JustLendStateService(CompoundStateService):
     # REWARDS BALANCE
     def get_rewards_balance_function_info(
             self,
-            wallets: str,
+            wallet: str,
             reserves_info: dict = None,
             block_number: int = "latest",
     ):
-        rpc_call = self.get_comptroller_function_info("compAccrued", [wallets])
-        get_reward_id = f"compAccrued_{self.name}_{wallets}_{block_number}".lower()
+        rpc_call = self.get_comptroller_function_info("compAccrued", [wallet])
+        get_reward_id = f"compAccrued_{self.name}_{wallet}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
-    def calculate_rewards_balance(self, decoded_data: dict, wallets: str,
-                                  block_number: int = "latest"):
-        get_reward_id = f"compAccrued_{self.name}_{wallets}_{block_number}".lower()
+    def calculate_rewards_balance(
+            self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
+        get_reward_id = f"compAccrued_{self.name}_{wallet}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
         result = {
