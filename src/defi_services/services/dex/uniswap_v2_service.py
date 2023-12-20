@@ -47,9 +47,8 @@ class UniswapV2Services(DexProtocolServices):
         rpc_calls = {}
         for pid in range(0, min(pool_length, limit)):
             query_id = f'allPairs_{factory_addr}_{pid}_latest'.lower()
-            rpc_calls[query_id] = self.state_service.get_function_info(
-                address=factory_addr, abi=self.factory_abi, fn_name="allPairs", fn_paras=[pid]
-            )
+            rpc_calls[query_id] = self.get_factory_function_info(fn_name="allPairs", fn_paras=[pid])
+
         return rpc_calls
 
     def decode_all_supported_lp_token(self, decoded_data):
@@ -292,3 +291,9 @@ class UniswapV2Services(DexProtocolServices):
     def calculate_rewards_balance(
             self, wallet: str, supplied_data: dict, decoded_data: dict, block_number: int = "latest") -> dict:
         return {}
+
+    def get_factory_function_info(self, fn_name, fn_paras, block_number: int = 'latest'):
+        factory_addr = self.pool_info['factoryAddress']
+        return self.state_service.get_function_info(
+            factory_addr, self.factory_abi, fn_name, fn_paras, block_number
+        )

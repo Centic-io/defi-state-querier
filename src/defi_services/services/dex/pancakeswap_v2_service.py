@@ -1,5 +1,6 @@
 import logging
 
+from defi_services.abis.dex.pancakeswap.masterchef_v0_abi import PANCAKESWAP_MASTERCHEF_V0_ABI
 from defi_services.abis.dex.pancakeswap.pancakeswap_factory_abi import PANCAKESWAP_FACTORY_ABI
 from defi_services.abis.dex.pancakeswap.pancakeswap_lp_token_abi import LP_TOKEN_ABI
 from defi_services.abis.dex.pancakeswap.pancakeswap_masterchef_v2_abi import PANCAKESWAP_MASTERCHEF_V2_ABI
@@ -48,9 +49,16 @@ class PancakeSwapV2Services(UniswapV2Services):
         rpc_calls = {}
         for pid in range(0, min(pool_length, limit)):
             query_id = f'lpToken_{masterchef_addr}_{pid}_latest'.lower()
-            rpc_calls[query_id] = self.state_service.get_function_info(
-                address=masterchef_addr, abi=self.masterchef_abi, fn_name="lpToken", fn_paras=[pid]
-            )
+            rpc_calls[query_id] = self.get_masterchef_function_info(fn_name="lpToken", fn_paras=[pid])
+
+        # For another version
+        # masterchef_addr_v1 = self.pool_info.get('masterchefAddressV1')
+        # master_chef_contract_v1 = web3.eth.contract(abi=self.masterchef_v1_abi, address=web3.toChecksumAddress(masterchef_addr_v1))
+        # pool_length_v1 = master_chef_contract_v1.functions.poolLength().call()
+        #
+        # for pid in range(0, min(pool_length_v1, limit)):
+        #     query_id = f'poolInfo_{masterchef_addr}_{pid}_latest'.lower()
+        #     rpc_calls[query_id] = self.get_masterchef_v1_function_info(fn_name="poolInfo", fn_paras=[pid])
 
         return rpc_calls
 
@@ -61,6 +69,16 @@ class PancakeSwapV2Services(UniswapV2Services):
 
             pid = int(query_id.split("_")[-2])
             result[value.lower()] = {"farming_pid": pid}
+
+            # For another version
+            # elif query_id.startswith('poolInfo'):
+            #     lp_token = value[0].lower()
+            #     if lp_token not in result:
+            #         result[lp_token] = {}
+            #
+            #     # Format query_id: f'poolInfo_{self.masterchef_addr}_{pid}_latest'
+            #     pid = int(query_id.split("_")[-2])
+            #     result[lp_token] = {"farming_v1_pid": pid}
 
         return result
 
@@ -80,9 +98,8 @@ class PancakeSwapV2Services(UniswapV2Services):
             if info.get('farming_pid') is not None:
                 pid = int(info.get('farming_pid'))
                 query_id = f'poolInfo_{masterchef_addr}_{pid}_{block_number}'.lower()
-                rpc_calls[query_id] = self.state_service.get_function_info(
-                    address=masterchef_addr, abi=self.masterchef_abi, fn_name="poolInfo", fn_paras=[pid],
-                    block_number=block_number)
+                rpc_calls[query_id] = self.get_masterchef_function_info(
+                    fn_name="poolInfo", fn_paras=[pid], block_number=block_number)
 
         return rpc_calls
 
@@ -201,7 +218,7 @@ class PancakeSwapV2Services(UniswapV2Services):
 
         return lp_token_info
 
-    # User
+    # User Information
     def get_user_info_function(
             self, wallet: str, supplied_data, stake: bool = True, block_number: int = "latest"):
         rpc_calls = super().get_user_info_function(
@@ -215,16 +232,13 @@ class PancakeSwapV2Services(UniswapV2Services):
                 pid = int(info.get('farming_pid'))
 
                 query_id = f'userInfo_{masterchef_addr}_{[pid, wallet]}_{block_number}'.lower()
-                rpc_calls[query_id] = self.state_service.get_function_info(
-                    address=masterchef_addr, abi=self.masterchef_abi, fn_name="userInfo",
-                    fn_paras=[pid, wallet], block_number=block_number
-                )
+                rpc_calls[query_id] = self.get_masterchef_function_info(
+                    fn_name="userInfo", fn_paras=[pid, wallet], block_number=block_number)
 
         return rpc_calls
 
     def decode_user_info_function(
-            self, wallet: str, supplied_data, decoded_data: dict, stake: bool = True,
-            block_number: int = "latest"):
+            self, wallet: str, supplied_data, decoded_data: dict, stake: bool = True, block_number: int = "latest"):
 
         result = super().decode_user_info_function(
             wallet=wallet, supplied_data=supplied_data, decoded_data=decoded_data,
@@ -322,9 +336,8 @@ class PancakeSwapV2Services(UniswapV2Services):
                 pid = int(info.get('farming_pid'))
 
                 query_id = f'pendingCake_{masterchef_addr}_{[pid, wallet]}_{block_number}'.lower()
-                rpc_calls[query_id] = self.state_service.get_function_info(
-                    address=masterchef_addr, abi=self.masterchef_abi, fn_name="pendingCake",
-                    fn_paras=[int(pid), wallet], block_number=block_number)
+                rpc_calls[query_id] = self.get_masterchef_function_info(
+                    fn_name="pendingCake", fn_paras=[int(pid), wallet], block_number=block_number)
 
         return rpc_calls
 
@@ -345,3 +358,9 @@ class PancakeSwapV2Services(UniswapV2Services):
                 result[lp_token] = {reward_token: {'amount': decoded_data.get(query_id) / 10 ** reward_decimals}}
 
         return result
+
+    def get_masterchef_function_info(self, fn_name, fn_paras, block_number: int = 'latest'):
+        masterchef_addr = self.pool_info['masterchefAddress']
+        return self.state_service.get_function_info(
+            masterchef_addr, self.masterchef_abi, fn_name, fn_paras, block_number
+        )

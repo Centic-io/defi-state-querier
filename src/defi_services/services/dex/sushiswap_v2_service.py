@@ -64,9 +64,8 @@ class SushiSwapV2Services(PancakeSwapV2Services):
                 pid = int(info.get('farming_pid'))
 
                 query_id = f'pendingSushi_{masterchef_addr}_{[pid, wallet]}_{block_number}'.lower()
-                rpc_calls[query_id] = self.state_service.get_function_info(
-                    address=masterchef_addr, abi=self.masterchef_abi, fn_name="pendingSushi",
-                    fn_paras=[int(pid), wallet], block_number=block_number)
+                rpc_calls[query_id] = self.get_masterchef_function_info(
+                    fn_name="pendingSushi", fn_paras=[int(pid), wallet], block_number=block_number)
 
         return rpc_calls
 

@@ -50,9 +50,8 @@ class SpookySwapV2Services(PancakeSwapV2Services):
                 pid = int(info.get('farming_pid'))
 
                 query_id = f'getFarmData_{masterchef_addr}_{pid}_{block_number}'.lower()
-                rpc_calls[query_id] = self.state_service.get_function_info(
-                    address=masterchef_addr, abi=self.masterchef_abi, fn_name="getFarmData", fn_paras=[pid],
-                    block_number=block_number)
+                rpc_calls[query_id] = self.get_masterchef_function_info(
+                    fn_name="getFarmData", fn_paras=[pid], block_number=block_number)
 
         return rpc_calls
 
@@ -118,9 +117,8 @@ class SpookySwapV2Services(PancakeSwapV2Services):
                 pid = int(info.get('farming_pid'))
 
                 query_id = f'pendingBOO_{masterchef_addr}_{[pid, wallet]}_{block_number}'.lower()
-                rpc_calls[query_id] = self.state_service.get_function_info(
-                    address=masterchef_addr, abi=self.masterchef_abi, fn_name="pendingBOO",
-                    fn_paras=[int(pid), wallet], block_number=block_number)
+                rpc_calls[query_id] = self.get_masterchef_function_info(
+                    fn_name="pendingBOO", fn_paras=[int(pid), wallet], block_number=block_number)
 
         return rpc_calls
 

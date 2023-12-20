@@ -5,7 +5,6 @@ from defi_services.abis.dex.pancakeswap.pancakeswap_masterchef_v2_abi import PAN
 
 PANCAKESWAP_V0_BSC_INFO = {
     'masterchefAddress': '0x73feaa1ee314f8c655e354234017be2193c9e24e',
-    'masterchef_abi': PANCAKESWAP_MASTERCHEF_V0_ABI,
     "rewardToken": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82"
 }
 
