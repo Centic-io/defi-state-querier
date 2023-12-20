@@ -1,5 +1,6 @@
 from defi_services.services.dex.pancakeswap_v2_service import PancakeSwapV2Services
 from defi_services.services.dex.pancakeswap_v3_service import PancakeSwapV3Service
+from defi_services.services.dex.quickswap_v2_service import QuickSwapV2Services
 from defi_services.services.dex.spookyswap_v2_service import SpookySwapV2Services
 from defi_services.services.dex.sushiswap_v2_service import SushiSwapV2Services
 from defi_services.services.dex.uniswap_v2_service import UniswapV2Services
@@ -25,7 +26,8 @@ class DexServices:
         Dex.sushi_v2: SushiSwapV2Services
     }
     polygon = {
-        Dex.sushi_v2: SushiSwapV2Services
+        Dex.sushi_v2: SushiSwapV2Services,
+        Dex.quickswap_v2: QuickSwapV2Services
     }
     fantom = {
         Dex.sushi_v2: SushiSwapV2Services,
