@@ -109,7 +109,7 @@ class PancakeSwapV2Services(UniswapV2Services):
                 alloc_point = pool_info[2]
 
                 lp_info.update({
-                    'acc_cake_per_share': acc_cake_per_share,
+                    'acc_reward_per_share': acc_cake_per_share,
                     'alloc_point': alloc_point,
                     'farming_pid': pid
                 })

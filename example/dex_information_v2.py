@@ -231,9 +231,9 @@ def get_user_reward(_dex_protocol):
 
 if __name__ == "__main__":
     wallet = "0x747834674d246417a3cf23dd1d880646e44fa39f"
-    dex_protocol = Dex.sushi_v2
+    dex_protocol = Dex.spooky_v2
 
-    for chain_id in [Chain.fantom, Chain.avalanche, Chain.arbitrum]:
+    for chain_id in [Chain.fantom]:
         try:
             job = StateProcessor(provider_url[chain_id], chain_id)
             get_lp_token_list(dex_protocol)
