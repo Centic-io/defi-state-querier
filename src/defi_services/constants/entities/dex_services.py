@@ -1,4 +1,4 @@
-from defi_services.services.dex.pancakeswap_v2_service import  PancakeSwapV2Services
+from defi_services.services.dex.pancakeswap_v2_service import PancakeSwapV2Services
 from defi_services.services.dex.pancakeswap_v3_service import PancakeSwapV3Service
 from defi_services.services.dex.spookyswap_v2_service import SpookySwapV2Services
 from defi_services.services.dex.sushiswap_v2_service import SushiSwapV2Services
@@ -10,8 +10,6 @@ from src.defi_services.services.dex.sushiswap_service import SushiswapServices
 
 
 # from src.defi_services.services.dex. import UniswapServices
-
-
 
 
 class DexServices:
@@ -36,7 +34,7 @@ class DexServices:
     }
     fantom = {
         Dex.sushi: SushiSwapV2Services,
-        Dex.spooky_v2:SpookySwapV2Services
+        Dex.spooky_v2: SpookySwapV2Services
 
     }
     optimism = {

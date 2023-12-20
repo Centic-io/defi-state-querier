@@ -1,6 +1,7 @@
 import logging
 
 from defi_services.abis.dex.pancakeswap.pancakeswap_lp_token_abi import LP_TOKEN_ABI
+from defi_services.abis.dex.uniswap.uniswap_v2_factory import UNISWAP_FACTORY_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.dex_constant import Dex
@@ -23,8 +24,7 @@ class UniswapV2Services(DexProtocolServices):
         self.chain_id = chain_id
         self.state_service = state_service
         self.pool_info = UniswapV2Info.mapping.get(chain_id)
-        self.masterchef_addr = self.pool_info['factory_address']
-        self.masterchef_abi = self.pool_info['factory_abi']
+        self.factory_abi = UNISWAP_FACTORY_ABI
 
     def get_service_info(self):
         info = {
@@ -38,28 +38,38 @@ class UniswapV2Services(DexProtocolServices):
 
     def get_all_supported_lp_token(self, limit=1):
         web3 = self.state_service.get_w3()
-        if web3.isAddress(self.masterchef_addr):
-            self.masterchef_addr = web3.toChecksumAddress(self.masterchef_addr)
-        master_chef_contract = web3.eth.contract(abi=self.masterchef_abi, address=self.masterchef_addr)
-        pool_length = master_chef_contract.functions.allPairsLength().call()
-        rpc_calls = {}
+        factory_addr = self.pool_info.get('factory_address')
 
-        for pid in range(0, int(pool_length / limit)):
-            query_id = f'lpToken_{pid}_'
+        factory_contract = web3.eth.contract(
+            address=web3.toChecksumAddress(factory_addr), abi=self.factory_abi)
+        pool_length = factory_contract.functions.allPairsLength().call()
+
+        rpc_calls = {}
+        for pid in range(0, min(pool_length, limit)):
+            query_id = f'allPairs_{factory_addr}_{pid}_latest'.lower()
             rpc_calls[query_id] = self.state_service.get_function_info(
-                address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="allPairs", fn_paras=[pid]
+                address=factory_addr, abi=self.factory_abi, fn_name="allPairs", fn_paras=[pid]
             )
         return rpc_calls
 
-    def decode_all_supported_lp_token(self, response_data):
+    def decode_all_supported_lp_token(self, decoded_data):
         result = {}
-        for key, value in response_data.items():
-            pid = key.split("_")[1]
-            result[value] = {
-                "pid": pid}
+        for query_id, value in decoded_data.items():
+            # Format query_id: f'allPairs_{self.factory_addr}_{pid}_latest'
+
+            pid = int(query_id.split("_")[-2])
+            result[value.lower()] = {"pid": pid}
+
         return result
 
+    def get_farming_supported_lp_token(self, limit: int = 10) -> dict:
+        return {}
+
+    def decode_farming_supported_lp_token(self, response_data) -> dict:
+        return {}
+
     def get_important_lp_token(self, supplied_data, block_number: int = "latest"):
+        """Deprecated"""
         rpc_calls = {}
         lp_token_list = supplied_data['lp_token_list']
         for lp_token, value in lp_token_list.items():
@@ -72,6 +82,7 @@ class UniswapV2Services(DexProtocolServices):
         return rpc_calls
 
     def decode_important_lp_token(self, supplied_data, response_data, block_number: int = "latest"):
+        """Deprecated"""
         lp_token_list = supplied_data['lp_token_list']
         token_info = supplied_data['token_info']
         result = {}
@@ -89,10 +100,12 @@ class UniswapV2Services(DexProtocolServices):
 
         return result
 
-    def get_lp_token_function_info(self, lp_token_info, block_number: int = "latest"):
+    def get_lp_token_function_info(self, supplied_data, block_number: int = "latest"):
         rpc_calls = {}
-        for lp_token, value in lp_token_info.items():
-            for fn_name in ["decimals", "totalSupply", "name"]:
+
+        lp_token_info = supplied_data['lp_token_info']
+        for lp_token, info in lp_token_info.items():
+            for fn_name in ["decimals", "totalSupply", "token0", "token1", "name"]:
                 query_id = f"{fn_name}_{lp_token}_{block_number}".lower()
                 rpc_calls[query_id] = self.state_service.get_function_info(
                     address=lp_token, abi=LP_TOKEN_ABI, fn_name=fn_name, fn_paras=None,
@@ -100,18 +113,19 @@ class UniswapV2Services(DexProtocolServices):
 
         return rpc_calls
 
-    def decode_lp_token_info(self, lp_token_info, response_data, block_number: int = "latest"):
+    def decode_lp_token_info(self, supplied_data, decoded_data, block_number: int = "latest"):
         result = {}
-        for lp_token, value in lp_token_info.items():
-            pid = value.get('pid')
-            token0 = value.get('token0')
-            token1 = value.get('token1')
-            decimals = response_data.get(f'decimals_{lp_token}_{block_number}'.lower(), "")
-            total_supply = response_data.get(f'totalSupply_{lp_token}_{block_number}'.lower(), "") / 10 ** decimals
-            name = response_data.get(f'name_{lp_token}_{block_number}'.lower(), "")
+
+        lp_token_info = supplied_data['lp_token_info']
+        for lp_token, info in lp_token_info.items():
+            token0 = decoded_data.get(f'token0_{lp_token}_{block_number}'.lower())
+            token1 = decoded_data.get(f'token1_{lp_token}_{block_number}'.lower())
+            decimals = decoded_data.get(f'decimals_{lp_token}_{block_number}'.lower())
+            total_supply = decoded_data.get(f'totalSupply_{lp_token}_{block_number}'.lower()) / 10 ** decimals
+            name = decoded_data.get(f'name_{lp_token}_{block_number}'.lower())
+
             result[lp_token] = {
-                "pid": pid,
-                "totalSupply": total_supply,
+                "total_supply": total_supply,
                 "token0": token0,
                 "token1": token1,
                 "name": name,
@@ -123,40 +137,56 @@ class UniswapV2Services(DexProtocolServices):
     # Get balance of token
     def get_balance_of_token_function_info(self, supplied_data, block_number: int = "latest"):
         rpc_calls = {}
+
         lp_token_info = supplied_data['lp_token_info']
-        for lp_token, value in lp_token_info.items():
-            for fn_name in ["token0", "token1"]:
-                token = value.get(fn_name, None)
-                if token is not None:
-                    query_id = f'balanceOf_{lp_token}_{token}_{block_number}_{self.chain_id}'.lower()
-                    decimals_query_id = f'decimals_{lp_token}_{token}_{block_number}_{self.chain_id}'.lower()
-                    rpc_calls[query_id] = self.state_service.get_function_info(
-                        address=token, abi=ERC20_ABI, fn_name="balanceOf", fn_paras=[lp_token],
+        for lp_token, info in lp_token_info.items():
+            for fn_name in ["decimals", "totalSupply"]:
+                query_id = f"{fn_name}_{lp_token}_{block_number}".lower()
+                rpc_calls[query_id] = self.state_service.get_function_info(
+                    address=lp_token, abi=LP_TOKEN_ABI, fn_name=fn_name, fn_paras=None,
+                    block_number=block_number)
+
+            for token_key in ["token0", "token1"]:
+                token_address = info.get(token_key, None)
+                if token_address is not None:
+                    balance_query_id = f'balanceOf_{token_address}_{lp_token}_{block_number}'.lower()
+                    decimals_query_id = f'decimals_{token_address}_{block_number}'.lower()
+
+                    rpc_calls[balance_query_id] = self.state_service.get_function_info(
+                        address=token_address, abi=ERC20_ABI, fn_name="balanceOf", fn_paras=[lp_token],
                         block_number=block_number)
 
                     rpc_calls[decimals_query_id] = self.state_service.get_function_info(
-                        address=token, abi=ERC20_ABI, fn_name="decimals", block_number=block_number)
+                        address=token_address, abi=ERC20_ABI, fn_name="decimals", block_number=block_number)
 
         return rpc_calls
 
     def decode_balance_of_token_function_info(
-            self, supplied_data, balance_info, block_number: int = "latest"):
-        lp_token_balance = {}
+            self, supplied_data, decoded_data, block_number: int = "latest"):
+        result = {}
+
         lp_token_info = supplied_data['lp_token_info']
-        token_info = supplied_data['token_info']
-        for key, value in lp_token_info.items():
-            lp_token_balance[key] = {}
-            for fn_name in ["token0", "token1"]:
-                token = value.get(fn_name, None)
-                if token is not None:
-                    query_id = f'balanceOf_{key}_{token}_{block_number}_{self.chain_id}'.lower()
-                    decimals = balance_info.get(f'decimals_{key}_{token}_{block_number}_{self.chain_id}'.lower())
-                    lp_token_balance[key][token] = balance_info.get(query_id) / 10 ** decimals
-        result = self.calculate_lp_token_price_info(lp_token_info, lp_token_balance, token_info)
+        for lp_token, info in lp_token_info.items():
+            decimals = decoded_data.get(f'decimals_{lp_token}_{block_number}'.lower())
+            total_supply = decoded_data.get(f'totalSupply_{lp_token}_{block_number}'.lower()) / 10 ** decimals
+            result[lp_token] = {
+                'total_supply': total_supply,
+                'decimals': decimals
+            }
+
+            for token_key in ["token0", "token1"]:
+                token_address = info.get(token_key, None)
+                if token_address is not None:
+                    query_id = f'balanceOf_{token_address}_{lp_token}_{block_number}'.lower()
+                    token_decimals = decoded_data.get(f'decimals_{token_address}_{block_number}'.lower())
+                    result[lp_token][f'{token_key}_amount'] = decoded_data.get(query_id) / 10 ** token_decimals
+
         return result
 
     def calculate_lp_token_price_info(
-            self, lp_token_info, lp_token_balance, token_info):
+            self, supplied_data, lp_token_balance, token_info):
+        """Deprecated"""
+        lp_token_info = supplied_data['lp_token_info']
         for lp_token, value in lp_token_info.items():
             total_supply = value.get("totalSupply")
             token0 = value.get("token0", 0)
@@ -177,42 +207,59 @@ class UniswapV2Services(DexProtocolServices):
                 })
         return lp_token_info
 
-    # ### USER
-    def get_user_info_function(
-            self, user: str, supplied_data, stake: bool = True, block_number: int = "latest"):
+    # User
+    def get_user_info_function(self, wallet: str, supplied_data, stake: bool = False, block_number: int = "latest"):
         rpc_calls = {}
+
         lp_token_info = supplied_data['lp_token_info']
         # lượng token đang hold trong ví
         for lp_token, value in lp_token_info.items():
-            query_id = f'balanceOf_{user}_{lp_token}_{block_number}_{self.chain_id}'.lower()
+            query_id = f'balanceOf_{lp_token}_{wallet}_{block_number}'.lower()
             rpc_calls[query_id] = self.state_service.get_function_info(
                 address=lp_token, abi=LP_TOKEN_ABI, fn_name="balanceOf",
-                fn_paras=[user],
-                block_number=block_number)
-            decimals_query_id = f'decimals_{user}_{lp_token}_{block_number}_{self.chain_id}'.lower()
+                fn_paras=[wallet], block_number=block_number)
+
+            decimals_query_id = f'decimals_{lp_token}_{block_number}'.lower()
             rpc_calls[decimals_query_id] = self.state_service.get_function_info(
                 address=lp_token, abi=LP_TOKEN_ABI, fn_name="decimals", block_number=block_number)
 
         return rpc_calls
 
     def decode_user_info_function(
-            self, user: str, supplied_data: dict, user_data: dict, stake: bool = False,
+            self, wallet: str, supplied_data: dict, decoded_data: dict, stake: bool = False,
             block_number: int = "latest"):
+
+        result = {}
+
         lp_token_info = supplied_data['lp_token_info']
-        token_info = supplied_data['token_info']
-        user_info = {}
-        for lp_token, value in lp_token_info.items():
-            query_id = f'balanceOf_{user}_{lp_token}_{block_number}_{self.chain_id}'.lower()
-            decimals = user_data.get(f'decimals_{user}_{lp_token}_{block_number}_{self.chain_id}'.lower())
-            user_info[lp_token] = {
-                "amount": user_data.get(query_id) / 10 ** decimals,
+        for lp_token, info in lp_token_info.items():
+            query_id = f'balanceOf_{lp_token}_{wallet}_{block_number}'.lower()
+            decimals = decoded_data.get(f'decimals_{lp_token}_{block_number}'.lower())
+            amount = decoded_data.get(query_id) / 10 ** decimals
+
+            total_supply = info.get('total_supply')
+
+            result[lp_token] = {
+                "amount": amount,
+                "tokens": {
+                    info['token0']: {
+                        'idx': 0,
+                        'amount': amount * info.get('token0_amount', 0) / total_supply if total_supply else 0
+                    },
+                    info['token1']: {
+                        'idx': 1,
+                        'amount': amount * info.get('token1_amount', 0) / total_supply if total_supply else 0
+                    }
+                }
             }
-        result = self.update_token_amount_of_wallet(user_info, lp_token_info, token_info)
+
         return result
 
     def update_token_amount_of_wallet(
-            self, user_info, lp_token_info: dict = None, token_info: dict = None):
+            self, user_info, supplied_data: dict = None, token_info: dict = None):
+        """Deprecated"""
         user_info_token_amount = {}
+        lp_token_info = supplied_data['lp_token_info']
         for lp_token, value in user_info.items():
             amount = value.get("amount", 0)
             pair_info = lp_token_info.get(lp_token)
@@ -238,3 +285,10 @@ class UniswapV2Services(DexProtocolServices):
             }
 
         return user_info_token_amount
+
+    def get_rewards_balance_function_info(self, wallet, supplied_data, block_number: int = "latest"):
+        return {}
+
+    def calculate_rewards_balance(
+            self, wallet: str, supplied_data: dict, decoded_data: dict, block_number: int = "latest") -> dict:
+        return {}

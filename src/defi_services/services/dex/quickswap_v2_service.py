@@ -17,7 +17,7 @@ class QuickSwapV2Info:
     }
 
 
-class UniswapV2Services(DexProtocolServices):
+class QuickSwapV2Services(DexProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = '0x1'):
         super().__init__()
         self.chain_id = chain_id
