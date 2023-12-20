@@ -24,7 +24,7 @@ class PancakeSwapV3Service(DexProtocolServices):
         self.chain_id = chain_id
         self.state_service = state_service
         self.pool_info = PancakeSwapV3Info.mapping.get(chain_id)
-        self.masterchef_addr = self.pool_info['masterchef_address']
+        self.masterchef_addr = self.pool_info['masterchefAddress']
         self.masterchef_abi = self.pool_info['masterchef_abi']
         self.nft_token_address = self.pool_info['NFT_token_manager']
         self.NFT_abi = self.pool_info['NFT_abi']

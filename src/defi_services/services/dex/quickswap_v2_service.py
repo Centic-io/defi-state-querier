@@ -23,7 +23,7 @@ class QuickSwapV2Services(DexProtocolServices):
         self.chain_id = chain_id
         self.state_service = state_service
         self.pool_info = QuickSwapV2Info.mapping.get(chain_id)
-        self.masterchef_addr = self.pool_info['factory_address']
+        self.masterchef_addr = self.pool_info['factoryAddress']
         self.masterchef_abi = self.pool_info['factory_abi']
 
     def get_service_info(self):

@@ -9,9 +9,6 @@ from src.defi_services.services.dex.pancakeswap_service import PancakeswapServic
 from src.defi_services.services.dex.sushiswap_service import SushiswapServices
 
 
-# from src.defi_services.services.dex. import UniswapServices
-
-
 class DexServices:
     ethereum = {
         Dex.uniswap_v2: UniswapV2Services,
@@ -22,28 +19,23 @@ class DexServices:
         Dex.pancake: PancakeswapServices,
         Dex.pancake_v3: PancakeSwapV3Service,
         Dex.pancake_v2: PancakeSwapV2Services,
-        Dex.sushi: SushiSwapV2Services
+        Dex.sushi_v2: SushiSwapV2Services
     }
     avalanche = {
-        Dex.sushi: SushiSwapV2Services
-
+        Dex.sushi_v2: SushiSwapV2Services
     }
     polygon = {
-        Dex.sushi: SushiSwapV2Services
-
+        Dex.sushi_v2: SushiSwapV2Services
     }
     fantom = {
-        Dex.sushi: SushiSwapV2Services,
+        Dex.sushi_v2: SushiSwapV2Services,
         Dex.spooky_v2: SpookySwapV2Services
-
     }
-    optimism = {
-        Dex.sushi: SushiSwapV2Services
-
-    }
+    # optimism = {
+    #     Dex.sushi: SushiSwapV2Services
+    # }
     arbitrum = {
-        Dex.sushi: SushiSwapV2Services
-
+        Dex.sushi_v2: SushiSwapV2Services
     }
     mapping = {
         Chain.ethereum: ethereum,
@@ -52,5 +44,5 @@ class DexServices:
         Chain.avalanche: avalanche,
         Chain.polygon: polygon,
         Chain.arbitrum: arbitrum,
-        Chain.optimism: optimism,
+        # Chain.optimism: optimism,
     }

@@ -198,5 +198,5 @@ if __name__ == "__main__":
     dex_protocol = Dex.pancake_v2
 
     job = StateProcessor(provider_url[chain_id], chain_id)
-    get_user_reward(dex_protocol)
+    get_user_info(dex_protocol)
     # get_user_info_processor(dex_protocol)

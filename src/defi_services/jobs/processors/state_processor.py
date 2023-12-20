@@ -137,20 +137,22 @@ class StateProcessor:
             query_type = query.get("query_type")
             reserves_list = query.get("reserves_list", None)
             stake = query.get('stake', None)
-            number_lp= query.get('number_lp', 1)
+            number_lp = query.get('number_lp', 1)
             supplied_data = query.get('supplied_data', None)
             rpc_calls, _ = self.init_rpc_call_information(
                 wallet, query_id, entity_id, query_type, block_number, reserves_list=reserves_list,
-                supplied_data=supplied_data, stake=stake, number_lp= number_lp)
+                supplied_data=supplied_data, stake=stake, number_lp=number_lp)
             all_rpc_calls.update(rpc_calls)
-        result = []
+
         decoded_data = self.execute_rpc_calls(all_rpc_calls, batch_size, max_workers, ignore_error=ignore_error)
+
+        result = []
         for query in queries:
             query_id = query.get("query_id")
             query_type = query.get("query_type")
             reserves_list = query.get("reserves_list", None)
             supplied_data = query.get('supplied_data', None)
-            number_lp= query.get('number_lp', 1)
+            number_lp = query.get('number_lp', 1)
             stake = query.get('stake', None)
             processed_data = self.process_decoded_data(
                 query_id, query_type, wallet, decoded_data, block_number, reserve_info=reserves_list,

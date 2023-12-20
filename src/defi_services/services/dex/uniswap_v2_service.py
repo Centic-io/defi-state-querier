@@ -38,7 +38,7 @@ class UniswapV2Services(DexProtocolServices):
 
     def get_all_supported_lp_token(self, limit=1):
         web3 = self.state_service.get_w3()
-        factory_addr = self.pool_info.get('factory_address')
+        factory_addr = self.pool_info.get('factoryAddress')
 
         factory_contract = web3.eth.contract(
             address=web3.toChecksumAddress(factory_addr), abi=self.factory_abi)

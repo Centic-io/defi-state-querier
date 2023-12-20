@@ -40,7 +40,7 @@ class PancakeSwapV2Services(UniswapV2Services):
     # Get all lp tokens
     def get_farming_supported_lp_token(self, limit: int = 1):
         web3 = self.state_service.get_w3()
-        masterchef_addr = self.pool_info.get('masterchef_address')
+        masterchef_addr = self.pool_info.get('masterchefAddress')
 
         master_chef_contract = web3.eth.contract(abi=self.masterchef_abi, address=web3.toChecksumAddress(masterchef_addr))
         pool_length = master_chef_contract.functions.poolLength().call()
@@ -68,7 +68,7 @@ class PancakeSwapV2Services(UniswapV2Services):
     def get_lp_token_function_info(self, supplied_data, block_number: int = "latest"):
         rpc_calls = super().get_lp_token_function_info(supplied_data=supplied_data, block_number=block_number)
 
-        masterchef_addr = self.pool_info.get('masterchef_address')
+        masterchef_addr = self.pool_info.get('masterchefAddress')
 
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
@@ -90,7 +90,7 @@ class PancakeSwapV2Services(UniswapV2Services):
         result = super().decode_lp_token_info(
             supplied_data=supplied_data, decoded_data=decoded_data, block_number=block_number)
 
-        masterchef_addr = self.pool_info.get('masterchef_address')
+        masterchef_addr = self.pool_info.get('masterchefAddress')
 
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
@@ -122,7 +122,7 @@ class PancakeSwapV2Services(UniswapV2Services):
             supplied_data=supplied_data, block_number=block_number
         )
 
-        masterchef_addr = self.pool_info.get('masterchef_address')
+        masterchef_addr = self.pool_info.get('masterchefAddress')
 
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
@@ -138,7 +138,7 @@ class PancakeSwapV2Services(UniswapV2Services):
             supplied_data=supplied_data, decoded_data=decoded_data, block_number=block_number
         )
 
-        masterchef_addr = self.pool_info.get('masterchef_address')
+        masterchef_addr = self.pool_info.get('masterchefAddress')
 
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
@@ -207,7 +207,7 @@ class PancakeSwapV2Services(UniswapV2Services):
         rpc_calls = super().get_user_info_function(
             wallet=wallet, supplied_data=supplied_data, stake=stake, block_number=block_number)
 
-        masterchef_addr = self.pool_info.get('masterchef_address')
+        masterchef_addr = self.pool_info.get('masterchefAddress')
 
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
@@ -231,7 +231,7 @@ class PancakeSwapV2Services(UniswapV2Services):
             stake=stake, block_number=block_number
         )
 
-        masterchef_addr = self.pool_info.get('masterchef_address')
+        masterchef_addr = self.pool_info.get('masterchefAddress')
 
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
@@ -314,7 +314,7 @@ class PancakeSwapV2Services(UniswapV2Services):
         rpc_calls[decimals_query_id] = self.state_service.get_function_info(
             address=reward_token, abi=ERC20_ABI, fn_name="decimals", block_number=block_number)
 
-        masterchef_addr = self.pool_info.get('masterchef_address')
+        masterchef_addr = self.pool_info.get('masterchefAddress')
 
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
@@ -334,7 +334,7 @@ class PancakeSwapV2Services(UniswapV2Services):
 
         result = {}
 
-        masterchef_addr = self.pool_info.get('masterchef_address')
+        masterchef_addr = self.pool_info.get('masterchefAddress')
 
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():

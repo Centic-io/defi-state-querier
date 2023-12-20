@@ -23,7 +23,7 @@ class PancakeswapServices(DexProtocolServices):
         self.chain_id = chain_id
         self.state_service = state_service
         self.pool_info = PancakeSwapInfo.mapping.get(chain_id)
-        self.master_chef_addr = self.pool_info['masterchef_address']
+        self.master_chef_addr = self.pool_info['masterchefAddress']
         self.master_chef_abi = self.pool_info['masterchef_abi']
 
     def get_service_info(self):
