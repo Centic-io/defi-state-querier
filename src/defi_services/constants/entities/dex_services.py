@@ -7,13 +7,13 @@ from defi_services.services.dex.uniswap_v2_service import UniswapV2Services
 from src.defi_services.constants.chain_constant import Chain
 from src.defi_services.constants.entities.dex_constant import Dex
 from src.defi_services.services.dex.pancakeswap_service import PancakeSwapServices
-from src.defi_services.services.dex.sushiswap_service import SushiswapServices
+from src.defi_services.services.dex.sushiswap_service import SushiSwapServices
 
 
 class DexServices:
     ethereum = {
         Dex.uniswap_v2: UniswapV2Services,
-        Dex.sushi: SushiswapServices,
+        Dex.sushi: SushiSwapServices,
         Dex.sushi_v2: SushiSwapV2Services
     }
     bsc = {

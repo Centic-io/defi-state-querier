@@ -230,10 +230,10 @@ def get_user_reward(_dex_protocol):
 
 
 if __name__ == "__main__":
-    wallet = "0x747834674d246417a3cf23dd1d880646e44fa39f"
-    dex_protocol = Dex.pancake
+    wallet = "0x89089fd89dfEdC7350861C99b71DABF4fdEA2fc0"
+    dex_protocol = Dex.sushi
 
-    for chain_id in [Chain.bsc]:
+    for chain_id in [Chain.ethereum]:
         try:
             job = StateProcessor(provider_url[chain_id], chain_id)
             get_lp_token_list(dex_protocol)
