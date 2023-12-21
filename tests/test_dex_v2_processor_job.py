@@ -160,5 +160,5 @@ if __name__ == "__main__":
     wallet = "0x1b2a2f6ed4a1401e8c73b4c2b6172455ce2f78e8"
     job = StateProcessor(provider_url[chain_id], chain_id)
     dex_protocol = 'pancakeswap'
-    # test_lp_token_processor(dex_protocol,)
-    test_user_info_processor(dex_protocol)
+    test_lp_token_processor(dex_protocol,)
+    # test_user_info_processor(dex_protocol)

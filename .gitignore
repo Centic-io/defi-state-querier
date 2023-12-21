@@ -162,3 +162,5 @@ test
 **/.DS_Store
 
 tests/lib_service_data.json
+services/dex/pancakeswap_v3_service.py
+tests/test_dex_v3_processor_job.py

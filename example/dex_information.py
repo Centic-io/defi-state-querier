@@ -34,13 +34,14 @@ def get_lp_token_list(_dex_protocol):
 
     lp_token_list = job.run(wallet, queries, batch_size=100, max_workers=8, ignore_error=True)
 
-    with open('../test/lp_token_list.json', 'w') as f:
+    with open('../tests/lp_token_list.json', 'w') as f:
         json.dump(lp_token_list, f, indent=2)
 
     return lp_token_list
 
 
 def get_lp_token_info(_dex_protocol):
+
     queries = [
         {
             'query_id': f'{_dex_protocol}_{Query.lp_token_info}',
@@ -198,5 +199,6 @@ if __name__ == "__main__":
     dex_protocol = Dex.pancake_v2
 
     job = StateProcessor(provider_url[chain_id], chain_id)
-    get_user_info(dex_protocol)
+    get_lp_token_list(dex_protocol)
+    # get_user_info(dex_protocol)
     # get_user_info_processor(dex_protocol)

@@ -1,0 +1,76 @@
+[
+  {
+    "query_id": "pancakeswap_v2_lp_token_list",
+    "query_type": "lp_token_list",
+    "entity_id": "pancakeswap_v2",
+    "lp_token_list": {
+      "0x804678fa97d91b974ec2af3c843270886528a9e6": {
+        "pid": 0
+      },
+      "0x0ed7e52944161450477ee417de9cd3a859b14fd0": {
+        "pid": 1
+      },
+      "0x58f876857a02d6762e0101bb5c46a8c1ed44dc16": {
+        "pid": 2
+      },
+      "0x28415ff2c35b65b9e5c7de82126b4015ab9d031f": {
+        "pid": 3
+      },
+      "0x168b273278f3a8d302de5e879aa30690b7e6c28f": {
+        "pid": 4
+      },
+      "0xdd5bad8f8b360d76d12fda230f8baf42fe0022cf": {
+        "pid": 5
+      },
+      "0xb6e34b5c65eda51bb1bd4ea5f79d385fb94b9504": {
+        "pid": 6
+      },
+      "0x824eb9fadfb377394430d2744fa7c42916de3ece": {
+        "pid": 7
+      },
+      "0x7efaef62fddcca950418312c6c91aef321375a00": {
+        "pid": 8
+      },
+      "0x3dcb1787a95d2ea0eb7d00887704eebf0d79bb13": {
+        "pid": 9
+      }
+    }
+  },
+  {
+    "query_id": "pancakeswap_v2_farming_lp_token_list",
+    "query_type": "farming_lp_token_list",
+    "entity_id": "pancakeswap_v2",
+    "farming_lp_token_list": {
+      "0xa104dafde23cb7d40e5af89ef39b74713e2d566c": {
+        "farming_pid": 0
+      },
+      "0x886566e408efbd557b031ef6733e8265a848279c": {
+        "farming_pid": 1
+      },
+      "0x0ed7e52944161450477ee417de9cd3a859b14fd0": {
+        "farming_pid": 2
+      },
+      "0x58f876857a02d6762e0101bb5c46a8c1ed44dc16": {
+        "farming_pid": 3
+      },
+      "0x28415ff2c35b65b9e5c7de82126b4015ab9d031f": {
+        "farming_pid": 4
+      },
+      "0xdd5bad8f8b360d76d12fda230f8baf42fe0022cf": {
+        "farming_pid": 5
+      },
+      "0x824eb9fadfb377394430d2744fa7c42916de3ece": {
+        "farming_pid": 6
+      },
+      "0x7efaef62fddcca950418312c6c91aef321375a00": {
+        "farming_pid": 7
+      },
+      "0x3dcb1787a95d2ea0eb7d00887704eebf0d79bb13": {
+        "farming_pid": 8
+      },
+      "0x7eb5d86fd78f3852a3e0e064f2842d45a3db6ea2": {
+        "farming_pid": 9
+      }
+    }
+  }
+]
