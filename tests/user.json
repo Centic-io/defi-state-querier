@@ -1,0 +1,171 @@
+[
+  {
+    "query_id": "pancakeswap_userinfo",
+    "query_type": "dex_user_info",
+    "entity_id": "pancakeswap",
+    "dex_user_info": {
+      "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82": {
+        "amount": 0.0,
+        "stakeAmount": 247753.2998097602
+      },
+      "0xa527a61703d82139f8a06bc30097cc9caa2df5a6": {
+        "amount": 0.0
+      },
+      "0x1b96b92314c44b159149f7e0303511fb2fc4774f": {
+        "amount": 0.0
+      },
+      "0xba51d1ab95756ca4eab8737ecd450cd8f05384cf": {
+        "amount": 0.0
+      },
+      "0xc639187ef82271d8f517de6feae4faf5b517533c": {
+        "amount": 0.0
+      },
+      "0xbcd62661a6b1ded703585d3af7d7649ef4dcdb5c": {
+        "amount": 0.0
+      },
+      "0x981d2ba1b298888408d342c39c2ab92e8991691e": {
+        "amount": 0.0
+      },
+      "0xaebe45e3a03b734c68e5557ae04bfc76917b4686": {
+        "amount": 0.0
+      },
+      "0xc2eed0f5a0dc28cfa895084bc0a9b8b8279ae492": {
+        "amount": 0.0
+      },
+      "0xd937fb9e6e47f3805981453bfb277a49fffe04d7": {
+        "amount": 0.0
+      },
+      "0x3da30727ed0626b78c212e81b37b97a8ef8a25bb": {
+        "amount": 0.0
+      },
+      "0xc15fa3e22c912a276550f3e5fe3b0deb87b55acd": {
+        "amount": 0.0
+      },
+      "0x610e7a287c27dffcac0f0a94f547cc1b770cf483": {
+        "amount": 0.0
+      },
+      "0x41182c32f854dd97ba0e0b1816022e0acb2fc0bb": {
+        "amount": 0.0
+      },
+      "0x70d8929d04b60af4fb9b58713ebcf18765ade422": {
+        "amount": 0.0
+      },
+      "0x7561eee90e24f3b348e1087a005f78b4c8453524": {
+        "amount": 0.0
+      },
+      "0x4e0f3385d932f7179dee045369286ffa6b03d887": {
+        "amount": 0.0
+      },
+      "0x20bcc3b8a0091ddac2d0bc30f68e6cbb97de59cd": {
+        "amount": 0.0
+      },
+      "0xc7b4b32a3be2cb6572a1c9959401f832ce47a6d2": {
+        "amount": 0.0
+      },
+      "0x2333c77fc0b2875c11409cdcd3c75d42d402e834": {
+        "amount": 0.0
+      },
+      "0x574a978c2d0d36d707a05e459466c7a1054f1210": {
+        "amount": 0.0
+      },
+      "0x56c77d59e82f33c712f919d09fceddf49660a829": {
+        "amount": 0.0
+      },
+      "0x5acac332f0f49c8badc7afd0134ad19d3db972e6": {
+        "amount": 0.0
+      },
+      "0x54edd846db17f43b6e43296134ecd96284671e81": {
+        "amount": 0.0
+      },
+      "0x68ff2ca47d27db5ac0b5c46587645835dd51d3c1": {
+        "amount": 0.0
+      },
+      "0x4269e7f43a63cea1ad7707be565a94a9189967e9": {
+        "amount": 0.0
+      },
+      "0x35fe9787f0ebf2a200bac413d3030cf62d312774": {
+        "amount": 0.0
+      },
+      "0x7a34bd64d18e44cfde3ef4b81b87baf3eb3315b6": {
+        "amount": 0.0
+      },
+      "0x30479874f9320a62bce3bc0e315c920e1d73e278": {
+        "amount": 0.0
+      },
+      "0x752e713fb70e3fa1ac08bcf34485f14a986956c4": {
+        "amount": 0.0
+      },
+      "0xa96b5ac38b33af0fef7d40c200f2bac9d817ebca": {
+        "amount": 0.0
+      },
+      "0x7793870484647a7278907498ec504879d6971eab": {
+        "amount": 0.0
+      },
+      "0xe0388f5fe45ee31d1838cba963b92d49e9879fd9": {
+        "amount": 0.0
+      },
+      "0x7cd05f8b960ba071fdf69c750c0e5a57c8366500": {
+        "amount": 0.0
+      },
+      "0x745c4fd226e169d6da959283275a8e0ecdd7f312": {
+        "amount": 0.0
+      },
+      "0x2730bf486d658838464a4ef077880998d944252d": {
+        "amount": 0.0
+      },
+      "0x9f40e8a2fcaa267a0c374b6c661e0b372264cc3d": {
+        "amount": 0.0
+      },
+      "0x970858016c963b780e06f7dcfdef8e809919bce8": {
+        "amount": 0.0
+      },
+      "0xbea35584b9a88107102abef0bdee2c4fae5d8c31": {
+        "amount": 0.0
+      },
+      "0xc743dc05f03d25e1af8ec5f8228f4bd25513c8d0": {
+        "amount": 0.0
+      },
+      "0xff17ff314925dff772b71abdff2782bc913b3575": {
+        "amount": 0.0
+      },
+      "0x9c4f6a5050cf863e67a402e8b377973b4e3372c1": {
+        "amount": 0.0
+      },
+      "0x51a2ffa5b7de506f9a22549e48b33f6cf0d9030e": {
+        "amount": 0.0
+      },
+      "0x470bc451810b312bbb1256f96b0895d95ea659b1": {
+        "amount": 0.0
+      },
+      "0x58b58cab6c5cf158f63a2390b817710826d116d0": {
+        "amount": 0.0
+      },
+      "0x64373608f2e93ea97ad4d8ca2cce6b2575db2f55": {
+        "amount": 0.0
+      },
+      "0xd6b900d5308356317299dafe303e661271aa12f1": {
+        "amount": 0.0
+      },
+      "0xd5b3ebf1a85d32c73a82b40f75e1cd929caf4029": {
+        "amount": 0.0
+      },
+      "0xbe14f3a89a4f7f279af9d99554cf12e8c29db921": {
+        "amount": 0.0
+      },
+      "0x01ecc44ddd2d104f44d2aa1a2bd9dfbc91ae8275": {
+        "amount": 0.0
+      },
+      "0x20781bc3701c5309ac75291f5d09bdc23d7b7fa8": {
+        "amount": 0.0
+      }
+    }
+  },
+  {
+    "query_id": "pancakeswap_userreward",
+    "query_type": "protocol_reward",
+    "entity_id": "pancakeswap",
+    "protocol_reward": {
+      "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82": 0.0
+    }
+  }
+]

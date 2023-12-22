@@ -96,6 +96,16 @@ class StateQuerier:
             list_rpc_call.append(eth_call)
 
         response_data = self.client_querier.sent_batch_to_provider(list_rpc_call, batch_size, workers)
+        filtered_response_data = {}
+        # loại bỏ những phần tử không có data
+        for key, value in response_data.items():
+            if value is not None:
+                filtered_response_data[key] = value
+            else:
+                print(key)
+        filtered_keys = list(filtered_response_data.keys())
+        response_data = filtered_response_data
+        list_call_id = [call_id for call_id in list_call_id if call_id in filtered_keys]
         decoded_data = self.decode_response_data(response_data, list_call_id, ignore_error=ignore_error)
         return decoded_data
 

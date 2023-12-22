@@ -10,3 +10,6 @@ class MongoDBCollections:
     multichain_wallets_credit_scores = 'multichain_wallets_credit_scores'
 
     is_part_ofs = 'is_part_ofs'
+
+
+

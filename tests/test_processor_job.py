@@ -9,14 +9,13 @@ load_dotenv()
 
 def test_processor_job():
     providers = {
-        '0x1': os.environ.get("ETHEREUM_PROVIDER"),
-        '0x38': os.environ.get("BSC_PROVIDER"),
-        '0x89': os.environ.get("POLYGON_PROVIDER"),
-        '0xfa': os.environ.get("FANTOM_PROVIDER"),
-        '0xa4b1': os.environ.get("ARBITRUM_PROVIDER"),
-        '0xa': os.environ.get("OPTIMISM_PROVIDER"),
-        '0xa86a': os.environ.get("AVALANCHE_PROVIDER"),
-        '0x2b6653dc': os.environ.get("TRON_PROVIDER")
+        "0x38": 'https://bsc-dataseed3.binance.org/',
+    '0x1': "https://rpc.ankr.com/eth",
+    '0xfa': "https://fantom.publicnode.com",
+    '0xa': "https://optimism.llamarpc.com",
+    '0xa4b1': "https://rpc.ankr.com/arbitrum",
+    '0xa86a': "https://rpc.ankr.com/avalanche",
+    '0x89': "https://rpc.ankr.com/polygon"
     }
     address = '0xf1df824419879bb8a7e758173523f88efb7af193'
 
