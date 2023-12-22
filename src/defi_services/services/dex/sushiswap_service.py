@@ -3,6 +3,7 @@ import logging
 from defi_services.abis.dex.sushiswap.masterchef_abi import SUSHISWAP_MASTER_CHEF_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
+from defi_services.constants.entities.dex_constant import Dex
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.dex.dex_info.sushiswap_info import (SUSHISWAP_V0_ETH_INFO)
 from defi_services.services.dex.pancakeswap_service import PancakeSwapServices
@@ -22,6 +23,16 @@ class SushiSwapServices(PancakeSwapServices):
 
         self.pool_info = SushiSwapInfo.mapping.get(chain_id)
         self.masterchef_abi = SUSHISWAP_MASTER_CHEF_ABI
+
+    def get_service_info(self):
+        info = {
+            Dex.sushi: {
+                "chain_id": self.chain_id,
+                "type": "dex",
+                "pool_info": self.pool_info
+            }
+        }
+        return info
 
     # User Reward
     def get_rewards_balance_function_info(self, wallet, supplied_data, block_number: int = "latest"):

@@ -1,4 +1,3 @@
-import os
 from dotenv import load_dotenv
 from defi_services.jobs.processors.state_processor import StateProcessor
 from defi_services.utils.logger_utils import get_logger
@@ -10,12 +9,12 @@ load_dotenv()
 def test_processor_job():
     providers = {
         "0x38": 'https://bsc-dataseed3.binance.org/',
-    '0x1': "https://rpc.ankr.com/eth",
-    '0xfa': "https://fantom.publicnode.com",
-    '0xa': "https://optimism.llamarpc.com",
-    '0xa4b1': "https://rpc.ankr.com/arbitrum",
-    '0xa86a': "https://rpc.ankr.com/avalanche",
-    '0x89': "https://rpc.ankr.com/polygon"
+        '0x1': "https://rpc.ankr.com/eth",
+        '0xfa': "https://fantom.publicnode.com",
+        '0xa': "https://optimism.llamarpc.com",
+        '0xa4b1': "https://rpc.ankr.com/arbitrum",
+        '0xa86a': "https://rpc.ankr.com/avalanche",
+        '0x89': "https://rpc.ankr.com/polygon"
     }
     address = '0xf1df824419879bb8a7e758173523f88efb7af193'
 

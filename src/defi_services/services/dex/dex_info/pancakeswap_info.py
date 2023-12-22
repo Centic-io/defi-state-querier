@@ -1,7 +1,5 @@
-from defi_services.abis.dex.pancakeswap.masterchef_v0_abi import PANCAKESWAP_MASTERCHEF_V0_ABI
 from defi_services.abis.dex.pancakeswap.masterchef_v3_abi import PANCAKESWAP_MASTERCHEF_V3_ABI
 from defi_services.abis.dex.pancakeswap.nft_token_abi import PANCAKE_V3_NON_FUNGIBLE_POSITION_TOKEN_ABI
-from defi_services.abis.dex.pancakeswap.pancakeswap_masterchef_v2_abi import PANCAKESWAP_MASTERCHEF_V2_ABI
 
 PANCAKESWAP_V0_BSC_INFO = {
     'masterchefAddress': '0x73feaa1ee314f8c655e354234017be2193c9e24e',

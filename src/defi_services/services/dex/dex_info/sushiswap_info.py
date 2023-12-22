@@ -1,10 +1,8 @@
-from defi_services.abis.dex.sushiswap.masterchef_abi import SUSHISWAP_MASTER_CHEF_ABI
 from defi_services.abis.dex.uniswap.uniswap_v2_factory import UNISWAP_FACTORY_ABI
 
 SUSHISWAP_V0_ETH_INFO = {
     'masterchefAddress': '0xc2edad668740f1aa35e4d8f227fb8e17dca888cd',
     'rewardToken': '0x6b3595068778dd592e39a122f4f5a5cf09c90fe2',
-    'masterchef_abi': SUSHISWAP_MASTER_CHEF_ABI
 }
 
 SUSHISWAP_V2_ETH_INFO = {
