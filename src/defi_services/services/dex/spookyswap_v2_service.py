@@ -5,6 +5,7 @@ from defi_services.abis.dex.pancakeswap.pancakeswap_lp_token_abi import LP_TOKEN
 from defi_services.abis.dex.spookyswap.masterchef_v2_abi import SPOOKYSWAP_MASTERCHEF_V2_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
+from defi_services.constants.entities.dex_constant import Dex
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.dex.dex_info.spookyswap_info import SPOOKY_FTM_V2_INFO
 from defi_services.services.dex.pancakeswap_v2_service import PancakeSwapV2Services
@@ -26,6 +27,16 @@ class SpookySwapV2Services(PancakeSwapV2Services):
 
         self.masterchef_abi = SPOOKYSWAP_MASTERCHEF_V2_ABI
         self.factory_abi = PANCAKESWAP_FACTORY_ABI
+
+    def get_service_info(self):
+        info = {
+            Dex.spooky_v2: {
+                "chain_id": self.chain_id,
+                "type": "dex",
+                "pool_info": self.pool_info
+            }
+        }
+        return info
 
     # Get lp token info
     def get_lp_token_function_info(self, supplied_data, block_number: int = "latest"):
