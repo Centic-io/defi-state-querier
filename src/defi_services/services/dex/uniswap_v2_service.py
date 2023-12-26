@@ -178,9 +178,10 @@ class UniswapV2Services(DexProtocolServices):
 
             for token_key in ["token0", "token1"]:
                 token_address = info.get(token_key, None)
-                if token_address is not None:
-                    query_id = f'balanceOf_{token_address}_{lp_token}_{block_number}'.lower()
-                    token_decimals = decoded_data.get(f'decimals_{token_address}_{block_number}'.lower())
+                query_id = f'balanceOf_{token_address}_{lp_token}_{block_number}'.lower()
+
+                if (token_address is not None) and (decoded_data.get(query_id) is not None):
+                    token_decimals = decoded_data.get(f'decimals_{token_address}_{block_number}'.lower()) or 18
                     result[lp_token][f'{token_key}_amount'] = decoded_data.get(query_id) / 10 ** token_decimals
 
         return result
