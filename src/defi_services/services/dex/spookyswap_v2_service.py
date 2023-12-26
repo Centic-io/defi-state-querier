@@ -33,7 +33,7 @@ class SpookySwapV2Services(PancakeSwapV2Services):
             Dex.spooky_v2: {
                 "chain_id": self.chain_id,
                 "type": "dex",
-                "pool_info": self.pool_info
+                "protocol_info": self.pool_info
             }
         }
         return info
