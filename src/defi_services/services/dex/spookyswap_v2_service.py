@@ -76,6 +76,9 @@ class SpookySwapV2Services(PancakeSwapV2Services):
             token0 = decoded_data.get(f'token0_{lp_token}_{block_number}'.lower())
             token1 = decoded_data.get(f'token1_{lp_token}_{block_number}'.lower())
             decimals = decoded_data.get(f'decimals_{lp_token}_{block_number}'.lower())
+            if (not token0) and (not token1) and (decimals is None):
+                continue
+
             total_supply = decoded_data.get(f'totalSupply_{lp_token}_{block_number}'.lower()) / 10 ** decimals
             name = decoded_data.get(f'name_{lp_token}_{block_number}'.lower())
 

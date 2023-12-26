@@ -112,6 +112,8 @@ class PancakeSwapV2Services(UniswapV2Services):
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
             lp_info = result.get(lp_token, {})
+            if not lp_info:
+                continue
 
             staked_balance_query_id = f'balanceOf_{lp_token}_{masterchef_addr}_{block_number}'.lower()
             masterchef_balance = decoded_data.get(
