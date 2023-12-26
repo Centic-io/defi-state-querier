@@ -1,17 +1,23 @@
 import json
+import os
+
+from dotenv import load_dotenv
 
 from defi_services.constants.entities.dex_constant import Dex
 from defi_services.constants.query_constant import Query
 from defi_services.jobs.processors.state_processor import StateProcessor
 
+load_dotenv()
+
 provider_url = {
-    "0x38": 'https://bsc-dataseed3.binance.org/',
-    '0x1': "https://rpc.ankr.com/eth",
-    '0xfa': "https://rpc.ankr.com/fantom",
-    '0xa': "https://optimism.llamarpc.com",
-    '0xa4b1': "https://rpc.ankr.com/arbitrum",
-    '0xa86a': "https://rpc.ankr.com/avalanche",
-    '0x89': "https://rpc.ankr.com/polygon"
+    '0x1': os.environ.get("ETHEREUM_PROVIDER"),
+    '0x38': os.environ.get("BSC_PROVIDER"),
+    '0x89': os.environ.get("POLYGON_PROVIDER"),
+    '0xfa': os.environ.get("FANTOM_PROVIDER"),
+    '0xa4b1': os.environ.get("ARBITRUM_PROVIDER"),
+    '0xa': os.environ.get("OPTIMISM_PROVIDER"),
+    '0xa86a': os.environ.get("AVALANCHE_PROVIDER"),
+    '0x2b6653dc': os.environ.get("TRON_PROVIDER")
 }
 
 
@@ -200,5 +206,3 @@ if __name__ == "__main__":
 
     job = StateProcessor(provider_url[chain_id], chain_id)
     get_lp_token_list(dex_protocol)
-    # get_user_info(dex_protocol)
-    # get_user_info_processor(dex_protocol)

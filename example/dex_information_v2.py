@@ -1,18 +1,24 @@
 import json
+import os
+
+from dotenv import load_dotenv
 
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.dex_constant import Dex
 from defi_services.constants.query_constant import Query
 from defi_services.jobs.processors.state_processor import StateProcessor
 
+load_dotenv()
+
 provider_url = {
-    "0x38": 'https://bsc-dataseed3.binance.org/',
-    '0x1': "https://rpc.ankr.com/eth",
-    '0xfa': "https://rpc.ankr.com/fantom",
-    '0xa': "https://optimism.llamarpc.com",
-    '0xa4b1': "https://rpc.ankr.com/arbitrum",
-    '0xa86a': "https://rpc.ankr.com/avalanche",
-    '0x89': "https://rpc.ankr.com/polygon"
+    '0x1': os.environ.get("ETHEREUM_PROVIDER"),
+    '0x38': os.environ.get("BSC_PROVIDER"),
+    '0x89': os.environ.get("POLYGON_PROVIDER"),
+    '0xfa': os.environ.get("FANTOM_PROVIDER"),
+    '0xa4b1': os.environ.get("ARBITRUM_PROVIDER"),
+    '0xa': os.environ.get("OPTIMISM_PROVIDER"),
+    '0xa86a': os.environ.get("AVALANCHE_PROVIDER"),
+    '0x2b6653dc': os.environ.get("TRON_PROVIDER")
 }
 
 
@@ -231,7 +237,7 @@ def get_user_reward(job, wallet, dex_protocol):
 
 if __name__ == "__main__":
     w = "0x89089fd89dfEdC7350861C99b71DABF4fdEA2fc0"
-    dex_id = Dex.sushi
+    dex_id = Dex.sushi_v2
 
     for chain_id in [Chain.ethereum]:
         try:
