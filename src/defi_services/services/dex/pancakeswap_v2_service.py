@@ -62,7 +62,7 @@ class PancakeSwapV2Services(UniswapV2Services):
 
         return rpc_calls
 
-    def decode_farming_supported_lp_token(self, decoded_data):
+    def decode_farming_supported_lp_token(self, decoded_data, ):
         result = {}
         for query_id, value in decoded_data.items():
             # Format query_id: f'lpToken_{self.masterchef_addr}_{pid}_latest'

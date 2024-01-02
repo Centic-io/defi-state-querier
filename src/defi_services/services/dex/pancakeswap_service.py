@@ -33,10 +33,10 @@ class PancakeSwapServices(PancakeSwapV2Services):
         }
         return info
 
-    def get_all_supported_lp_token(self, limit: int = 1):
+    def get_all_supported_lp_token(self, limit: int = 1, supplied_data:dict = None):
         return {}
 
-    def decode_all_supported_lp_token(self, response_data):
+    def decode_all_supported_lp_token(self, response_data, supplied_data:dict = None):
         return {}
 
     def get_farming_supported_lp_token(self, limit: int = 1):

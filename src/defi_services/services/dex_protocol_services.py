@@ -23,12 +23,14 @@ class DexProtocolServices:
         supplied_data = kwargs.get("supplied_data", {})
 
         if Query.lp_token_list in query_types:
-            limit_ = kwargs.get("number_lp", 1)
-            rpc_calls.update(self.get_all_supported_lp_token(limit_))
+            limit_ = kwargs.get("number_lp")
+            rpc_calls.update(self.get_all_supported_lp_token(limit_, supplied_data))
 
         if Query.farming_lp_token_list in query_types:
-            limit_ = kwargs.get("number_lp", 1)
+            limit_ = kwargs.get("number_lp")
             rpc_calls.update(self.get_farming_supported_lp_token(limit_))
+        if Query.important_lp_token_list in query_types:
+            rpc_calls.update(self.get_important_lp_token(supplied_data,block_number))
 
         if Query.lp_token_info in query_types:
             rpc_calls.update(self.get_lp_token_function_info(supplied_data, block_number))
@@ -59,10 +61,13 @@ class DexProtocolServices:
         result = {}
         supplied_data = kwargs.get("supplied_data", {})
         if Query.lp_token_list in query_types:
-            result.update(self.decode_all_supported_lp_token(decoded_data))
+            result.update(self.decode_all_supported_lp_token(decoded_data, supplied_data))
 
         if Query.farming_lp_token_list in query_types:
             result.update(self.decode_farming_supported_lp_token(decoded_data))
+
+        if Query.important_lp_token_list in query_types:
+            result.update(self.decode_important_lp_token(supplied_data, decoded_data))
 
         if Query.lp_token_info in query_types:
             result.update(self.decode_lp_token_info(supplied_data, decoded_data, block_number))
@@ -91,10 +96,10 @@ class DexProtocolServices:
         pass
 
     # Get lp list
-    def get_all_supported_lp_token(self, limit: int = 10) -> dict:
+    def get_all_supported_lp_token(self, limit: int = 10, supplied_data:dict = None) -> dict:
         pass
 
-    def decode_all_supported_lp_token(self, decoded_data) -> dict:
+    def decode_all_supported_lp_token(self, decoded_data, supplied_data:dict = None) -> dict:
         pass
 
     # Get farming supported lp list
@@ -102,6 +107,12 @@ class DexProtocolServices:
         pass
 
     def decode_farming_supported_lp_token(self, decoded_data) -> dict:
+        pass
+
+    def get_important_lp_token(self, supplied_data,block_number) -> dict:
+        pass
+
+    def decode_important_lp_token(self, supplied_data, decoded_data) ->dict:
         pass
 
     # Lp token liquidity

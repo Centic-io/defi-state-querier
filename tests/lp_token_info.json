@@ -1,0 +1,67 @@
+[
+  {
+    "query_id": "uniswap_v3_lptokeninfo",
+    "query_type": "lp_token_info",
+    "entity_id": "uniswap_v3",
+    "lp_token_info": {
+      "0x3416cf6c708da44db2624d63ea0aaef7113527c6": {
+        "pid": null,
+        "token0": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "token1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "fee": "100",
+        "totalLiquidity": 0.22478338252276714,
+        "currentPrice": 0.9998404911653661
+      },
+      "0x7858e59e0c01ea06df3af3d20ac7b0003275d4bf": {
+        "pid": null,
+        "token0": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "token1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "fee": "500",
+        "totalLiquidity": 0.011129677099304618,
+        "currentPrice": 0.9997511693034822
+      },
+      "0xee4cf3b78a74affa38c6a926282bcd8b5952818d": {
+        "pid": null,
+        "token0": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "token1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "fee": "3000",
+        "totalLiquidity": 1.999947476677e-06,
+        "currentPrice": 0.9996068060443108
+      }
+    }
+  },
+  {
+    "query_id": "uniswap_v3_lptokenbalance",
+    "query_type": "token_pair_balance",
+    "entity_id": "uniswap_v3",
+    "token_pair_balance": {
+      "0x3416cf6c708da44db2624d63ea0aaef7113527c6": {
+        "token0": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "token1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "fee": "100",
+        "totalLiquidity": null,
+        "stakeLiquidity": 0,
+        "token0Amount": 13515822.439717,
+        "token1Amount": 31957441.287225
+      },
+      "0x7858e59e0c01ea06df3af3d20ac7b0003275d4bf": {
+        "token0": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "token1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "fee": "500",
+        "totalLiquidity": null,
+        "stakeLiquidity": 0,
+        "token0Amount": 3347722.902441,
+        "token1Amount": 6395583.085451
+      },
+      "0xee4cf3b78a74affa38c6a926282bcd8b5952818d": {
+        "token0": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "token1": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "fee": "3000",
+        "totalLiquidity": null,
+        "stakeLiquidity": 0,
+        "token0Amount": 8544.175267,
+        "token1Amount": 9938.413421
+      }
+    }
+  }
+]

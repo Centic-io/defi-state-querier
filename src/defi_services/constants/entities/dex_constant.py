@@ -1,10 +1,11 @@
 class Dex:
     pancake = 'pancakeswap'
     pancake_v2 = 'pancakeswap_v2'
-    # pancake_v3 = 'pancakeswap_v3'
+    pancake_v3 = 'pancakeswap_v3'
     sushi = 'sushiswap'
     sushi_v2 = 'sushiswap_v2'
     uniswap_v2 = 'uniswap_v2'
+    uniswap_v3 = 'uniswap_v3'
     spooky_v2 = 'spookyswap_v2'
     # spooky_v3 = 'spookyswap_v3'
     quickswap_v2 = 'quickswap_v2'

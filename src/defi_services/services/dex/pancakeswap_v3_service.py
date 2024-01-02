@@ -1,7 +1,7 @@
 import logging
 
 from defi_services.abis.dex.pancakeswap.nft_token_abi import PANCAKE_V3_NON_FUNGIBLE_POSITION_TOKEN_ABI
-from defi_services.abis.dex.pancakeswap.v3_pool_abi import V3_POOL_ABI
+from defi_services.abis.dex.pancakeswap.v3_pool_abi import PANCAKESWAP_V3_POOL_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.dex_constant import Dex
@@ -24,9 +24,9 @@ class PancakeSwapV3Service(DexProtocolServices):
         self.chain_id = chain_id
         self.state_service = state_service
         self.pool_info = PancakeSwapV3Info.mapping.get(chain_id)
-        self.masterchef_addr = self.pool_info['masterchefAddress']
+        self.masterchef_addr = self.pool_info['masterchef_address']
         self.masterchef_abi = self.pool_info['masterchef_abi']
-        self.nft_token_address = self.pool_info['NFT_token_manager']
+        self.nft_token_manager = self.pool_info['NFT_token_manager']
         self.NFT_abi = self.pool_info['NFT_abi']
 
     def get_service_info(self):
@@ -39,7 +39,7 @@ class PancakeSwapV3Service(DexProtocolServices):
         }
         return info
 
-    def get_all_supported_lp_token(self, limit: int = 1):
+    def get_all_supported_lp_token(self, limit: int = 1, supplied_data:dict = None):
         web3 = self.state_service.get_w3()
         self.masterchef_addr = self.checksum_address(web3, self.masterchef_addr)
         master_chef_contract = web3.eth.contract(abi=self.masterchef_abi, address=self.masterchef_addr)
@@ -53,7 +53,7 @@ class PancakeSwapV3Service(DexProtocolServices):
 
         return rpc_calls
 
-    def decode_all_supported_lp_token(self, response_data):
+    def decode_all_supported_lp_token(self, response_data, supplied_data:dict = None):
         result = {}
         for key, value in response_data.items():
             pid = key.split("_")[1]
@@ -77,7 +77,7 @@ class PancakeSwapV3Service(DexProtocolServices):
             for fn_name in ["liquidity", "slot0"]:
                 query_id = f"{fn_name}_{lp_token}_{block_number}_{self.chain_id}".lower()
                 rpc_calls[query_id] = self.state_service.get_function_info(
-                    address=lp_token, abi=V3_POOL_ABI, fn_name=fn_name, fn_paras=None,
+                    address=lp_token, abi=PANCAKESWAP_V3_POOL_ABI, fn_name=fn_name, fn_paras=None,
                     block_number=block_number)
             query_id = f'getLatestPeriodInfoByPid_{lp_token}_{block_number}_{self.chain_id}'.lower()
             rpc_calls[query_id] = self.state_service.get_function_info(
@@ -198,8 +198,8 @@ class PancakeSwapV3Service(DexProtocolServices):
         rpc_calls = {}
         web3 = self.state_service.get_w3()
         user = self.checksum_address(web3, user)
-        self.nft_token_address = self.checksum_address(web3, self.nft_token_address)
-        nft_contract = web3.eth.contract(abi=PANCAKE_V3_NON_FUNGIBLE_POSITION_TOKEN_ABI, address=self.nft_token_address)
+        self.nft_token_manager = self.checksum_address(web3, self.nft_token_manager)
+        nft_contract = web3.eth.contract(abi=PANCAKE_V3_NON_FUNGIBLE_POSITION_TOKEN_ABI, address=self.nft_token_manager)
         number_token = nft_contract.functions.balanceOf(user).call()
         self.masterchef_addr = self.checksum_address(web3, self.masterchef_addr)
         master_chef_contract = web3.eth.contract(abi=self.masterchef_abi, address=self.masterchef_addr)
@@ -208,7 +208,7 @@ class PancakeSwapV3Service(DexProtocolServices):
         for idx in range(number_token):
             query_id = f'tokenOfOwnerByIndex_{user}_{idx}_{block_number}_{self.chain_id}'.lower()
             rpc_calls[query_id] = self.state_service.get_function_info(
-                address=self.nft_token_address, abi=self.NFT_abi, fn_name="tokenOfOwnerByIndex",
+                address=self.nft_token_manager, abi=self.NFT_abi, fn_name="tokenOfOwnerByIndex",
                 fn_paras=[user, idx],
                 block_number=block_number)
 
@@ -242,7 +242,7 @@ class PancakeSwapV3Service(DexProtocolServices):
         for token_id, value in user_data['allToken'].items():
             query_id = f'positions_{user}_{token_id}_{block_number}'.lower()
             rpc_calls[query_id] = self.state_service.get_function_info(
-                address=self.nft_token_address, abi=self.NFT_abi, fn_name="positions",
+                address=self.nft_token_manager, abi=self.NFT_abi, fn_name="positions",
                 fn_paras=[int(token_id)], block_number=block_number)
 
         for token_id, value in user_data['stakeToken'].items():

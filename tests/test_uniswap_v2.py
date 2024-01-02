@@ -14,7 +14,6 @@ provider_url = {
     '0xa86a': "https://rpc.ankr.com/avalanche",
     '0x89': "https://rpc.ankr.com/polygon"}
 
-
 def test_dex_processor():
     wallet = "0x63B59cb9F03Bc57DF16d7a45423cE8148B4818D9"
     job = StateProcessor( provider_url[chain_id], chain_id)

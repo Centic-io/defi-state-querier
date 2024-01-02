@@ -23,13 +23,13 @@ def get_lp_token_list(_dex_protocol):
             'query_id': f'{_dex_protocol}_{Query.lp_token_list}',
             "entity_id": _dex_protocol,
             'query_type': Query.lp_token_list,
-            'number_lp': 10
+            'number_lp': 200
         },
         {
             'query_id': f'{_dex_protocol}_{Query.farming_lp_token_list}',
             "entity_id": _dex_protocol,
             'query_type': Query.farming_lp_token_list,
-            'number_lp': 10
+            'number_lp': 200
         }
     ]
 

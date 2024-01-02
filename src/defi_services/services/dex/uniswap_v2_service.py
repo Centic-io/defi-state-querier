@@ -1,7 +1,7 @@
 import logging
 
 from defi_services.abis.dex.pancakeswap.pancakeswap_lp_token_abi import LP_TOKEN_ABI
-from defi_services.abis.dex.uniswap.uniswap_v2_factory import UNISWAP_FACTORY_ABI
+from defi_services.abis.dex.uniswap.factory_v2_abi import UNISWAP_FACTORY_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.dex_constant import Dex
@@ -36,7 +36,7 @@ class UniswapV2Services(DexProtocolServices):
         }
         return info
 
-    def get_all_supported_lp_token(self, limit=1):
+    def get_all_supported_lp_token(self, limit=1, supplied_data:dict = None):
         web3 = self.state_service.get_w3()
         factory_addr = self.pool_info.get('factoryAddress')
 
@@ -51,7 +51,7 @@ class UniswapV2Services(DexProtocolServices):
 
         return rpc_calls
 
-    def decode_all_supported_lp_token(self, decoded_data):
+    def decode_all_supported_lp_token(self, decoded_data, supplied_data:dict = None):
         result = {}
         for query_id, value in decoded_data.items():
             # Format query_id: f'allPairs_{self.factory_addr}_{pid}_latest'

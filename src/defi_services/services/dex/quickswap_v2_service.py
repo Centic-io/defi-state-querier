@@ -1,6 +1,6 @@
 import logging
 
-from defi_services.abis.dex.uniswap.uniswap_v2_factory import UNISWAP_FACTORY_ABI
+from defi_services.abis.dex.uniswap.factory_v2_abi import UNISWAP_FACTORY_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.dex_constant import Dex
 from defi_services.jobs.queriers.state_querier import StateQuerier
