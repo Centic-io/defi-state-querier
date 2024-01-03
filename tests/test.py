@@ -35,78 +35,43 @@ def get_sqrt_ratio_at_tick(tick):
     sqrt_price_x96 = (ratio >> 32) + (0 if ratio % (1 << 32) == 0 else 1)
     return sqrt_price_x96
 #
-# def getAmount0Delta1(sqrtRatioAX96, sqrtRatioBX96, liquidity, roundUp):
-#     if sqrtRatioAX96 > sqrtRatioBX96:
-#         sqrtRatioAX96, sqrtRatioBX96 = sqrtRatioBX96, sqrtRatioAX96
-#     numerator1 = liquidity << FixedPoint96.RESOLUTION
-#     numerator2 = sqrtRatioBX96 - sqrtRatioAX96
-#     if sqrtRatioAX96<0:
-#         return None
-#     else:
-#         if roundUp:
-#             x= mul_div_rounding_up(numerator1, numerator2, sqrtRatioBX96)
-#             return div_rounding_up(x, sqrtRatioAX96)
-#         else:
-#             return mul_div(numerator1, numerator2, sqrtRatioBX96) / sqrtRatioAX96
-#
-# def getAmount1Delta1( sqrtRatioAX96, sqrtRatioBX96, liquidity, roundUp):
-#     if sqrtRatioAX96 > sqrtRatioBX96:
-#         sqrtRatioAX96, sqrtRatioBX96 = sqrtRatioBX96, sqrtRatioAX96
-#     if roundUp:
-#         x= mul_div_rounding_up(liquidity, sqrtRatioBX96 - sqrtRatioAX96, FixedPoint96.Q96)
-#         return x
-#     else:
-#         return mul_div(liquidity, sqrtRatioBX96 - sqrtRatioAX96, FixedPoint96.Q96)
-#
-#
-# def getAmount0Delta(sqrtRatioAX96,sqrtRatioBX96, liquidity):
-#     if liquidity<0:
-#         return getAmount0Delta1(sqrtRatioAX96, sqrtRatioBX96, -liquidity, False)
-#     else:
-#         return getAmount0Delta1(sqrtRatioAX96, sqrtRatioBX96, liquidity, True)
-#
-# def getAmount1Delta( sqrtRatioAX96,sqrtRatioBX96,liquidity):
-#     if liquidity<0:
-#         return -getAmount1Delta1(sqrtRatioAX96, sqrtRatioBX96, -liquidity, False)
-#     else:
-#         return getAmount1Delta1(sqrtRatioAX96, sqrtRatioBX96, liquidity, True)
-#
-
-def getAmount0Delta(sqrtRatioAX96, sqrtRatioBX96, liquidity, roundUp):
+def getAmount0Delta1(sqrtRatioAX96, sqrtRatioBX96, liquidity, roundUp):
     if sqrtRatioAX96 > sqrtRatioBX96:
         sqrtRatioAX96, sqrtRatioBX96 = sqrtRatioBX96, sqrtRatioAX96
-
-    numerator1 = liquidity * FixedPoint96.Q96
+    numerator1 = liquidity << FixedPoint96.RESOLUTION
     numerator2 = sqrtRatioBX96 - sqrtRatioAX96
-
-    if sqrtRatioAX96 <= 0:
-        raise ValueError("sqrtRatioAX96 must be greater than 0")
-
-    if roundUp:
-        return div_rounding_up(mul_div_rounding_up(numerator1, numerator2, sqrtRatioBX96), sqrtRatioAX96)
+    if sqrtRatioAX96<0:
+        return None
     else:
-        return mul_div(numerator1, numerator2, sqrtRatioBX96) // sqrtRatioAX96
+        if roundUp:
+            x= mul_div_rounding_up(numerator1, numerator2, sqrtRatioBX96)
+            return div_rounding_up(x, sqrtRatioAX96)
+        else:
+            return mul_div(numerator1, numerator2, sqrtRatioBX96) / sqrtRatioAX96
 
-def getAmount1Delta(sqrtRatioAX96, sqrtRatioBX96, liquidity, roundUp):
+def getAmount1Delta1( sqrtRatioAX96, sqrtRatioBX96, liquidity, roundUp):
     if sqrtRatioAX96 > sqrtRatioBX96:
         sqrtRatioAX96, sqrtRatioBX96 = sqrtRatioBX96, sqrtRatioAX96
-
     if roundUp:
-        return div_rounding_up(liquidity * (sqrtRatioBX96 - sqrtRatioAX96),  FixedPoint96.Q96)
+        x= mul_div_rounding_up(liquidity, sqrtRatioBX96 - sqrtRatioAX96, FixedPoint96.Q96)
+        return x
     else:
-        return mul_div(liquidity * (sqrtRatioBX96 - sqrtRatioAX96),  FixedPoint96.Q96,  FixedPoint96.Q96)
+        return mul_div(liquidity, sqrtRatioBX96 - sqrtRatioAX96, FixedPoint96.Q96)
 
-def getAmount0DeltaWithSign(sqrtRatioAX96, sqrtRatioBX96, liquidity):
-    if liquidity < 0:
-        return -getAmount0Delta(sqrtRatioAX96, sqrtRatioBX96, abs(liquidity), False)
-    else:
-        return getAmount0Delta(sqrtRatioAX96, sqrtRatioBX96, liquidity, True)
 
-def getAmount1DeltaWithSign(sqrtRatioAX96, sqrtRatioBX96, liquidity):
-    if liquidity < 0:
-        return -getAmount1Delta(sqrtRatioAX96, sqrtRatioBX96, abs(liquidity), False)
+def getAmount0Delta(sqrtRatioAX96,sqrtRatioBX96, liquidity):
+    if liquidity<0:
+        return getAmount0Delta1(sqrtRatioAX96, sqrtRatioBX96, -liquidity, False)
     else:
-        return getAmount1Delta(sqrtRatioAX96, sqrtRatioBX96, liquidity, True)
+        return getAmount0Delta1(sqrtRatioAX96, sqrtRatioBX96, liquidity, True)
+
+def getAmount1Delta( sqrtRatioAX96,sqrtRatioBX96,liquidity):
+    if liquidity<0:
+        return -getAmount1Delta1(sqrtRatioAX96, sqrtRatioBX96, -liquidity, False)
+    else:
+        return getAmount1Delta1(sqrtRatioAX96, sqrtRatioBX96, liquidity, True)
+
+
 def div_rounding_up(x, y):
     return  x // y + (x % y > 0)
 
@@ -189,18 +154,19 @@ def to_int256(value, bit_length=256):
         return -((~value + 1) & max_int256)
     else:
         return value
+
 def get_amount0_amount1(liquidity, sqrtPriceX96, tick,tickLower,tickUpper ):
     amount0, amount1= 0,0
     if liquidity!=0:
         if tick< tickLower:
-            amount0= getAmount0DeltaWithSign(get_sqrt_ratio_at_tick(tickLower),
+            amount0= getAmount0Delta(get_sqrt_ratio_at_tick(tickLower),
                                      get_sqrt_ratio_at_tick(tickUpper),
                                      liquidity)
         elif tick< tickUpper:
-            amount0= getAmount0DeltaWithSign(sqrtPriceX96, get_sqrt_ratio_at_tick(tickUpper), liquidity)
-            amount1= getAmount1DeltaWithSign(get_sqrt_ratio_at_tick(tickLower), sqrtPriceX96, liquidity)
+            amount0= getAmount0Delta(sqrtPriceX96, get_sqrt_ratio_at_tick(tickUpper), liquidity)
+            amount1= getAmount1Delta(get_sqrt_ratio_at_tick(tickLower), sqrtPriceX96, liquidity)
         else:
-            amount1= getAmount1DeltaWithSign(get_sqrt_ratio_at_tick(tickLower),
+            amount1= getAmount1Delta(get_sqrt_ratio_at_tick(tickLower),
                                      get_sqrt_ratio_at_tick(tickUpper),
                                      liquidity)
     return amount0, amount1

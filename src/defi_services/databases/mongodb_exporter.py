@@ -9,9 +9,11 @@ logger = logging.getLogger("MongodbStreamingExporter")
 
 class MongoExporter(object):
     def __init__(self,
-                connection_url ,
+
                 collector_id,
                 db_prefix,
+                 chain_id,
+                 connection_url=None,
                 database = MongoDBConfig.DATABASE,
                 # collector = MongoDBConfig.COLLECTORS,
                 event_collection = None):
@@ -30,6 +32,7 @@ class MongoExporter(object):
             self.event = self.mongo_db[event_collection]
         else:
             self.event = self.mongo_db[collector_id]
+        self.chain_id = chain_id
 
     def open(self):
         pass
@@ -41,7 +44,7 @@ class MongoExporter(object):
             logger.debug(f"Error: Don't have any data to write")
             return
         start = time.time()
-        bulk_operations = [UpdateOne({'_id': data['_id']}, {"$set": data}, upsert=True) for data in operations_data]
+        bulk_operations = [UpdateOne({'_id': self.chain_id+"_"+data['lp_token']}, {"$set": data}, upsert=True) for data in operations_data]
         logger.info("Updating into events ........")
         try:
             self.event.bulk_write(bulk_operations)
