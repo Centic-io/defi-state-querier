@@ -25,7 +25,25 @@ class Token:
         Chain.arbitrum: wrapped_eth_arbitrum,
         Chain.polygon: wrapped_matic,
         Chain.tron: wrapped_tron,
-        Chain.cronos: wrapped_cro
+        Chain.cronos: wrapped_cro,
+        Chain.base: '0x4200000000000000000000000000000000000006',
+        Chain.kava: '0xc86c7c0efbd6a49b35e8714c5f59d99de09a225b',
+        Chain.gnosis: '0xe91d153e0b41518a2ce8dd3d7944fa863463a97d',
+        Chain.klaytn: '0x19aac5f612f524b754ca7e7c41cbfa2e981a4432',
+        Chain.mantle: '0x78c1b0c915c4faa5fffa6cabf0219da63d7f4cb8',
+        Chain.celo: '0x3ad443d769a07f287806874f8e5405ce3ac902b9',
+        Chain.moonbeam: '0xacc15dc74880c9944775448304b263d191c6077f',
+        Chain.manta: '0x0dc808adce2099a9f62aa87d9670745aba741746',
+        Chain.pulse: '0xa1077a294dde1b09bb078844df40758a5d0f9a27',
+        Chain.rootstock: '0x967f8799af07df1534d48a95a5c9febe92c53ae0',
+        Chain.astar: '0xaeaaf0e2c81af264101b9129c00f4440ccf0f720',
+        Chain.metis: '0x75cb093e4d61d2a2e65d8e0bbb01de8d89b53481',
+        Chain.canto: '0x826551890dc65655a0aceca109ab11abdbd7a07b',
+        Chain.heco: '0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f',
+        Chain.linea: '0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f',
+        Chain.okc: '0x8f8526dbfd6e38e3d8307702ca8469bae6c56c15',
+        Chain.aurora: '0xc9bdeed33cd01541e1eed10f90519d2c06fe3feb',
+        Chain.moonriver: '0x98878b06940ae243284ca214f92bb71a2b032b8a'
     }
 
 

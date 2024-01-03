@@ -40,7 +40,7 @@ def test_staking_reward_job():
         if queries:
             error = False
             try:
-                result = job.run(address, queries, batch_size=100, ignore_error=True)
+                result = job.run(address, queries, batch_size=100, max_workers=5, ignore_error=True)
                 data[chain_id] = result
             except Exception as ex:
                 logger.exception(ex)

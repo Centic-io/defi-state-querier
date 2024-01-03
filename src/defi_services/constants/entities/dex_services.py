@@ -5,10 +5,11 @@ from defi_services.services.dex.spookyswap_v2_service import SpookySwapV2Service
 from defi_services.services.dex.sushiswap_v2_service import SushiSwapV2Services
 from defi_services.services.dex.uniswap_v2_service import UniswapV2Services
 from defi_services.services.dex.uniswap_v3_service import UniswapV3Services
-from src.defi_services.constants.chain_constant import Chain
-from src.defi_services.constants.entities.dex_constant import Dex
-from src.defi_services.services.dex.pancakeswap_service import PancakeSwapServices
-from src.defi_services.services.dex.sushiswap_service import SushiSwapServices
+
+from defi_services.constants.chain_constant import Chain
+from defi_services.constants.entities.dex_constant import Dex
+from defi_services.services.dex.pancakeswap_service import PancakeSwapServices
+from defi_services.services.dex.sushiswap_service import SushiSwapServices
 
 
 class DexServices:

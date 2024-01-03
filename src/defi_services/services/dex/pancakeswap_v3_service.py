@@ -34,7 +34,7 @@ class PancakeSwapV3Service(DexProtocolServices):
             Dex.pancake_v3: {
                 "chain_id": self.chain_id,
                 "type": "dex",
-                "pool_info": self.pool_info
+                "protocol_info": self.pool_info
             }
         }
         return info

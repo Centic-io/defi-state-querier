@@ -31,7 +31,7 @@ class UniswapV2Services(DexProtocolServices):
             Dex.uniswap_v2: {
                 "chain_id": self.chain_id,
                 "type": "dex",
-                "pool_info": self.pool_info
+                "protocol_info": self.pool_info
             }
         }
         return info
@@ -120,6 +120,9 @@ class UniswapV2Services(DexProtocolServices):
             token0 = decoded_data.get(f'token0_{lp_token}_{block_number}'.lower())
             token1 = decoded_data.get(f'token1_{lp_token}_{block_number}'.lower())
             decimals = decoded_data.get(f'decimals_{lp_token}_{block_number}'.lower())
+            if (not token0) and (not token1) and (decimals is None):
+                continue
+
             total_supply = decoded_data.get(f'totalSupply_{lp_token}_{block_number}'.lower()) / 10 ** decimals
             name = decoded_data.get(f'name_{lp_token}_{block_number}'.lower())
 
@@ -175,9 +178,10 @@ class UniswapV2Services(DexProtocolServices):
 
             for token_key in ["token0", "token1"]:
                 token_address = info.get(token_key, None)
-                if token_address is not None:
-                    query_id = f'balanceOf_{token_address}_{lp_token}_{block_number}'.lower()
-                    token_decimals = decoded_data.get(f'decimals_{token_address}_{block_number}'.lower())
+                query_id = f'balanceOf_{token_address}_{lp_token}_{block_number}'.lower()
+
+                if (token_address is not None) and (decoded_data.get(query_id) is not None):
+                    token_decimals = decoded_data.get(f'decimals_{token_address}_{block_number}'.lower()) or 18
                     result[lp_token][f'{token_key}_amount'] = decoded_data.get(query_id) / 10 ** token_decimals
 
         return result

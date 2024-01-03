@@ -1,6 +1,5 @@
 import logging
 
-from defi_services.abis.dex.pancakeswap.masterchef_v0_abi import PANCAKESWAP_MASTERCHEF_V0_ABI
 from defi_services.abis.dex.pancakeswap.pancakeswap_factory_abi import PANCAKESWAP_FACTORY_ABI
 from defi_services.abis.dex.pancakeswap.pancakeswap_lp_token_abi import LP_TOKEN_ABI
 from defi_services.abis.dex.pancakeswap.pancakeswap_masterchef_v2_abi import PANCAKESWAP_MASTERCHEF_V2_ABI
@@ -33,7 +32,7 @@ class PancakeSwapV2Services(UniswapV2Services):
             Dex.pancake_v2: {
                 "chain_id": self.chain_id,
                 "type": "dex",
-                "pool_info": self.pool_info
+                "protocol_info": self.pool_info
             }
         }
         return info
@@ -114,6 +113,10 @@ class PancakeSwapV2Services(UniswapV2Services):
             lp_info = result.get(lp_token, {})
 
             staked_balance_query_id = f'balanceOf_{lp_token}_{masterchef_addr}_{block_number}'.lower()
+
+            if (not lp_info) or (decoded_data.get(staked_balance_query_id) is None):
+                continue
+
             masterchef_balance = decoded_data.get(
                 staked_balance_query_id) / 10 ** lp_info.get('decimals', 18)
             lp_info.update({"stake_balance": masterchef_balance})
@@ -162,6 +165,10 @@ class PancakeSwapV2Services(UniswapV2Services):
             lp_info = result.get(lp_token, {})
 
             staked_balance_query_id = f'balanceOf_{lp_token}_{masterchef_addr}_{block_number}'.lower()
+
+            if (not lp_info) or (decoded_data.get(staked_balance_query_id) is None):
+                continue
+
             staked_balance = decoded_data.get(
                 staked_balance_query_id) / 10 ** lp_info.get('decimals', 18)
             lp_info.update({"stake_balance": staked_balance})

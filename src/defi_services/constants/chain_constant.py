@@ -10,6 +10,24 @@ class Chain:
     tron = "0x2b6653dc"
     cronos = "0x19"
     polkadot = "polkadot"
+    base = '0x2105'
+    kava = '0x8ae'
+    gnosis = '0x64'
+    klaytn = '0x2019'
+    mantle = '0x1388'
+    celo = '0xa4ec'
+    moonbeam = '0x504'
+    manta = '0xa9'
+    pulse = '0x171'
+    rootstock = '0x1e'
+    astar = '0x250'
+    metis = '0x440'
+    canto = '0x1e14'
+    heco = '0x80'
+    linea = '0xe708'
+    okc = '0x42'
+    aurora = '0x4e454152'
+    moonriver = '0x505'
 
     native_decimals = {
         tron: 6,
