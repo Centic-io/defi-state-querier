@@ -1,6 +1,6 @@
 import logging
 
-from defi_services.abis.dex.pancakeswap.pancakeswap_factory_abi import PANCAKESWAP_FACTORY_ABI
+from defi_services.abis.dex.pancakeswap.pancakeswap_v2_factory_abi import PANCAKESWAP_V2_FACTORY_ABI
 from defi_services.abis.dex.pancakeswap.pancakeswap_lp_token_abi import LP_TOKEN_ABI
 from defi_services.abis.dex.pancakeswap.pancakeswap_masterchef_v2_abi import PANCAKESWAP_MASTERCHEF_V2_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
@@ -25,7 +25,7 @@ class PancakeSwapV2Services(UniswapV2Services):
 
         self.pool_info = PancakeSwapV2Info.mapping.get(chain_id)
         self.masterchef_abi = PANCAKESWAP_MASTERCHEF_V2_ABI
-        self.factory_abi = PANCAKESWAP_FACTORY_ABI
+        self.factory_abi = PANCAKESWAP_V2_FACTORY_ABI
 
     def get_service_info(self):
         info = {
@@ -181,49 +181,49 @@ class PancakeSwapV2Services(UniswapV2Services):
         return result
 
     # Calculate lp token price
-    def calculate_lp_token_price_info(
-            self, supplied_data, lp_token_balance, token_price):
-        """Deprecated"""
-        lp_token_info = supplied_data['lp_token_info']
-        for lp_token, value in lp_token_info.items():
-            total_supply = value.get("totalSupply")
-            token0 = value.get("token0", None)
-            token1 = value.get("token1", None)
-            if token0 and token1:
-
-                balance_of_token0 = lp_token_balance[lp_token].get(token0, 0)
-                balance_of_token1 = lp_token_balance[lp_token].get(token1, 0)
-                lp_token_stake_amount = value.get("stakeBalance", 0)
-                lp_token_info[lp_token].update({
-                    "totalSupply": total_supply,
-                    "stakeBalance": lp_token_stake_amount,
-                    "token0Amount": balance_of_token0,
-                    "token1Amount": balance_of_token1
-                })
-                token0_price = token_price.get(token0).get("price", 0)
-                token1_price = token_price.get(token1).get("price", 0)
-                new_amount1 = balance_of_token1
-                if token0_price != 0 and token1_price != 0:
-                    total_of_token0 = balance_of_token0 * token0_price
-                    total_of_token1 = balance_of_token1 * token1_price
-                elif token0_price == 0:
-                    total_of_token1 = balance_of_token0 * token1_price
-                    total_of_token0 = total_of_token1
-                    token0_price = total_of_token0 / balance_of_token0
-                else:
-                    total_of_token0 = balance_of_token1 * token0_price
-                    total_of_token1 = total_of_token0
-                    token1_price = total_of_token1 / new_amount1
-                lp_token_price = (total_of_token0 + total_of_token1) / total_supply
-                lp_token_info[lp_token].update({
-                    "price": lp_token_price,
-                    'token0Price': token0_price,
-                    'token1Price': token1_price,
-                    "stakeAmountToken0": lp_token_stake_amount * lp_token_price / 2 / token0_price,
-                    "stakeAmountToken1": lp_token_stake_amount * lp_token_price / 2 / token1_price
-                })
-
-        return lp_token_info
+    # def calculate_lp_token_price_info(
+    #         self, supplied_data, lp_token_balance, token_price):
+    #     """Deprecated"""
+    #     lp_token_info = supplied_data['lp_token_info']
+    #     for lp_token, value in lp_token_info.items():
+    #         total_supply = value.get("totalSupply")
+    #         token0 = value.get("token0", None)
+    #         token1 = value.get("token1", None)
+    #         if token0 and token1:
+    #
+    #             balance_of_token0 = lp_token_balance[lp_token].get(token0, 0)
+    #             balance_of_token1 = lp_token_balance[lp_token].get(token1, 0)
+    #             lp_token_stake_amount = value.get("stakeBalance", 0)
+    #             lp_token_info[lp_token].update({
+    #                 "totalSupply": total_supply,
+    #                 "stakeBalance": lp_token_stake_amount,
+    #                 "token0Amount": balance_of_token0,
+    #                 "token1Amount": balance_of_token1
+    #             })
+    #             token0_price = token_price.get(token0).get("price", 0)
+    #             token1_price = token_price.get(token1).get("price", 0)
+    #             new_amount1 = balance_of_token1
+    #             if token0_price != 0 and token1_price != 0:
+    #                 total_of_token0 = balance_of_token0 * token0_price
+    #                 total_of_token1 = balance_of_token1 * token1_price
+    #             elif token0_price == 0:
+    #                 total_of_token1 = balance_of_token0 * token1_price
+    #                 total_of_token0 = total_of_token1
+    #                 token0_price = total_of_token0 / balance_of_token0
+    #             else:
+    #                 total_of_token0 = balance_of_token1 * token0_price
+    #                 total_of_token1 = total_of_token0
+    #                 token1_price = total_of_token1 / new_amount1
+    #             lp_token_price = (total_of_token0 + total_of_token1) / total_supply
+    #             lp_token_info[lp_token].update({
+    #                 "price": lp_token_price,
+    #                 'token0Price': token0_price,
+    #                 'token1Price': token1_price,
+    #                 "stakeAmountToken0": lp_token_stake_amount * lp_token_price / 2 / token0_price,
+    #                 "stakeAmountToken1": lp_token_stake_amount * lp_token_price / 2 / token1_price
+    #             })
+    #
+    #     return lp_token_info
 
     # User Information
     def get_user_info_function(
@@ -330,7 +330,7 @@ class PancakeSwapV2Services(UniswapV2Services):
     def get_rewards_balance_function_info(self, wallet, supplied_data, block_number: int = "latest"):
         rpc_calls = {}
 
-        reward_token = self.pool_info.get("rewardToken")
+        reward_token = self.pool_info.get("reward_token")
         decimals_query_id = f'decimals_{reward_token}_{block_number}'.lower()
         rpc_calls[decimals_query_id] = self.state_service.get_function_info(
             address=reward_token, abi=ERC20_ABI, fn_name="decimals", block_number=block_number)
@@ -349,7 +349,7 @@ class PancakeSwapV2Services(UniswapV2Services):
         return rpc_calls
 
     def calculate_rewards_balance(self, wallet: str, supplied_data: dict, decoded_data: dict, block_number: int = "latest") -> dict:
-        reward_token = self.pool_info.get("rewardToken")
+        reward_token = self.pool_info.get("reward_token")
         reward_decimals = decoded_data.get(f'decimals_{reward_token}_{block_number}'.lower())
 
         result = {}

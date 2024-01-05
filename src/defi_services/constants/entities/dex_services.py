@@ -22,7 +22,7 @@ class DexServices:
     }
     bsc = {
         Dex.pancake: PancakeSwapServices,
-        # Dex.pancake_v3: PancakeSwapV3Service,
+        Dex.pancake_v3: PancakeSwapV3Service,
         Dex.pancake_v2: PancakeSwapV2Services,
         Dex.sushi_v2: SushiSwapV2Services
     }

@@ -157,6 +157,7 @@ class StateProcessor:
             processed_data = self.process_decoded_data(
                 query_id, query_type, wallet, decoded_data, block_number, reserve_info=reserves_list,
                 supplied_data=supplied_data, stake=stake, number_lp=number_lp)
+
             result.append(processed_data)
 
         return result

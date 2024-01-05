@@ -44,7 +44,7 @@ class MongoExporter(object):
             logger.debug(f"Error: Don't have any data to write")
             return
         start = time.time()
-        bulk_operations = [UpdateOne({'_id': self.chain_id+"_"+data['lp_token']}, {"$set": data}, upsert=True) for data in operations_data]
+        bulk_operations = [UpdateOne({'_id': f"{self.chain_id}_{data['lp_token']}_{data['master_chef_address']}"}, {"$set": data}, upsert=True) for data in operations_data]
         logger.info("Updating into events ........")
         try:
             self.event.bulk_write(bulk_operations)
