@@ -1,14 +1,12 @@
 import logging
+import math
 
-from defi_services.abis.dex.pancakeswap.nft_token_abi import PANCAKE_V3_NON_FUNGIBLE_POSITION_TOKEN_ABI
-from defi_services.abis.dex.pancakeswap.v3_pool_abi import PANCAKESWAP_V3_POOL_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.dex_constant import Dex
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.dex.dex_info.pancakeswap_info import PANCAKESWAP_V3_BSC_INFO
 from defi_services.services.dex.uniswap_v3_service import UniswapV3Services
-from defi_services.services.dex_protocol_services import DexProtocolServices
 
 logger = logging.getLogger("PancakeSwap V3 State Service")
 
@@ -45,14 +43,50 @@ class PancakeSwapV3Service(UniswapV3Services):
         }
         return info
 
-    def get_farming_supported_lp_token(self, limit: int = 1, supplied_data: dict = None):
+    def get_all_supported_lp_token(self, limit: int = 10000, supplied_data: dict = None):
+        rpc_calls = {}
+        top_token = supplied_data['token_info']
+        length = min(len(top_token), limit)
+
+        for idx0 in range(1, length):
+            token0 = top_token[idx0]
+            for idx1 in range(idx0 + 1, length):
+                token1 = top_token[idx1]
+                for fee in [100, 500, 2500, 10000]:
+                    query_id = f'allPool_{self.factory_addr}_{[token0, token1, fee]}_latest'.lower()
+                    rpc_calls[query_id] = self.state_service.get_function_info(
+                        self.factory_addr, self.factory_abi, fn_name="getPool", fn_paras=[token0, token1, fee]
+                    )
+        return rpc_calls
+
+    def decode_all_supported_lp_token(self, limit: int = 10000, decoded_data: dict = None, supplied_data: dict = None):
+        result = {}
+        top_token = supplied_data['token_info']
+        length = min(len(top_token), limit)
+        for idx0 in range(1, length):
+            token0 = top_token[idx0]
+            for idx1 in range(idx0 + 1, length):
+                token1 = top_token[idx1]
+                for fee in [100, 500, 2500, 10000]:
+                    query_id = f'allPool_{self.factory_addr}_{[token0, token1, fee]}_latest'.lower()
+                    pool_address = decoded_data.get(query_id)
+                    if pool_address != '0x0000000000000000000000000000000000000000':
+                        result[pool_address] = {
+                            'token0': token0,
+                            'token1': token1,
+                            'fee': fee
+                        }
+
+        return result
+
+    def get_farming_supported_lp_token(self, limit: int = 10000, supplied_data: dict = None):
         web3 = self.state_service.get_w3()
         self.masterchef_addr = self.checksum_address(self.masterchef_addr)
         master_chef_contract = web3.eth.contract(abi=self.masterchef_abi, address=self.masterchef_addr)
         pool_length = master_chef_contract.functions.poolLength().call()
         rpc_calls = {}
         for pid in range(1, min(pool_length, limit)):
-            query_id = f'poolInfo_{pid}_'
+            query_id = f'poolInfo_{self.masterchef_addr}_{pid}_latest'.lower()
             rpc_calls[query_id] = self.state_service.get_function_info(
                 address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="poolInfo", fn_paras=[pid]
             )
@@ -61,16 +95,15 @@ class PancakeSwapV3Service(UniswapV3Services):
 
     def decode_farming_supported_lp_token(self, response_data, supplied_data: dict = None):
         result = {}
-        for key, value in response_data.items():
-            pid = key.split("_")[1]
+        for query_id, value in response_data.items():
+            pid = query_id.split("_")[2]
             v3_pool = value[1]
             result[v3_pool] = {
                 "pid": pid,
                 "token0": value[2],
                 'token1': value[3],
                 'fee': value[4],
-                'stakeLiquidity': value[5],
-                # 'stakeBoostLiquidity': value[6]
+                'totalLiquidity': value[5],
             }
 
         return result
@@ -81,44 +114,39 @@ class PancakeSwapV3Service(UniswapV3Services):
         for lp_token, value in lp_token_info.items():
             pid = value.get("pid")
             for fn_name in ["liquidity", "slot0"]:
-                query_id = f"{fn_name}_{lp_token}_{block_number}_{self.chain_id}".lower()
+                query_id = f"{fn_name}_{lp_token}_{self.masterchef_addr}_{block_number}".lower()
                 rpc_calls[query_id] = self.state_service.get_function_info(
-                    address=lp_token, abi=PANCAKESWAP_V3_POOL_ABI, fn_name=fn_name, fn_paras=None,
+                    address=lp_token, abi=self.pool_info['pool_abi'], fn_name=fn_name, fn_paras=None,
                     block_number=block_number)
-            # query_id = f'getLatestPeriodInfoByPid_{lp_token}_{block_number}_{self.chain_id}'.lower()
-            # rpc_calls[query_id] = self.state_service.get_function_info(
-            #     address=self.masterchef_addr, abi=self.masterchef_abi, fn_name='getLatestPeriodInfoByPid',
-            #     fn_paras=[int(pid)],
-            #     block_number=block_number)
+
+            for token_key in ['token0', 'token1']:
+                token_address = value.get(token_key)
+                query_id = f'decimals_{token_address}_{block_number}'.lower()
+                rpc_calls[query_id] = self.state_service.get_function_info(
+                    address=token_address, abi=ERC20_ABI, fn_name="decimals", block_number=block_number)
+
         return rpc_calls
 
     def decode_lp_token_info(self, supplied_data, response_data, block_number: int = "latest"):
-        result = {}
         lp_token_info = supplied_data['lp_token_info']
+
         for lp_token, value in lp_token_info.items():
-            pid = value.get("pid")
-            token0 = value.get("token0")
-            token1 = value.get("token1")
-            fee = value.get('fee')
-            stake_liquidity = value.get('stakeLiquidity')
-            # stake_boost_liquidity = value.get('stakeBoostLiquidity')
-            unstake_liquidity = response_data.get(f'liquidity_{lp_token}_{block_number}_{self.chain_id}'.lower(),
+            unstake_liquidity = response_data.get(f'liquidity_{lp_token}_{self.masterchef_addr}_{block_number}'.lower(),
                                                   0)
-            sqrt_price_x96 = response_data.get(f"slot0_{lp_token}_{block_number}_{self.chain_id}".lower())[0]
-            price = self.convert_q64_96_to_integer(sqrt_price_x96)
-            # cake_per_second = response_data.get(f"getLatestPeriodInfoByPid_{lp_token}_{block_number}_{self.chain_id}".lower())[0]
-            result[lp_token] = {
-                "pid": pid,
-                "token0": token0,
-                'token1': token1,
-                'fee': fee,
-                'stakeLiquidity': stake_liquidity,
-                # 'stakeBoostLiquidity': stake_boost_liquidity / 10 ** 18,
+            slot0 = response_data.get(f"slot0_{lp_token}_{self.masterchef_addr}_{block_number}".lower())
+            price = self.convert_q64_96_to_integer(slot0[0]) ** 2
+            token0_address = value.get('token0')
+            token1_address = value.get('token1')
+            token0_decimals = response_data.get(f'decimals_{token0_address}_{block_number}'.lower())
+            token1_decimals = response_data.get(f'decimals_{token1_address}_{block_number}'.lower())
+            lp_token_info[lp_token].update({
                 "unstakeLiquidity": unstake_liquidity,
-                "currentPrice": price,
-                # "cakePerSecond": cake_per_second / 10 ** 18
-            }
-        return result
+                "price": price,
+                'tick': slot0[1],
+                'token0Decimals': token0_decimals,
+                'token1Decimals': token1_decimals
+            })
+        return lp_token_info
 
     ### USER
     def get_all_nft_token_of_user_function(
@@ -129,7 +157,7 @@ class PancakeSwapV3Service(UniswapV3Services):
         master_chef_contract = self.web3.eth.contract(abi=self.masterchef_abi, address=self.masterchef_addr)
         number_stake_nft_token = master_chef_contract.functions.balanceOf(user).call()
         for idx in range(number_stake_nft_token):
-            query_id = f'stakeTokenOfOwnerByIndex_{user}_{idx}_{block_number}_{self.chain_id}'.lower()
+            query_id = f'tokenOfOwnerByIndex_{self.masterchef_addr}_{[user, idx]}_{block_number}'.lower()
             rpc_calls[query_id] = self.state_service.get_function_info(
                 address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="tokenOfOwnerByIndex",
                 fn_paras=[user, idx],
@@ -141,45 +169,33 @@ class PancakeSwapV3Service(UniswapV3Services):
             self, decode_data: dict):
         result = {'allToken': {}, 'stakeToken': {}}
         result['allToken'] = super().decode_all_nft_token_of_user_function(decode_data)
-        self.masterchef_addr = self.checksum_address(self.masterchef_addr)
-        master_chef_contract = self.web3.eth.contract(abi=self.masterchef_abi,
-                                                      address=self.masterchef_addr)
+
         for query_id, token_id in decode_data.items():
-            fn_name = query_id.split("_")[0]
-
-            if fn_name == 'stakeTokenOfOwnerByIndex'.lower():
-                position = master_chef_contract.functions.userPositionInfos(token_id).call()
-                liquidity = position[0]
-                tick_lower = position[2]
-                tick_upper = position[3]
-                reward = position[5]
-                pid = position[7]
-
-                result['stakeToken'][token_id] = {
-                    'stake_liquidity': liquidity,
-                    'tickLower': tick_lower,
-                    'tickUpper': tick_upper,
-                    'reward': reward,
-                    'pid': pid
-                }
+            contract_addr = query_id.split("_")[1]
+            if contract_addr == self.masterchef_addr.lower():
+                result['stakeToken'][token_id] = {}
 
         return result
 
     def get_user_info_function(self, user: str, supplied_data: dict, stake: bool = True, block_number: int = "latest"):
-        stake_tokens = supplied_data['user_data']['stakeToken']
         supplied_param = {'user_data': supplied_data['user_data']['allToken']}
-        rpc_calls = super().get_user_info_function(user, supplied_param, stake, block_number)
+        rpc_calls = super().get_user_info_function(user, supplied_param, block_number)
 
-        for token_id, value in stake_tokens.items():
-            pid = value['pid']
-            query_id = f'poolInfo_{user}_{token_id}_{block_number}'.lower()
+        for token_id, value in supplied_data['user_data']['stakeToken'].items():
+            query_id = f'userPositionInfos_{self.masterchef_addr}_{token_id}_{block_number}'.lower()
             rpc_calls[query_id] = self.state_service.get_function_info(
-                address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="poolInfo", fn_paras=[pid]
+                address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="userPositionInfos",
+                fn_paras=[int(token_id)]
             )
 
-            query_id = f'pendingCake_{user}_{token_id}_{block_number}'.lower()
+            query_id = f'pendingCake_{self.masterchef_addr}_{token_id}_{block_number}'.lower()
             rpc_calls[query_id] = self.state_service.get_function_info(
                 address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="pendingCake", fn_paras=[int(token_id)]
+            )
+            query_id = f'positions_{self.nft_token_manager_addr}_{token_id}_{block_number}'.lower()
+            rpc_calls[query_id] = self.state_service.get_function_info(
+                address=self.nft_token_manager_addr, abi=self.nft_token_manager_abi, fn_name="positions",
+                fn_paras=[int(token_id)]
             )
 
         return rpc_calls
@@ -188,32 +204,140 @@ class PancakeSwapV3Service(UniswapV3Services):
                                   stake: bool = True,
                                   block_number: int = "latest"):
         user_data = supplied_data['user_data']
-        lp_token_info = supplied_data['lp_token_info']
         supplied_param = {'user_data': user_data['allToken']}
-        user_data['allToken'] = super().decode_user_info_function(user, supplied_param, decoded_data, stake,
+        user_data['allToken'] = super().decode_user_info_function(user, supplied_param, decoded_data,
                                                                   block_number)
+
         for token_id, value in user_data['stakeToken'].items():
-            liquidity = value.get('stake_liquidity')
+            master_chef_position = decoded_data.get(
+                f'userPositionInfos_{self.masterchef_addr}_{token_id}_{block_number}'.lower())
+            pending_cake = decoded_data.get(f'pendingCake_{self.masterchef_addr}_{token_id}_{block_number}'.lower())
+            nft_position = decoded_data.get(
+                f'positions_{self.nft_token_manager_addr}_{token_id}_{block_number}'.lower())
+
+            user_data['stakeToken'][token_id].update({
+                'liquidity': master_chef_position[0],
+                'tickLower': master_chef_position[2],
+                'tickUpper': master_chef_position[3],
+                'reward': master_chef_position[5] / 10 ** 18,
+                'pid': master_chef_position[7],
+                'pendingCake': pending_cake / 10 ** 18,
+                'feeGrowthInside0': nft_position[8],
+                'feeGrowthInside1': nft_position[9],
+                'tokensOwed0': nft_position[10],
+                'tokensOwed1': nft_position[11]
+
+            })
+
+        return user_data
+
+    def get_user_token_amount_function(self, user: str, supplied_data: dict, block_number: int = "latest"):
+        user_data = supplied_data['user_data']
+        supplied_param = {'user_data': user_data['allToken']}
+        rpc_calls = super().get_user_token_amount_function(user, supplied_param, block_number)
+        for token_id, value in supplied_data['user_data']['stakeToken'].items():
+            pid = value.get('pid')
+            query_id = f'poolInfo_{self.masterchef_addr}_{pid}_{block_number}'.lower()
+            rpc_calls[query_id] = self.state_service.get_function_info(
+                address=self.masterchef_addr, abi=self.masterchef_abi, fn_name="poolInfo", fn_paras=[pid]
+            )
+
+        return rpc_calls
+
+    def decode_user_token_amount_function(self, user: str, supplied_data: dict, decoded_data: dict = None,
+                                          block_number: int = "latest"):
+        user_data = supplied_data['user_data']
+        lp_token_info = supplied_data['lp_token_info']
+
+        supplied_param = {'user_data': user_data['allToken'],
+                          'lp_token_info': lp_token_info}
+        user_data['allToken'] = super().decode_user_token_amount_function(user, supplied_param, decoded_data,
+                                                                          block_number)
+        for token_id, value in user_data['stakeToken'].items():
+            pid = value.get('pid')
+            lp_token_address = decoded_data.get(f'poolInfo_{self.masterchef_addr}_{pid}_{block_number}'.lower())[1]
+            user_data['stakeToken'][token_id].update({
+                'poolAddress': lp_token_address
+            })
+            liquidity = value.get('liquidity')
+            if liquidity > 0:
+                token0_decimals = lp_token_info.get(lp_token_address, {}).get("token0Decimals")
+                token1_decimals = lp_token_info.get(lp_token_address, {}).get("token1Decimals")
+                price = lp_token_info.get(lp_token_address, {}).get("price")
+
+                tick = lp_token_info.get(lp_token_address, {}).get('tick')
+                tick_lower = value.get('tickLower')
+                tick_upper = value.get('tickUpper')
+                if price and tick:
+                    sqrt_price_x96 = self.convert_integer_to_q64_96(math.sqrt(price))
+
+                    token0_amount, token1_amount = self.get_amount0_amount1(liquidity=liquidity,
+                                                                            sqrt_price_x96=sqrt_price_x96,
+                                                                            tick=tick, tick_upper=tick_upper,
+                                                                            tick_lower=tick_lower)
+
+                    user_data['stakeToken'][token_id].update(
+                        {
+
+                            'token0_amount': token0_amount / 10 ** token0_decimals,
+                            'token1_amount': token1_amount / 10 ** token1_decimals,
+
+                        }
+                    )
+        return user_data
+
+    def get_rewards_balance_function_info(self, user, supplied_data, block_number: int = "latest"):
+        user_data = supplied_data['user_data']
+        supplied_param = {'user_data': user_data['allToken']}
+        rpc_calls = super().get_rewards_balance_function_info(user, supplied_param, block_number)
+        for token_id, value in supplied_data['user_data']['stakeToken'].items():
+            lp_token_address = value.get('poolAddress')
             tick_lower = value.get('tickLower')
             tick_upper = value.get('tickUpper')
-            pool_addr = decoded_data.get(f'poolInfo_{user}_{token_id}_{block_number}'.lower())[1]
-            pending_cake = decoded_data.get(f'pendingCake_{user}_{token_id}_{block_number}'.lower())
-            token0_decimals = lp_token_info.get(pool_addr, {}).get('token0_decimals', 18)
-            token1_decimals = lp_token_info.get(pool_addr, {}).get('token1_decimals', 18)
-            if liquidity:
-                pool_contract = self.web3.eth.contract(abi=self.pool_info['pool_abi'],
-                                                       address=self.checksum_address(pool_addr))
-                slot0 = pool_contract.functions.slot0().call()
-                sqrt_price_x96 = slot0[0]
-                tick = slot0[1]
-                token0_amount, token1_amount = self.get_amount0_amount1(liquidity=liquidity,
-                                                                        sqrt_price_x96=sqrt_price_x96,
-                                                                        tick=tick, tick_upper=tick_upper,
-                                                                        tick_lower=tick_lower)
-                user_data['stakeToken'][token_id].update({
-                    'reward': pending_cake / 10 ** 18,
-                    'stake_token0_amount': token0_amount / 10 ** token0_decimals,
-                    'stake_token1_amount': token1_amount / 10 ** token1_decimals,
-                })
+            position_key = self.get_position_key(tick_lower, tick_upper)
+            query_id = f'positions_{lp_token_address}_{[tick_upper, tick_lower]}_{block_number}'.lower()
+            rpc_calls[query_id] = self.state_service.get_function_info(
+                address=lp_token_address, abi=self.pool_info['pool_abi'], fn_name="positions", fn_paras=[position_key]
+            )
+        return rpc_calls
+
+    def calculate_rewards_balance(
+            self, user: str, supplied_data: dict, decoded_data: dict, block_number: int = "latest"):
+        lp_token_info = supplied_data['lp_token_info']
+        user_data = supplied_data['user_data']
+
+        supplied_param = {'user_data': user_data['allToken'],
+                          'lp_token_info': lp_token_info}
+        user_data['allToken'] = super().calculate_rewards_balance(user, supplied_param, decoded_data,
+                                                                  block_number)
+        for token_id, value in user_data['stakeToken'].items():
+            liquidity = value.get('liquidity')
+            if liquidity > 0:
+                lp_token_address = value.get('poolAddress')
+                tick_lower = value.get('tickLower')
+                tick_upper = value.get('tickUpper')
+                pool_position = decoded_data.get(
+                    f'positions_{lp_token_address}_{[tick_upper, tick_lower]}_{block_number}'.lower())
+
+                pool_fee_growth_inside0 = pool_position[1]
+                pool_fee_growth_inside1 = pool_position[2]
+                fee_growth_inside0 = value.get('feeGrowthInside0')
+                fee_growth_inside1 = value.get('feeGrowthInside1')
+                liquidity = value.get('liquidity')
+                token0_decimals = lp_token_info.get(lp_token_address, {}).get("token0Decimals")
+                token1_decimals = lp_token_info.get(lp_token_address, {}).get("token1Decimals")
+                token0_reward = ((pool_fee_growth_inside0 - fee_growth_inside0) / 2 ** 128 * liquidity + value.get(
+                    'tokensOwed0')) / 10 ** token0_decimals
+                token1_reward = ((pool_fee_growth_inside1 - fee_growth_inside1) / 2 ** 128 * liquidity + value.get(
+                    'tokensOwed1')) / 10 ** token1_decimals
+
+            else:
+                token0_reward = 0
+                token1_reward = 0
+
+            user_data['stakeToken'][token_id].update({
+                'token0Reward': token0_reward,
+                'token1Reward': token1_reward
+            })
 
         return user_data

@@ -1,4 +1,7 @@
 import logging
+import math
+
+from web3 import Web3
 
 from defi_services.abis.dex.uniswap.pool_v3_abi import UNISWAP_V3_POOL_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
@@ -49,25 +52,30 @@ class UniswapV3Services(DexProtocolServices):
             for idx1 in range(idx0 + 1, length):
                 token1 = top_token[idx1]
                 for fee in [100, 500, 3000, 10000]:
-                    query_id = f'allPool_{token0}_{token1}_{fee}_latest'.lower()
+                    query_id = f'allPool_{self.factory_addr}_{[token0, token1, fee]}_latest'.lower()
                     rpc_calls[query_id] = self.state_service.get_function_info(
                         self.factory_addr, self.factory_abi, fn_name="getPool", fn_paras=[token0, token1, fee]
                     )
         return rpc_calls
 
-    def decode_all_supported_lp_token(self, decoded_data, supplied_data: dict = None):
+    def decode_all_supported_lp_token(self, limit: int = 100, decoded_data: dict = None, supplied_data: dict = None):
         result = {}
-        for query_id, value in decoded_data.items():
-            if value != '0x0000000000000000000000000000000000000000':
-                token0 = query_id.split("_")[1]
-                token1 = query_id.split("_")[2]
-                fee = query_id.split("_")[3]
+        top_token = supplied_data['token_info']
+        length = min(len(top_token), limit)
+        for idx0 in range(1, length):
+            token0 = top_token[idx0]
+            for idx1 in range(idx0 + 1, length):
+                token1 = top_token[idx1]
+                for fee in [100, 500, 3000, 10000]:
+                    query_id = f'allPool_{self.factory_addr}_{[token0, token1, fee]}_latest'.lower()
+                    pool_address = decoded_data.get(query_id)
+                    if pool_address != '0x0000000000000000000000000000000000000000':
+                        result[pool_address] = {
+                            'token0': token0,
+                            'token1': token1,
+                            'fee': fee
+                        }
 
-                result[value] = {
-                    'token0': token0,
-                    'token1': token1,
-                    'fee': fee
-                }
         return result
 
     def get_lp_token_function_info(self, supplied_data, block_number: int = "latest"):
@@ -75,7 +83,7 @@ class UniswapV3Services(DexProtocolServices):
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, value in lp_token_info.items():
             for fn_name in ["liquidity", "slot0"]:
-                query_id = f"{fn_name}_{lp_token}_{block_number}_{self.chain_id}".lower()
+                query_id = f"{fn_name}_{lp_token}_{self.factory_addr}_{block_number}".lower()
                 rpc_calls[query_id] = self.state_service.get_function_info(
                     address=lp_token, abi=UNISWAP_V3_POOL_ABI, fn_name=fn_name, fn_paras=None,
                     block_number=block_number)
@@ -83,73 +91,72 @@ class UniswapV3Services(DexProtocolServices):
         return rpc_calls
 
     def decode_lp_token_info(self, supplied_data, response_data, block_number: int = "latest"):
-        result = {}
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, value in lp_token_info.items():
-            token0 = value.get("token0")
-            token1 = value.get("token1")
-            fee = value.get('fee')
-            total_liquidity = response_data.get(f'liquidity_{lp_token}_{block_number}_{self.chain_id}'.lower(),
-                                                0)
-            sqrt_price_x96 = response_data.get(f"slot0_{lp_token}_{block_number}_{self.chain_id}".lower())[0]
-            price = self.convert_q64_96_to_integer(sqrt_price_x96)
-            result[lp_token] = {
-                "token0": token0,
-                'token1': token1,
-                'fee': fee,
+            total_liquidity = response_data.get(f'liquidity_{lp_token}_{self.factory_addr}_{block_number}'.lower(), 0)
+            slot0 = response_data.get(f"slot0_{lp_token}_{self.factory_addr}_{block_number}".lower())
+            price = self.convert_q64_96_to_integer(slot0[0]) ** 2
+            lp_token_info[lp_token].update({
+
                 "totalLiquidity": total_liquidity / 10 ** 18,
-                "currentPrice": price,
-            }
-        return result
+                "price": price,
+                'tick': slot0[1]
+
+            })
+        return lp_token_info
 
     def get_balance_of_token_function_info(self, supplied_data, block_number: int = "latest"):
         rpc_calls = {}
         lp_token_info = supplied_data['lp_token_info']
-        for key, value in lp_token_info.items():
-            for fn_name in ["token0", "token1"]:
-                token = value.get(fn_name, None)
-                if token is not None:
-                    query_id = f'balanceOf_{key}_{token}_{block_number}_{self.chain_id}'.lower()
-                    decimals_query_id = f'decimals_{key}_{token}_{block_number}_{self.chain_id}'.lower()
-                    rpc_calls[query_id] = self.state_service.get_function_info(
-                        address=token, abi=ERC20_ABI, fn_name="balanceOf", fn_paras=[key],
+        for lp_token, value in lp_token_info.items():
+            for token_key in ["token0", "token1"]:
+                token_address = value.get(token_key, None)
+                if token_address is not None:
+                    balance_query_id = f'balanceOf_{token_address}_{lp_token}_{block_number}'.lower()
+                    decimals_query_id = f'decimals_{token_address}_{block_number}'.lower()
+
+                    rpc_calls[balance_query_id] = self.state_service.get_function_info(
+                        address=token_address, abi=ERC20_ABI, fn_name="balanceOf", fn_paras=[lp_token],
                         block_number=block_number)
+
                     rpc_calls[decimals_query_id] = self.state_service.get_function_info(
-                        address=token, abi=ERC20_ABI, fn_name="decimals", block_number=block_number)
+                        address=token_address, abi=ERC20_ABI, fn_name="decimals", block_number=block_number)
 
         return rpc_calls
 
     def decode_balance_of_token_function_info(
             self, supplied_data, decoded_data, block_number: int = "latest"):
         lp_token_info = supplied_data['lp_token_info']
-        result = {}
         for lp_token, value in lp_token_info.items():
-            result[lp_token] = {}
-            for fn_name in ["token0", "token1"]:
-                token = value.get(fn_name, None)
-                if token is not None:
-                    balance_of = decoded_data.get(
-                        f'balanceOf_{lp_token}_{token}_{block_number}_{self.chain_id}'.lower())
-                    decimals = decoded_data.get(f'decimals_{lp_token}_{token}_{block_number}_{self.chain_id}'.lower())
-                    result[lp_token].update({
-                        f'{fn_name}_amount': balance_of / 10 ** decimals,
-                        f'{fn_name}_decimals': decimals
-                    })
-        return result
+            for token_key in ["token0", "token1"]:
 
-    def calculate_lp_token_price_info(
-            self, lp_token_info, lp_token_balance):
-        for lp_token, value in lp_token_info.items():
-            token0 = value.get("token0", None)
-            token1 = value.get("token1", None)
-            if token0 and token1:
-                balance_of_token0 = lp_token_balance[lp_token].get(token0, 0)
-                balance_of_token1 = lp_token_balance[lp_token].get(token1, 0)
-                lp_token_info[lp_token].update({
-                    "token0Amount": balance_of_token0,
-                    "token1Amount": balance_of_token1
-                })
+                token_address = value.get(token_key, None)
+                decimals = decoded_data.get(f'decimals_{token_address}_{block_number}'.lower())
+
+                if token_address is not None:
+                    balance_of = decoded_data.get(
+                        f'balanceOf_{token_address}_{lp_token}_{block_number}'.lower())
+
+                    lp_token_info[lp_token].update({
+                        f'{token_key}Amount': balance_of / 10 ** decimals,
+                        f'{token_key}Decimals': decimals
+                    })
+
         return lp_token_info
+
+    # def calculate_lp_token_price_info(
+    #         self, lp_token_info, lp_token_balance):
+    #     for lp_token, value in lp_token_info.items():
+    #         token0 = value.get("token0", None)
+    #         token1 = value.get("token1", None)
+    #         if token0 and token1:
+    #             balance_of_token0 = lp_token_balance[lp_token].get(token0, 0)
+    #             balance_of_token1 = lp_token_balance[lp_token].get(token1, 0)
+    #             lp_token_info[lp_token].update({
+    #                 "token0Amount": balance_of_token0,
+    #                 "token1Amount": balance_of_token1
+    #             })
+    #     return lp_token_info
 
     ### USER
     def get_all_nft_token_of_user_function(
@@ -161,7 +168,7 @@ class UniswapV3Services(DexProtocolServices):
                                               address=self.nft_token_manager_addr)
         number_token = nft_contract.functions.balanceOf(user).call()
         for idx in range(number_token):
-            query_id = f'tokenOfOwnerByIndex_{user}_{idx}_{block_number}_{self.chain_id}'.lower()
+            query_id = f'tokenOfOwnerByIndex_{self.nft_token_manager_addr}_{[user, idx]}_{block_number}'.lower()
             rpc_calls[query_id] = self.state_service.get_function_info(
                 address=self.nft_token_manager_addr, abi=self.nft_token_manager_abi, fn_name="tokenOfOwnerByIndex",
                 fn_paras=[user, idx],
@@ -172,87 +179,159 @@ class UniswapV3Services(DexProtocolServices):
     def decode_all_nft_token_of_user_function(
             self, decode_data: dict):
         result = {}
-
-        self.nft_token_manager_addr = self.checksum_address(self.nft_token_manager_addr)
-        nft_manager_contract = self.web3.eth.contract(abi=self.nft_token_manager_abi,
-                                                      address=self.nft_token_manager_addr)
         for query_id, token_id in decode_data.items():
-            fn_name = query_id.split("_")[0]
-            if fn_name == "tokenOfOwnerByIndex".lower():
-                position = nft_manager_contract.functions.positions(token_id).call()
-                fee = position[4]
-                token0 = position[2]
-                token1 = position[3]
-
-                result.update(
-                    {token_id: {"position_id": token_id,
-                                'pool_fee': fee,
-                                'liquidity': position[7],
-                                'tick_lower': position[5],
-                                'tick_upper': position[6],
-                                'token0_address': token0,
-                                'token1_address': token1}}
-                )
+            contract_addr = query_id.split("_")[1]
+            if contract_addr == self.nft_token_manager_addr.lower():
+                result[token_id] = {}
 
         return result
 
-    def get_user_info_function(self, user: str, supplied_data: dict, stake: bool = True, block_number: int = "latest"):
+    def get_user_info_function(self, user: str, supplied_data: dict,stake: bool = False, block_number: int = "latest"):
         rpc_calls = {}
         user_data = supplied_data['user_data']
-        for token_id, value in user_data.items():
-            fee = value['pool_fee']
-            token0 = self.checksum_address(value['token0_address'])
-            token1 = value['token1_address']
-            query_id = f'getPool_{user}_{token_id}_{block_number}'.lower()
+        for token_id, _ in user_data.items():
+            query_id = f'positions_{self.nft_token_manager_addr}_{token_id}_{block_number}'.lower()
             rpc_calls[query_id] = self.state_service.get_function_info(
-                address=self.factory_addr, abi=self.factory_abi, fn_name="getPool",
-                fn_paras=[token0, token1, int(fee)], block_number=block_number)
-            for token in [token0, token1]:
-                query_id = f'decimals_{token}_{block_number}'.lower()
-                rpc_calls[query_id] = self.state_service.get_function_info(address=token, abi=ERC20_ABI,
-                                                                           fn_name="decimals",
-                                                                           block_number=block_number)
+                address=self.nft_token_manager_addr, abi=self.nft_token_manager_abi, fn_name="positions",
+                fn_paras=[int(token_id)], block_number=block_number)
+        return rpc_calls
+
+    def decode_user_info_function(self, user: str, supplied_data: dict, decoded_data: dict = None, stake: bool = False,
+                                  block_number: int = "latest"):
+        user_data = supplied_data['user_data']
+        for token_id, value in user_data.items():
+            position = decoded_data.get(f'positions_{self.nft_token_manager_addr}_{token_id}_{block_number}'.lower())
+            user_data[token_id].update({
+                'token0': position[2],
+                'token1': position[3],
+                'fee': position[4],
+                'tickLower': position[5],
+                'tickUpper': position[6],
+                'liquidity': position[7],
+                'feeGrowthInside0': position[8],
+                'feeGrowthInside1': position[9],
+                'tokensOwed0': position[10],
+                'tokensOwed1': position[11]
+
+            })
+        return user_data
+
+    def get_user_token_amount_function(self, user: str, supplied_data: dict, block_number: int = "latest"):
+        user_data = supplied_data['user_data']
+        rpc_calls = {}
+        for token_id, value in user_data.items():
+            token0 = value.get('token0')
+            token1 = value.get('token1')
+            fee = value.get('fee')
+            query_id = f'allPool_{self.factory_addr}_{token_id}_{block_number}'.lower()
+            rpc_calls[query_id] = self.state_service.get_function_info(
+                self.factory_addr, self.factory_abi, fn_name="getPool", fn_paras=[token0, token1, fee]
+            )
+            for token_key in ['token0', 'token1']:
+                token_address = value.get(token_key)
+
+                query_id = f'decimals_{token_address}_{block_number}'.lower()
+                rpc_calls[query_id] = self.state_service.get_function_info(
+                    address=token_address, abi=ERC20_ABI, fn_name="decimals", block_number=block_number)
 
         return rpc_calls
 
-    def decode_user_info_function(self, user: str, supplied_data: dict, decoded_data: dict = None,
-                                  stake: bool = True,
-                                  block_number: int = "latest"):
-
+    def decode_user_token_amount_function(self, user: str, supplied_data: dict, decoded_data: dict = None,
+                                          block_number: int = "latest"):
         user_data = supplied_data['user_data']
+        lp_token_info = supplied_data['lp_token_info']
+
         for token_id, value in user_data.items():
-            liquidity = user_data.get(token_id)['liquidity']
-            tick_upper = user_data.get(token_id).get('tick_upper')
-            tick_lower = user_data.get(token_id).get('tick_lower')
-            token0 = user_data.get(token_id).get('token0_address')
-            token1 = user_data.get(token_id).get('token1_address')
-            pool_addr = decoded_data.get(f'getPool_{user}_{token_id}_{block_number}'.lower())
-            token0_decimals = decoded_data.get(f'decimals_{token0}_{block_number}'.lower())
-            token1_decimals = decoded_data.get(f'decimals_{token1}_{block_number}'.lower())
+            lp_token_address = decoded_data.get(f'allPool_{self.factory_addr}_{token_id}_{block_number}'.lower())
+            user_data[token_id].update({
+                'poolAddress': lp_token_address
+            })
+            liquidity = value.get('liquidity')
+            if liquidity > 0:
+                token0 = value.get('token0')
+                token1 = value.get('token1')
+                token0_decimals = decoded_data.get(f'decimals_{token0}_{block_number}'.lower())
+                token1_decimals = decoded_data.get(f'decimals_{token1}_{block_number}'.lower())
+                price = lp_token_info.get(lp_token_address, {}).get("price")
 
-            if liquidity != 0:
-                pool_contract = self.web3.eth.contract(abi=self.pool_info['pool_abi'],
-                                                       address=self.checksum_address(pool_addr))
-                slot0 = pool_contract.functions.slot0().call()
-                sqrt_price_x96 = slot0[0]
-                tick = slot0[1]
-                token0_amount, token1_amount = self.get_amount0_amount1(liquidity=liquidity,
-                                                                        sqrt_price_x96=sqrt_price_x96,
-                                                                        tick=tick, tick_upper=tick_upper,
-                                                                        tick_lower=tick_lower)
-                user_data[token_id].update(
-                    {
+                tick = lp_token_info.get(lp_token_address, {}).get('tick')
+                tick_upper = value.get('tickUpper')
+                tick_lower = value.get('tickLower')
+                if price and tick:
+                    sqrt_price_x96 = self.convert_integer_to_q64_96(math.sqrt(price))
 
-                        'token0_amount': token0_amount / 10 ** token0_decimals,
-                        'token1_amount': token1_amount / 10 ** token1_decimals,
+                    token0_amount, token1_amount = self.get_amount0_amount1(liquidity=liquidity,
+                                                                            sqrt_price_x96=sqrt_price_x96,
+                                                                            tick=tick, tick_upper=tick_upper,
+                                                                            tick_lower=tick_lower)
+                    user_data[token_id].update(
+                        {
 
-                    }
-                )
-            # except Exception as e:
-            #     logger.error(f"[Ignored] An exception when decode data from provider: {e}")
-            #     continue
+                            'token0_amount': token0_amount / 10 ** token0_decimals,
+                            'token1_amount': token1_amount / 10 ** token1_decimals,
+
+                        }
+                    )
 
         return user_data
+
+    def get_rewards_balance_function_info(self, user, supplied_data, block_number: int = "latest"):
+        user_data = supplied_data['user_data']
+        rpc_calls = {}
+        for token_id, value in user_data.items():
+            lp_token_address = value.get('poolAddress')
+            tick_lower = value.get('tickLower')
+            tick_upper = value.get('tickUpper')
+            position_key = self.get_position_key(tick_lower, tick_upper)
+            query_id = f'positions_{lp_token_address}_{[tick_upper, tick_lower]}_{block_number}'.lower()
+            rpc_calls[query_id] = self.state_service.get_function_info(
+                address=lp_token_address, abi=self.pool_info['pool_abi'], fn_name="positions", fn_paras=[position_key]
+            )
+        return rpc_calls
+
+    def calculate_rewards_balance(
+            self, user: str, supplied_data: dict, decoded_data: dict, block_number: int = "latest"):
+        lp_token_info = supplied_data['lp_token_info']
+        user_data = supplied_data['user_data']
+
+        for token_id, value in user_data.items():
+            liquidity = value.get('liquidity')
+            if liquidity > 0:
+                lp_token_address = value.get('poolAddress')
+                tick_lower = value.get('tickLower')
+                tick_upper = value.get('tickUpper')
+                pool_position = decoded_data.get(
+                    f'positions_{lp_token_address}_{[tick_upper, tick_lower]}_{block_number}'.lower())
+
+                pool_fee_growth_inside0 = pool_position[1]
+                pool_fee_growth_inside1 = pool_position[2]
+                fee_growth_inside0 = value.get('feeGrowthInside0')
+                fee_growth_inside1 = value.get('feeGrowthInside1')
+                liquidity = value.get('liquidity')
+                token0_decimals = lp_token_info.get(lp_token_address, {}).get("token0Decimals")
+                token1_decimals = lp_token_info.get(lp_token_address, {}).get("token1Decimals")
+                token0_reward = ((pool_fee_growth_inside0 - fee_growth_inside0) / 2 ** 128 * liquidity + value.get(
+                    'tokensOwed0')) / 10 ** token0_decimals
+                token1_reward = ((pool_fee_growth_inside1 - fee_growth_inside1) / 2 ** 128 * liquidity + value.get(
+                    'tokensOwed1')) / 10 ** token1_decimals
+
+            else:
+                token0_reward = 0
+                token1_reward = 0
+
+            user_data[token_id].update({
+                'token0Reward': token0_reward,
+                'token1Reward': token1_reward
+            })
+
+        return user_data
+
+    def get_position_key(self, tick_lower, tick_upper):
+        data_to_hash = Web3.solidityKeccak(
+            ['address', 'int24', 'int24'],
+            [Web3.toChecksumAddress(self.nft_token_manager_addr), tick_lower, tick_upper]
+        )
+        return data_to_hash.hex()
 
     def get_amount0_amount1(self, liquidity, sqrt_price_x96, tick, tick_lower, tick_upper):
         def _get_sqrt_ratio_at_tick(tick):
@@ -357,9 +436,14 @@ class UniswapV3Services(DexProtocolServices):
     def convert_q64_96_to_integer(self, sqrt_price_x96):
         integer_part = sqrt_price_x96 >> 96
         fractional_part = (sqrt_price_x96 & ((1 << 96) - 1)) / (2 ** 96)
-        # Tổng hợp thành số nguyên
         result = integer_part + fractional_part
 
+        return result
+
+    def convert_integer_to_q64_96(self, integer):
+        integer_part = int(integer)
+        fractional_part = int((integer - integer_part) * (2 ** 96))
+        result = (integer_part << 96) + fractional_part
         return result
 
 

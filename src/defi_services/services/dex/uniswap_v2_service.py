@@ -1,7 +1,6 @@
 import logging
 
 from defi_services.abis.dex.pancakeswap.pancakeswap_lp_token_abi import LP_TOKEN_ABI
-from defi_services.abis.dex.uniswap.factory_v2_abi import UNISWAP_FACTORY_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.dex_constant import Dex
@@ -24,7 +23,8 @@ class UniswapV2Services(DexProtocolServices):
         self.chain_id = chain_id
         self.state_service = state_service
         self.pool_info = UniswapV2Info.mapping.get(chain_id)
-        self.factory_abi = UNISWAP_FACTORY_ABI
+        if self.pool_info:
+            self.factory_abi = self.pool_info['factory_abi']
 
     def get_service_info(self):
         info = {

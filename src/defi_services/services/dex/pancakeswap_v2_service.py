@@ -1,8 +1,6 @@
 import logging
 
-from defi_services.abis.dex.pancakeswap.pancakeswap_v2_factory_abi import PANCAKESWAP_V2_FACTORY_ABI
 from defi_services.abis.dex.pancakeswap.pancakeswap_lp_token_abi import LP_TOKEN_ABI
-from defi_services.abis.dex.pancakeswap.pancakeswap_masterchef_v2_abi import PANCAKESWAP_MASTERCHEF_V2_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.dex_constant import Dex
@@ -24,8 +22,9 @@ class PancakeSwapV2Services(UniswapV2Services):
         super().__init__(state_service=state_service, chain_id=chain_id)
 
         self.pool_info = PancakeSwapV2Info.mapping.get(chain_id)
-        self.masterchef_abi = PANCAKESWAP_MASTERCHEF_V2_ABI
-        self.factory_abi = PANCAKESWAP_V2_FACTORY_ABI
+        if self.pool_info:
+            self.masterchef_abi = self.pool_info['master_chef_abi']
+            self.factory_abi = self.pool_info['factory_abi']
 
     def get_service_info(self):
         info = {
@@ -42,7 +41,8 @@ class PancakeSwapV2Services(UniswapV2Services):
         web3 = self.state_service.get_w3()
         masterchef_addr = self.pool_info.get('master_chef_address')
 
-        master_chef_contract = web3.eth.contract(abi=self.masterchef_abi, address=web3.toChecksumAddress(masterchef_addr))
+        master_chef_contract = web3.eth.contract(abi=self.masterchef_abi,
+                                                 address=web3.toChecksumAddress(masterchef_addr))
         pool_length = master_chef_contract.functions.poolLength().call()
 
         rpc_calls = {}
@@ -175,7 +175,8 @@ class PancakeSwapV2Services(UniswapV2Services):
 
             for token_key in ["token0", "token1"]:
                 token_amount = lp_info.get(f'{token_key}_amount', 0)
-                token_stake_amount = token_amount * staked_balance / lp_info.get('total_supply') if lp_info.get('total_supply') else 0
+                token_stake_amount = token_amount * staked_balance / lp_info.get('total_supply') if lp_info.get(
+                    'total_supply') else 0
                 result[lp_token][f'{token_key}_stake_amount'] = token_stake_amount
 
         return result
@@ -267,8 +268,10 @@ class PancakeSwapV2Services(UniswapV2Services):
 
                 result[lp_token]['farming_pid'] = pid
                 result[lp_token]['stake_amount'] = stake_amount
-                result[lp_token]['tokens'][info['token0']]['stake_amount'] = stake_amount * info.get('token0_amount', 0) / total_supply if total_supply else 0
-                result[lp_token]['tokens'][info['token1']]['stake_amount'] = stake_amount * info.get('token1_amount', 0) / total_supply if total_supply else 0
+                result[lp_token]['tokens'][info['token0']]['stake_amount'] = stake_amount * info.get('token0_amount',
+                                                                                                     0) / total_supply if total_supply else 0
+                result[lp_token]['tokens'][info['token1']]['stake_amount'] = stake_amount * info.get('token1_amount',
+                                                                                                     0) / total_supply if total_supply else 0
 
         return result
 
@@ -348,7 +351,8 @@ class PancakeSwapV2Services(UniswapV2Services):
 
         return rpc_calls
 
-    def calculate_rewards_balance(self, wallet: str, supplied_data: dict, decoded_data: dict, block_number: int = "latest") -> dict:
+    def calculate_rewards_balance(self, wallet: str, supplied_data: dict, decoded_data: dict,
+                                  block_number: int = "latest") -> dict:
         reward_token = self.pool_info.get("reward_token")
         reward_decimals = decoded_data.get(f'decimals_{reward_token}_{block_number}'.lower())
 

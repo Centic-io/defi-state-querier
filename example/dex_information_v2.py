@@ -38,7 +38,7 @@ def get_lp_token_list(job, wallet, dex_protocol):
             'query_id': f'{dex_protocol}_{Query.farming_lp_token_list}',
             "entity_id": dex_protocol,
             'query_type': Query.farming_lp_token_list,
-            # 'number_lp': 20
+            'number_lp': 20
         }
     ]
 
@@ -67,7 +67,7 @@ def get_lp_token_info(job, wallet, dex_protocol):
     #     }
     # }
     lp_token_info = {}
-    # lp_token_info.update(dict(list(lp_token_list[0][Query.lp_token_list].items())))
+    lp_token_info.update(dict(list(lp_token_list[0][Query.lp_token_list].items())))
     lp_token_info.update(dict(list(lp_token_list[0][Query.farming_lp_token_list].items())))
 
     queries = [
@@ -306,19 +306,19 @@ def export_to_mongodb(chain_id, dex_protocol):
 
 if __name__ == "__main__":
     w = "0x89089fd89dfEdC7350861C99b71DABF4fdEA2fc0"
-    dex_ids = [Dex.sushi_v2, Dex.spooky_v2, Dex.quickswap_v2]
+    dex_ids = [Dex.pancake]
 
     for chain_id in [Chain.bsc, Chain.ethereum, Chain.fantom, Chain.polygon, Chain.arbitrum, Chain.avalanche]:
         for dex_id in dex_ids:
             try:
                 job_ = StateProcessor(provider_url[chain_id], chain_id)
                 if dex_id in job_.services:
-                    # get_lp_token_list(job=job_, wallet=w, dex_protocol=dex_id)
-                    # get_lp_token_info(job=job_, wallet=w, dex_protocol=dex_id)
+                    get_lp_token_list(job=job_, wallet=w, dex_protocol=dex_id)
+                    get_lp_token_info(job=job_, wallet=w, dex_protocol=dex_id)
                     get_lp_token_liquidity(job=job_, wallet=w, dex_protocol=dex_id)
                     get_user_info(job=job_, wallet=w, dex_protocol=dex_id)
                     # get_user_reward(job=job_, wallet=w, dex_protocol=dex_id)
-                    export_to_mongodb(chain_id, dex_id)
+                    # export_to_mongodb(chain_id, dex_id)
                     print(f'export {dex_id}  in {chain_id}')
             except Exception as ex:
                 print(f'Error with chain {chain_id}')

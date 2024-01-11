@@ -71,7 +71,7 @@ def get_lp_token_info():
             }
         ]
     res = job.run(wallet, queries, batch_size=100, max_workers=8, ignore_error=True)
-    with open('lp_token_info.json', 'w') as f:
+    with open('lp_token_info1.json', 'w') as f:
         json.dump(res, f)
 
 ###USER

@@ -28,7 +28,7 @@
 #     lp_token_list = job.run(wallet, queries, batch_size=100, max_workers=8, ignore_error=True)
 #     lp_token_inf = get_lp_token_info(lp_token_list, _dex_protocol)
 #     lp_token_token_info = get_stake_token_pair(lp_token_inf, _dex_protocol)
-#     with open('lp_token_info.json', 'w') as f:
+#     with open('lp_token_info1.json', 'w') as f:
 #         json.dump(lp_token_token_info, f)
 #
 #
@@ -84,7 +84,7 @@
 #
 # # TEST USER INFO ##
 # def test_user_info_processor(_dex_protocol, list_pool: list = None):
-#     with open('lp_token_info.json', 'r') as f:
+#     with open('lp_token_info1.json', 'r') as f:
 #         data = json.loads(f.read())
 #     lp_token_info = data[0]['token_pair_balance']
 #     token_list = []
