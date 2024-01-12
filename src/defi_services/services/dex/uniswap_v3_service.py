@@ -1,3 +1,4 @@
+import copy
 import logging
 import math
 
@@ -88,6 +89,12 @@ class UniswapV3Services(DexProtocolServices):
                     address=lp_token, abi=UNISWAP_V3_POOL_ABI, fn_name=fn_name, fn_paras=None,
                     block_number=block_number)
 
+            for token_key in ['token0', 'token1']:
+                token_address = value.get(token_key)
+                query_id = f'decimals_{token_address}_{block_number}'.lower()
+                rpc_calls[query_id] = self.state_service.get_function_info(
+                    address=token_address, abi=ERC20_ABI, fn_name="decimals", block_number=block_number)
+
         return rpc_calls
 
     def decode_lp_token_info(self, supplied_data, response_data, block_number: int = "latest"):
@@ -96,11 +103,17 @@ class UniswapV3Services(DexProtocolServices):
             total_liquidity = response_data.get(f'liquidity_{lp_token}_{self.factory_addr}_{block_number}'.lower(), 0)
             slot0 = response_data.get(f"slot0_{lp_token}_{self.factory_addr}_{block_number}".lower())
             price = self.convert_q64_96_to_integer(slot0[0]) ** 2
-            lp_token_info[lp_token].update({
+            token0_address = value.get('token0')
+            token1_address = value.get('token1')
+            token0_decimals = response_data.get(f'decimals_{token0_address}_{block_number}'.lower())
+            token1_decimals = response_data.get(f'decimals_{token1_address}_{block_number}'.lower())
 
-                "totalLiquidity": total_liquidity / 10 ** 18,
+            lp_token_info[lp_token].update({
+                "totalLiquidity": total_liquidity,
                 "price": price,
-                'tick': slot0[1]
+                'tick': slot0[1],
+                'token0Decimals': token0_decimals,
+                'token1Decimals': token1_decimals
 
             })
         return lp_token_info
@@ -126,21 +139,17 @@ class UniswapV3Services(DexProtocolServices):
 
     def decode_balance_of_token_function_info(
             self, supplied_data, decoded_data, block_number: int = "latest"):
-        lp_token_info = supplied_data['lp_token_info']
-        for lp_token, value in lp_token_info.items():
+        lp_token_info = {}
+        for lp_token, value in supplied_data['lp_token_info'].items():
+            lp_token_info[lp_token] = copy.deepcopy(value)
             for token_key in ["token0", "token1"]:
-
                 token_address = value.get(token_key, None)
                 decimals = decoded_data.get(f'decimals_{token_address}_{block_number}'.lower())
 
                 if token_address is not None:
                     balance_of = decoded_data.get(
                         f'balanceOf_{token_address}_{lp_token}_{block_number}'.lower())
-
-                    lp_token_info[lp_token].update({
-                        f'{token_key}Amount': balance_of / 10 ** decimals,
-                        f'{token_key}Decimals': decimals
-                    })
+                    lp_token_info[lp_token][f'{token_key}Amount'] = balance_of / 10 ** decimals
 
         return lp_token_info
 
@@ -186,7 +195,7 @@ class UniswapV3Services(DexProtocolServices):
 
         return result
 
-    def get_user_info_function(self, user: str, supplied_data: dict,stake: bool = False, block_number: int = "latest"):
+    def get_user_info_function(self, user: str, supplied_data: dict, stake: bool = False, block_number: int = "latest"):
         rpc_calls = {}
         user_data = supplied_data['user_data']
         for token_id, _ in user_data.items():

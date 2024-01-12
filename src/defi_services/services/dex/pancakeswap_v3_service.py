@@ -1,3 +1,4 @@
+import copy
 import logging
 import math
 
@@ -103,7 +104,7 @@ class PancakeSwapV3Service(UniswapV3Services):
                 "token0": value[2],
                 'token1': value[3],
                 'fee': value[4],
-                'totalLiquidity': value[5],
+                'stakeLiquidity': value[5],
             }
 
         return result
@@ -129,23 +130,43 @@ class PancakeSwapV3Service(UniswapV3Services):
 
     def decode_lp_token_info(self, supplied_data, response_data, block_number: int = "latest"):
         lp_token_info = supplied_data['lp_token_info']
-
         for lp_token, value in lp_token_info.items():
-            unstake_liquidity = response_data.get(f'liquidity_{lp_token}_{self.masterchef_addr}_{block_number}'.lower(),
-                                                  0)
             slot0 = response_data.get(f"slot0_{lp_token}_{self.masterchef_addr}_{block_number}".lower())
             price = self.convert_q64_96_to_integer(slot0[0]) ** 2
             token0_address = value.get('token0')
             token1_address = value.get('token1')
             token0_decimals = response_data.get(f'decimals_{token0_address}_{block_number}'.lower())
             token1_decimals = response_data.get(f'decimals_{token1_address}_{block_number}'.lower())
+            unstake_liquidity = response_data.get(f"liquidity_{lp_token}_{self.masterchef_addr}_{block_number}".lower())
+            stake_liquidity = value.get('stakeLiquidity')
+
             lp_token_info[lp_token].update({
-                "unstakeLiquidity": unstake_liquidity,
                 "price": price,
                 'tick': slot0[1],
                 'token0Decimals': token0_decimals,
-                'token1Decimals': token1_decimals
+                'token1Decimals': token1_decimals,
+                'totalLiquidity': unstake_liquidity + stake_liquidity
             })
+        return lp_token_info
+
+    def decode_balance_of_token_function_info(
+            self, supplied_data, decoded_data, block_number: int = "latest"):
+        lp_token_info = {}
+        for lp_token, value in supplied_data['lp_token_info'].items():
+            lp_token_info[lp_token] = copy.deepcopy(value)
+            total_liquidity = value.get('totalLiquidity')
+            stake_liquidity = value.get('stakeLiquidity')
+            for token_key in ["token0", "token1"]:
+                token_address = value.get(token_key, None)
+                decimals = decoded_data.get(f'decimals_{token_address}_{block_number}'.lower())
+                if token_address is not None:
+                    balance_of = decoded_data.get(
+                        f'balanceOf_{token_address}_{lp_token}_{block_number}'.lower()) / 10 ** decimals
+                    lp_token_info[lp_token].update({
+                        f'{token_key}Amount': balance_of,
+                        f'{token_key}AmountStake': balance_of / total_liquidity * stake_liquidity
+                    })
+
         return lp_token_info
 
     ### USER
@@ -179,7 +200,7 @@ class PancakeSwapV3Service(UniswapV3Services):
 
     def get_user_info_function(self, user: str, supplied_data: dict, stake: bool = True, block_number: int = "latest"):
         supplied_param = {'user_data': supplied_data['user_data']['allToken']}
-        rpc_calls = super().get_user_info_function(user, supplied_param, block_number)
+        rpc_calls = super().get_user_info_function(user, supplied_param, stake, block_number)
 
         for token_id, value in supplied_data['user_data']['stakeToken'].items():
             query_id = f'userPositionInfos_{self.masterchef_addr}_{token_id}_{block_number}'.lower()
@@ -205,7 +226,7 @@ class PancakeSwapV3Service(UniswapV3Services):
                                   block_number: int = "latest"):
         user_data = supplied_data['user_data']
         supplied_param = {'user_data': user_data['allToken']}
-        user_data['allToken'] = super().decode_user_info_function(user, supplied_param, decoded_data,
+        user_data['allToken'] = super().decode_user_info_function(user, supplied_param, decoded_data, stake,
                                                                   block_number)
 
         for token_id, value in user_data['stakeToken'].items():
@@ -278,10 +299,8 @@ class PancakeSwapV3Service(UniswapV3Services):
 
                     user_data['stakeToken'][token_id].update(
                         {
-
                             'token0_amount': token0_amount / 10 ** token0_decimals,
                             'token1_amount': token1_amount / 10 ** token1_decimals,
-
                         }
                     )
         return user_data
@@ -313,23 +332,26 @@ class PancakeSwapV3Service(UniswapV3Services):
         for token_id, value in user_data['stakeToken'].items():
             liquidity = value.get('liquidity')
             if liquidity > 0:
-                lp_token_address = value.get('poolAddress')
-                tick_lower = value.get('tickLower')
-                tick_upper = value.get('tickUpper')
-                pool_position = decoded_data.get(
-                    f'positions_{lp_token_address}_{[tick_upper, tick_lower]}_{block_number}'.lower())
+                try:
+                    lp_token_address = value.get('poolAddress')
+                    tick_lower = value.get('tickLower')
+                    tick_upper = value.get('tickUpper')
+                    pool_position = decoded_data.get(
+                        f'positions_{lp_token_address}_{[tick_upper, tick_lower]}_{block_number}'.lower())
 
-                pool_fee_growth_inside0 = pool_position[1]
-                pool_fee_growth_inside1 = pool_position[2]
-                fee_growth_inside0 = value.get('feeGrowthInside0')
-                fee_growth_inside1 = value.get('feeGrowthInside1')
-                liquidity = value.get('liquidity')
-                token0_decimals = lp_token_info.get(lp_token_address, {}).get("token0Decimals")
-                token1_decimals = lp_token_info.get(lp_token_address, {}).get("token1Decimals")
-                token0_reward = ((pool_fee_growth_inside0 - fee_growth_inside0) / 2 ** 128 * liquidity + value.get(
-                    'tokensOwed0')) / 10 ** token0_decimals
-                token1_reward = ((pool_fee_growth_inside1 - fee_growth_inside1) / 2 ** 128 * liquidity + value.get(
-                    'tokensOwed1')) / 10 ** token1_decimals
+                    pool_fee_growth_inside0 = pool_position[1]
+                    pool_fee_growth_inside1 = pool_position[2]
+                    fee_growth_inside0 = value.get('feeGrowthInside0')
+                    fee_growth_inside1 = value.get('feeGrowthInside1')
+                    liquidity = value.get('liquidity')
+                    token0_decimals = lp_token_info.get(lp_token_address, {}).get("token0Decimals")
+                    token1_decimals = lp_token_info.get(lp_token_address, {}).get("token1Decimals")
+                    token0_reward = ((pool_fee_growth_inside0 - fee_growth_inside0) / 2 ** 128 * liquidity + value.get(
+                        'tokensOwed0')) / 10 ** token0_decimals
+                    token1_reward = ((pool_fee_growth_inside1 - fee_growth_inside1) / 2 ** 128 * liquidity + value.get(
+                        'tokensOwed1')) / 10 ** token1_decimals
+                except Exception as e:
+                    continue
 
             else:
                 token0_reward = 0
