@@ -114,8 +114,8 @@ class PancakeSwapV3Service(UniswapV3Services):
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, value in lp_token_info.items():
             pid = value.get("pid")
-            for fn_name in ["liquidity", "slot0"]:
-                query_id = f"{fn_name}_{lp_token}_{self.masterchef_addr}_{block_number}".lower()
+            for fn_name in ["liquidity", "slot0",  'tickSpacing']:
+                query_id = f"{fn_name}_{lp_token}_{block_number}".lower()
                 rpc_calls[query_id] = self.state_service.get_function_info(
                     address=lp_token, abi=self.pool_info['pool_abi'], fn_name=fn_name, fn_paras=None,
                     block_number=block_number)
@@ -131,21 +131,24 @@ class PancakeSwapV3Service(UniswapV3Services):
     def decode_lp_token_info(self, supplied_data, response_data, block_number: int = "latest"):
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, value in lp_token_info.items():
-            slot0 = response_data.get(f"slot0_{lp_token}_{self.masterchef_addr}_{block_number}".lower())
-            price = self.convert_q64_96_to_integer(slot0[0]) ** 2
+            slot0 = response_data.get(f"slot0_{lp_token}_{block_number}".lower())
+            price = (slot0[0]/ 2 ** 96) ** 2
             token0_address = value.get('token0')
             token1_address = value.get('token1')
             token0_decimals = response_data.get(f'decimals_{token0_address}_{block_number}'.lower())
             token1_decimals = response_data.get(f'decimals_{token1_address}_{block_number}'.lower())
-            unstake_liquidity = response_data.get(f"liquidity_{lp_token}_{self.masterchef_addr}_{block_number}".lower())
-            stake_liquidity = value.get('stakeLiquidity')
+            unstake_liquidity = response_data.get(f"liquidity_{lp_token}_{block_number}".lower())
+            tick_spacing= response_data.get(f'tickSpacing_{lp_token}_{block_number}'.lower())
 
             lp_token_info[lp_token].update({
+                'liquidityInRange': unstake_liquidity ,
+
                 "price": price,
                 'tick': slot0[1],
+                'tickSpacing': tick_spacing,
+
                 'token0Decimals': token0_decimals,
                 'token1Decimals': token1_decimals,
-                'totalLiquidity': unstake_liquidity + stake_liquidity
             })
         return lp_token_info
 
@@ -154,7 +157,7 @@ class PancakeSwapV3Service(UniswapV3Services):
         lp_token_info = {}
         for lp_token, value in supplied_data['lp_token_info'].items():
             lp_token_info[lp_token] = copy.deepcopy(value)
-            total_liquidity = value.get('totalLiquidity')
+            liquidity_in_range = value.get('liquidityInRange')
             stake_liquidity = value.get('stakeLiquidity')
             for token_key in ["token0", "token1"]:
                 token_address = value.get(token_key, None)
@@ -163,9 +166,20 @@ class PancakeSwapV3Service(UniswapV3Services):
                     balance_of = decoded_data.get(
                         f'balanceOf_{token_address}_{lp_token}_{block_number}'.lower()) / 10 ** decimals
                     lp_token_info[lp_token].update({
-                        f'{token_key}Amount': balance_of,
-                        f'{token_key}AmountStake': balance_of / total_liquidity * stake_liquidity
+                        f'{token_key}totalAmount': balance_of,
+                        # f'{token_key}AmountStake': balance_of / liquidity_in_range * stake_liquidity
                     })
+
+            tick = value.get('tick')
+            tick_spacing = value.get('tickSpacing')
+            tick_lower = tick // tick_spacing * tick_spacing
+            tick_upper = (tick // tick_spacing + 1) * tick_spacing
+            amount0, amount1 = self.get_token_amount_of_pool(liquidity=liquidity_in_range,
+                                                        tick_lower=tick_lower, tick_upper=tick_upper)
+            lp_token_info[lp_token].update({
+                'token0AmountInRange': amount0 / 10 ** value.get('token0Decimals'),
+                'token1AmountInRange': amount1 / 10 ** value.get('token1Decimals')
+            })
 
         return lp_token_info
 
@@ -290,9 +304,9 @@ class PancakeSwapV3Service(UniswapV3Services):
                 tick_lower = value.get('tickLower')
                 tick_upper = value.get('tickUpper')
                 if price and tick:
-                    sqrt_price_x96 = self.convert_integer_to_q64_96(math.sqrt(price))
+                    sqrt_price_x96 = math.sqrt(price) * 2**96
 
-                    token0_amount, token1_amount = self.get_amount0_amount1(liquidity=liquidity,
+                    token0_amount, token1_amount = self.get_token_amount_of_user(liquidity=liquidity,
                                                                             sqrt_price_x96=sqrt_price_x96,
                                                                             tick=tick, tick_upper=tick_upper,
                                                                             tick_lower=tick_lower)

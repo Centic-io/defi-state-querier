@@ -27,20 +27,20 @@ def get_lp_token_list(job, wallet, dex_protocol):
     token_info = get_token_info()
 
     queries = [
-        # {
-        #     'query_id': f'{dex_protocol}_lptokenlist',
-        #     "entity_id": dex_protocol,
-        #     'query_type': Query.lp_token_list,
-        #     'number_lp': 100,
-        #     'supplied_data': {"token_info": list(token_info.keys())}
-        # },
         {
-            'query_id': f'{dex_protocol}_farminglptokenlist',
+            'query_id': f'{dex_protocol}_lptokenlist',
             "entity_id": dex_protocol,
-            'query_type': Query.farming_lp_token_list,
-            'number_lp': 10
-
-        }
+            'query_type': Query.lp_token_list,
+            'number_lp': 10,
+            'supplied_data': {"token_info": list(token_info.keys())}
+        },
+        # {
+        #     'query_id': f'{dex_protocol}_farminglptokenlist',
+        #     "entity_id": dex_protocol,
+        #     'query_type': Query.farming_lp_token_list,
+        #     'number_lp': 50
+        #
+        # }
     ]
     res = job.run(wallet, queries, batch_size=100, max_workers=8, ignore_error=True)
     with open('test/lp_token_list.json', 'w') as f:
@@ -52,34 +52,34 @@ def get_lp_token_info(job, wallet, dex_protocol):
         lp_token_list = json.loads(f.read())
 
     queries = [
-        # {
-        #     'query_id': f'{dex_protocol}_lptokeninfo',
-        #     "entity_id": dex_protocol,
-        #     'query_type': Query.lp_token_info,
-        #     'supplied_data': {
-        #         'lp_token_info': lp_token_list[0][Query.lp_token_list]}
-        # },
-        # {
-        #     'query_id': f'{dex_protocol}_lptokenbalance',
-        #     "entity_id": dex_protocol,
-        #     'query_type': Query.token_pair_balance,
-        #     'supplied_data': {
-        #         'lp_token_info': lp_token_list[0][Query.lp_token_list]}
-        # },
         {
-            'query_id': f'{dex_protocol}_farminglptokeninfo',
+            'query_id': f'{dex_protocol}_lptokeninfo',
             "entity_id": dex_protocol,
             'query_type': Query.lp_token_info,
             'supplied_data': {
-                'lp_token_info': lp_token_list[0][Query.farming_lp_token_list]}
+                'lp_token_info': lp_token_list[0][Query.lp_token_list]}
         },
         {
-            'query_id': f'{dex_protocol}_farminglptokenbalance',
+            'query_id': f'{dex_protocol}_lptokenbalance',
             "entity_id": dex_protocol,
             'query_type': Query.token_pair_balance,
             'supplied_data': {
-                'lp_token_info': lp_token_list[0][Query.farming_lp_token_list]}
+                'lp_token_info': lp_token_list[0][Query.lp_token_list]}
         },
+        # {
+        #     'query_id': f'{dex_protocol}_farminglptokeninfo',
+        #     "entity_id": dex_protocol,
+        #     'query_type': Query.lp_token_info,
+        #     'supplied_data': {
+        #         'lp_token_info': lp_token_list[0][Query.farming_lp_token_list]}
+        # },
+        # {
+        #     'query_id': f'{dex_protocol}_farminglptokenbalance',
+        #     "entity_id": dex_protocol,
+        #     'query_type': Query.token_pair_balance,
+        #     'supplied_data': {
+        #         'lp_token_info': lp_token_list[0][Query.farming_lp_token_list]}
+        # },
 
     ]
     res = job.run(wallet, queries, batch_size=100, max_workers=8, ignore_error=True)
@@ -191,9 +191,8 @@ def get_token_info():
 
 
 if __name__ == "__main__":
-    w = "0x0646E5ACAe817042D0B39fb519a22e5Cd2FdACB5"
-    # w = '0x415cb699f3185246c4E6281CfEc69aFB90433A5E'
-    dex_ids = [Dex.pancake_v3]
+    w = "0xa01be392e521aBF54841910d2934BF52ec8BcAB9"
+    dex_ids = [Dex.sushi_v3]
 
     for chain_id in [Chain.bsc, Chain.ethereum, Chain.fantom, Chain.polygon, Chain.arbitrum, Chain.avalanche]:
         for dex_id in dex_ids:
@@ -201,14 +200,14 @@ if __name__ == "__main__":
             try:
                 job_ = StateProcessor(provider_url[chain_id], chain_id)
                 if dex_id in job_.services:
-                    get_lp_token_list(job=job_, wallet=w, dex_protocol=dex_id)
-                    get_lp_token_info(job=job_, wallet=w, dex_protocol=dex_id)
-                    get_user_nft(job=job_, wallet=w, dex_protocol=dex_id)
-                    get_user_info(job=job_, wallet=w, dex_protocol=dex_id)
-                    get_user_token_balance(job_, w, dex_id)
+                    # get_lp_token_list(job=job_, wallet=w, dex_protocol=dex_id)
+                    # get_lp_token_info(job=job_, wallet=w, dex_protocol=dex_id)
+                    # get_user_nft(job=job_, wallet=w, dex_protocol=dex_id)
+                    # get_user_info(job=job_, wallet=w, dex_protocol=dex_id)
+                    # get_user_token_balance(job_, w, dex_id)
                     get_user_token_reward(job=job_, wallet=w, dex_protocol=dex_id)
                     # export_to_mongodb(chain_id, dex_id)
-                    print(f'export {dex_id}  in {chain_id}')
+                    # print(f'export {dex_id}  in {chain_id}')
             except Exception as ex:
                 print(f'Error with chain {chain_id}')
                 raise ex

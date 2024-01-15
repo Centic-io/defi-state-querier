@@ -1,4 +1,7 @@
+from defi_services.abis.dex.sushiswap.factory_v3_abi import SUSHISWAP_V3_ETH_FACTORY_ABI
 from defi_services.abis.dex.uniswap.factory_v2_abi import UNISWAP_FACTORY_ABI
+from defi_services.abis.dex.uniswap.nft_token_manager_abi import UNISWAP_V3_NFT_TOKEN_MANGAGER_ABI
+from defi_services.abis.dex.uniswap.pool_v3_abi import UNISWAP_V3_POOL_ABI
 
 SUSHISWAP_V0_ETH_INFO = {
     'master_chef_address': '0xc2edad668740f1aa35e4d8f227fb8e17dca888cd',
@@ -29,7 +32,6 @@ SUSHISWAP_V2_POLYGON_INFO = {
     'reward_token': '0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a',
 }
 
-# TODO: recheck addresses in optimism
 # SUSHISWAP_V2_OPTIMISM_INFO = {
 #     'factory_address': '0xc35dadb65012ec5796536bd9864ed8773abc74c4',
 #     'master_chef_address': '0xb25157bf349295a7cd31d1751973f426182070d6',
@@ -50,6 +52,9 @@ SUSHISWAP_V2_ARBITRUM_INFO = {
 
 SUSHISWAP_V3_ETH_INFO = {
     'factory_address': '0xbaceb8ec6b9355dfc0269c18bac9d6e2bdc29c4f',
-    'factory_abi': UNISWAP_FACTORY_ABI,
-    'NFT_manager_address': '0x2214a42d8e2a1d20635c2cb0664422c528b6a432'
+    'factory_abi': SUSHISWAP_V3_ETH_FACTORY_ABI,
+    'NFT_manager_address': '0x2214a42d8e2a1d20635c2cb0664422c528b6a432',
+    'NFT_manager_abi': UNISWAP_V3_NFT_TOKEN_MANGAGER_ABI,
+    'pool_abi': UNISWAP_V3_POOL_ABI,
+
 }

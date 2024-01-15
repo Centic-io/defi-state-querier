@@ -181,50 +181,7 @@ class PancakeSwapV2Services(UniswapV2Services):
 
         return result
 
-    # Calculate lp token price
-    # def calculate_lp_token_price_info(
-    #         self, supplied_data, lp_token_balance, token_price):
-    #     """Deprecated"""
-    #     lp_token_info = supplied_data['lp_token_info']
-    #     for lp_token, value in lp_token_info.items():
-    #         total_supply = value.get("totalSupply")
-    #         token0 = value.get("token0", None)
-    #         token1 = value.get("token1", None)
-    #         if token0 and token1:
-    #
-    #             balance_of_token0 = lp_token_balance[lp_token].get(token0, 0)
-    #             balance_of_token1 = lp_token_balance[lp_token].get(token1, 0)
-    #             lp_token_stake_amount = value.get("stakeBalance", 0)
-    #             lp_token_info[lp_token].update({
-    #                 "totalSupply": total_supply,
-    #                 "stakeBalance": lp_token_stake_amount,
-    #                 "token0Amount": balance_of_token0,
-    #                 "token1Amount": balance_of_token1
-    #             })
-    #             token0_price = token_price.get(token0).get("price", 0)
-    #             token1_price = token_price.get(token1).get("price", 0)
-    #             new_amount1 = balance_of_token1
-    #             if token0_price != 0 and token1_price != 0:
-    #                 total_of_token0 = balance_of_token0 * token0_price
-    #                 total_of_token1 = balance_of_token1 * token1_price
-    #             elif token0_price == 0:
-    #                 total_of_token1 = balance_of_token0 * token1_price
-    #                 total_of_token0 = total_of_token1
-    #                 token0_price = total_of_token0 / balance_of_token0
-    #             else:
-    #                 total_of_token0 = balance_of_token1 * token0_price
-    #                 total_of_token1 = total_of_token0
-    #                 token1_price = total_of_token1 / new_amount1
-    #             lp_token_price = (total_of_token0 + total_of_token1) / total_supply
-    #             lp_token_info[lp_token].update({
-    #                 "price": lp_token_price,
-    #                 'token0Price': token0_price,
-    #                 'token1Price': token1_price,
-    #                 "stakeAmountToken0": lp_token_stake_amount * lp_token_price / 2 / token0_price,
-    #                 "stakeAmountToken1": lp_token_stake_amount * lp_token_price / 2 / token1_price
-    #             })
-    #
-    #     return lp_token_info
+
 
     # User Information
     def get_user_info_function(

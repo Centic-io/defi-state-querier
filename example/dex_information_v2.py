@@ -67,7 +67,7 @@ def get_lp_token_info(job, wallet, dex_protocol):
     #     }
     # }
     lp_token_info = {}
-    lp_token_info.update(dict(list(lp_token_list[0][Query.lp_token_list].items())))
+    # lp_token_info.update(dict(list(lp_token_list[0][Query.lp_token_list].items())))
     lp_token_info.update(dict(list(lp_token_list[0][Query.farming_lp_token_list].items())))
 
     queries = [
@@ -236,7 +236,7 @@ def get_user_info(job, wallet, dex_protocol):
     ]
 
     user_info = job.run(wallet, queries, batch_size=100, max_workers=8, ignore_error=True)
-    with open('test/dex_user_info.json', 'w') as f:
+    with open('test/user_info.json', 'w') as f:
         json.dump(user_info, f, indent=2)
 
     return user_info
@@ -305,7 +305,7 @@ def export_to_mongodb(chain_id, dex_protocol):
 
 
 if __name__ == "__main__":
-    w = "0x89089fd89dfEdC7350861C99b71DABF4fdEA2fc0"
+    w = "0x0646e5acae817042d0b39fb519a22e5cd2fdacb5"
     dex_ids = [Dex.pancake]
 
     for chain_id in [Chain.bsc, Chain.ethereum, Chain.fantom, Chain.polygon, Chain.arbitrum, Chain.avalanche]:
@@ -313,11 +313,11 @@ if __name__ == "__main__":
             try:
                 job_ = StateProcessor(provider_url[chain_id], chain_id)
                 if dex_id in job_.services:
-                    get_lp_token_list(job=job_, wallet=w, dex_protocol=dex_id)
-                    get_lp_token_info(job=job_, wallet=w, dex_protocol=dex_id)
+                    # get_lp_token_list(job=job_, wallet=w, dex_protocol=dex_id)
+                    # get_lp_token_info(job=job_, wallet=w, dex_protocol=dex_id)
                     get_lp_token_liquidity(job=job_, wallet=w, dex_protocol=dex_id)
                     get_user_info(job=job_, wallet=w, dex_protocol=dex_id)
-                    # get_user_reward(job=job_, wallet=w, dex_protocol=dex_id)
+                    get_user_reward(job=job_, wallet=w, dex_protocol=dex_id)
                     # export_to_mongodb(chain_id, dex_id)
                     print(f'export {dex_id}  in {chain_id}')
             except Exception as ex:
