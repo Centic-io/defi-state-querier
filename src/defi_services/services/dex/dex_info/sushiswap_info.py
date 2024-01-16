@@ -32,11 +32,6 @@ SUSHISWAP_V2_POLYGON_INFO = {
     'reward_token': '0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a',
 }
 
-# SUSHISWAP_V2_OPTIMISM_INFO = {
-#     'factory_address': '0xc35dadb65012ec5796536bd9864ed8773abc74c4',
-#     'master_chef_address': '0xb25157bf349295a7cd31d1751973f426182070d6',
-#     'masterchef_abi': SUSHISWAP_MINICHEF_ABI
-# }
 
 SUSHISWAP_V2_AVALANCHE_INFO = {
     'factory_address': '0xc35dadb65012ec5796536bd9864ed8773abc74c4',
@@ -56,5 +51,41 @@ SUSHISWAP_V3_ETH_INFO = {
     'NFT_manager_address': '0x2214a42d8e2a1d20635c2cb0664422c528b6a432',
     'NFT_manager_abi': UNISWAP_V3_NFT_TOKEN_MANGAGER_ABI,
     'pool_abi': UNISWAP_V3_POOL_ABI,
+}
+SUSHISWAP_V3_BSC_INFO = {
+    'factory_address': '0xbaceb8ec6b9355dfc0269c18bac9d6e2bdc29c4f',
+    'factory_abi': SUSHISWAP_V3_ETH_FACTORY_ABI,
+    'NFT_manager_address': '0x2214a42d8e2a1d20635c2cb0664422c528b6a432',
+    'NFT_manager_abi': UNISWAP_V3_NFT_TOKEN_MANGAGER_ABI,
+    'pool_abi': UNISWAP_V3_POOL_ABI,
+}
+SUSHISWAP_V3_FANTOM_INFO = {
+    'factory_address': '0xbaceb8ec6b9355dfc0269c18bac9d6e2bdc29c4f',
+    'factory_abi': SUSHISWAP_V3_ETH_FACTORY_ABI,
+    'NFT_manager_address': '0x2214a42d8e2a1d20635c2cb0664422c528b6a432',
+    'NFT_manager_abi': UNISWAP_V3_NFT_TOKEN_MANGAGER_ABI,
+    'pool_abi': UNISWAP_V3_POOL_ABI,
+}
+SUSHISWAP_V3_POLYGON_INFO = {
+    'factory_address': '0xbaceb8ec6b9355dfc0269c18bac9d6e2bdc29c4f',
+    'factory_abi': SUSHISWAP_V3_ETH_FACTORY_ABI,
+    'NFT_manager_address': '0x2214a42d8e2a1d20635c2cb0664422c528b6a432',
+    'NFT_manager_abi': UNISWAP_V3_NFT_TOKEN_MANGAGER_ABI,
+    'pool_abi': UNISWAP_V3_POOL_ABI,
+}
 
+SUSHISWAP_V3_AVALANCHE_INFO = {
+    'factory_address': '0xbaceb8ec6b9355dfc0269c18bac9d6e2bdc29c4f',
+    'factory_abi': SUSHISWAP_V3_ETH_FACTORY_ABI,
+    'NFT_manager_address': '0x2214a42d8e2a1d20635c2cb0664422c528b6a432',
+    'NFT_manager_abi': UNISWAP_V3_NFT_TOKEN_MANGAGER_ABI,
+    'pool_abi': UNISWAP_V3_POOL_ABI,
+}
+
+SUSHISWAP_V3_ARBITRUM_INFO = {
+    'factory_address': '0xbaceb8ec6b9355dfc0269c18bac9d6e2bdc29c4f',
+    'factory_abi': SUSHISWAP_V3_ETH_FACTORY_ABI,
+    'NFT_manager_address': '0x2214a42d8e2a1d20635c2cb0664422c528b6a432',
+    'NFT_manager_abi': UNISWAP_V3_NFT_TOKEN_MANGAGER_ABI,
+    'pool_abi': UNISWAP_V3_POOL_ABI,
 }

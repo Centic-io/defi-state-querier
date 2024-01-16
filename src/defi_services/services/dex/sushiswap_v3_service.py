@@ -1,6 +1,7 @@
 import logging
 
 from defi_services.constants.chain_constant import Chain
+from defi_services.constants.entities.dex_constant import Dex
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.dex.dex_info.sushiswap_info import SUSHISWAP_V3_ETH_INFO
 from defi_services.services.dex.uniswap_v3_service import UniswapV3Services
@@ -26,6 +27,16 @@ class SushiSwapV3Services(UniswapV3Services):
             self.nft_token_manager_addr = self.pool_info.get('NFT_manager_address')
             self.nft_token_manager_abi = self.pool_info.get('NFT_manager_abi')
             self.factory_addr = self.pool_info.get('factory_address')
+
+    def get_service_info(self):
+        info = {
+            Dex.sushi_v3: {
+                "chain_id": self.chain_id,
+                "type": "dex",
+                "protocol_info": self.pool_info
+            }
+        }
+        return info
 
     def get_all_supported_lp_token(self, limit: int = 100, supplied_data: dict = None):
         rpc_calls = {}
