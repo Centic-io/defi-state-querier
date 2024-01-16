@@ -17,7 +17,7 @@ provider_url = {
     '0xa4b1': os.environ.get("ARBITRUM_PROVIDER"),
     '0xa': os.environ.get("OPTIMISM_PROVIDER"),
     '0xa86a': os.environ.get("AVALANCHE_PROVIDER"),
-    '0x2b6653dc': os.environ.get("TRON_PROVIDER")
+    # '0x2b6653dc': os.environ.get("TRON_PROVIDER")
 }
 
 
