@@ -50,15 +50,6 @@ class PancakeSwapV2Services(UniswapV2Services):
             query_id = f'lpToken_{masterchef_addr}_{pid}_latest'.lower()
             rpc_calls[query_id] = self.get_masterchef_function_info(fn_name="lpToken", fn_paras=[pid])
 
-        # For another version
-        # masterchef_addr_v1 = self.pool_info.get('master_chef_addressV1')
-        # master_chef_contract_v1 = web3.eth.contract(abi=self.masterchef_v1_abi, address=web3.toChecksumAddress(masterchef_addr_v1))
-        # pool_length_v1 = master_chef_contract_v1.functions.poolLength().call()
-        #
-        # for pid in range(0, min(pool_length_v1, limit)):
-        #     query_id = f'poolInfo_{masterchef_addr}_{pid}_latest'.lower()
-        #     rpc_calls[query_id] = self.get_masterchef_v1_function_info(fn_name="poolInfo", fn_paras=[pid])
-
         return rpc_calls
 
     def decode_farming_supported_lp_token(self, decoded_data, ):
@@ -180,8 +171,6 @@ class PancakeSwapV2Services(UniswapV2Services):
                 result[lp_token][f'{token_key}_stake_amount'] = token_stake_amount
 
         return result
-
-
 
     # User Information
     def get_user_info_function(

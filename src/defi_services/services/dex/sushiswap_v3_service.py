@@ -7,10 +7,12 @@ from defi_services.services.dex.uniswap_v3_service import UniswapV3Services
 
 logger = logging.getLogger("SushiSwap V3 State Service")
 
+
 class SushiSwapV3Info:
-    mapping={
+    mapping = {
         Chain.ethereum: SUSHISWAP_V3_ETH_INFO
     }
+
 
 class SushiSwapV3Services(UniswapV3Services):
     def __init__(self, state_service: StateQuerier, chain_id: str = '0x1'):
@@ -24,7 +26,6 @@ class SushiSwapV3Services(UniswapV3Services):
             self.nft_token_manager_addr = self.pool_info.get('NFT_manager_address')
             self.nft_token_manager_abi = self.pool_info.get('NFT_manager_abi')
             self.factory_addr = self.pool_info.get('factory_address')
-
 
     def get_all_supported_lp_token(self, limit: int = 100, supplied_data: dict = None):
         rpc_calls = {}
@@ -60,5 +61,3 @@ class SushiSwapV3Services(UniswapV3Services):
                         }
 
         return result
-
-

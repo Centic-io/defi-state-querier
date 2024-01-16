@@ -5,12 +5,14 @@ from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.dex.dex_info.quickswap_info import QUICKSWAP_POLYGON_V3_INFO
 from defi_services.services.dex.uniswap_v3_service import UniswapV3Services
 
-logger = logging.getLogger("Quickswap V3 State Service")
+logger = logging.getLogger("QuickSwap V3 State Service")
+
 
 class QuickSwapV3Info:
     mapping = {
         Chain.polygon: QUICKSWAP_POLYGON_V3_INFO
     }
+
 
 class QuickSwapV3Services(UniswapV3Services):
     def __init__(self, state_service: StateQuerier, chain_id: str = '0x1'):
@@ -57,8 +59,6 @@ class QuickSwapV3Services(UniswapV3Services):
 
         return result
 
-
-
     def get_lp_token_function_info(self, supplied_data, block_number: int = "latest"):
         rpc_calls = {}
         lp_token_info = supplied_data['lp_token_info']
@@ -101,7 +101,6 @@ class QuickSwapV3Services(UniswapV3Services):
             })
         return lp_token_info
 
-
     ###USER
     def decode_user_info_function(self, user: str, supplied_data: dict, decoded_data: dict = None, stake: bool = False,
                                   block_number: int = "latest"):
@@ -122,7 +121,6 @@ class QuickSwapV3Services(UniswapV3Services):
             })
         return user_data
 
-
     def get_user_token_amount_function(self, user: str, supplied_data: dict, block_number: int = "latest"):
         user_data = supplied_data['user_data']
         rpc_calls = {}
@@ -141,7 +139,6 @@ class QuickSwapV3Services(UniswapV3Services):
                     address=token_address, abi=ERC20_ABI, fn_name="decimals", block_number=block_number)
 
         return rpc_calls
-
 
     def calculate_rewards_balance(
             self, user: str, supplied_data: dict, decoded_data: dict, block_number: int = "latest"):
@@ -183,7 +180,4 @@ class QuickSwapV3Services(UniswapV3Services):
     def get_position_key(self, tick_lower, tick_upper):
         owner = int(self.nft_token_manager_addr, 16)
         key = (((owner << 24) | (tick_lower & 0xFFFFFF)) << 24) | (tick_upper & 0xFFFFFF)
-        return '0x'+ format(key, '064x')
-
-
-
+        return '0x' + format(key, '064x')

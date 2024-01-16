@@ -51,7 +51,8 @@ class UniswapV2Services(DexProtocolServices):
 
         return rpc_calls
 
-    def decode_all_supported_lp_token(self, decoded_data, supplied_data: dict = None):
+    def decode_all_supported_lp_token(self, limit: int = 10, decoded_data: dict = None,
+                                      supplied_data: dict = None):
         result = {}
         for query_id, value in decoded_data.items():
             # Format query_id: f'allPairs_{self.factory_addr}_{pid}_latest'
