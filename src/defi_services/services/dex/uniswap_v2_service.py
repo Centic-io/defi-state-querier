@@ -1,7 +1,6 @@
 import logging
 
 from defi_services.abis.dex.pancakeswap.pancakeswap_lp_token_abi import LP_TOKEN_ABI
-from defi_services.abis.dex.uniswap.uniswap_v2_factory import UNISWAP_FACTORY_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.dex_constant import Dex
@@ -24,7 +23,8 @@ class UniswapV2Services(DexProtocolServices):
         self.chain_id = chain_id
         self.state_service = state_service
         self.pool_info = UniswapV2Info.mapping.get(chain_id)
-        self.factory_abi = UNISWAP_FACTORY_ABI
+        if self.pool_info:
+            self.factory_abi = self.pool_info['factory_abi']
 
     def get_service_info(self):
         info = {
@@ -36,7 +36,7 @@ class UniswapV2Services(DexProtocolServices):
         }
         return info
 
-    def get_all_supported_lp_token(self, limit=1):
+    def get_all_supported_lp_token(self, limit=1, supplied_data: dict = None):
         web3 = self.state_service.get_w3()
         factory_addr = self.pool_info.get('factoryAddress')
 
@@ -51,7 +51,8 @@ class UniswapV2Services(DexProtocolServices):
 
         return rpc_calls
 
-    def decode_all_supported_lp_token(self, decoded_data):
+    def decode_all_supported_lp_token(self, limit: int = 10, decoded_data: dict = None,
+                                      supplied_data: dict = None):
         result = {}
         for query_id, value in decoded_data.items():
             # Format query_id: f'allPairs_{self.factory_addr}_{pid}_latest'
@@ -117,23 +118,25 @@ class UniswapV2Services(DexProtocolServices):
 
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
-            token0 = decoded_data.get(f'token0_{lp_token}_{block_number}'.lower())
-            token1 = decoded_data.get(f'token1_{lp_token}_{block_number}'.lower())
-            decimals = decoded_data.get(f'decimals_{lp_token}_{block_number}'.lower())
-            if (not token0) and (not token1) and (decimals is None):
+            try:
+                token0 = decoded_data.get(f'token0_{lp_token}_{block_number}'.lower())
+                token1 = decoded_data.get(f'token1_{lp_token}_{block_number}'.lower())
+                decimals = decoded_data.get(f'decimals_{lp_token}_{block_number}'.lower())
+                if (not token0) and (not token1) and (decimals is None):
+                    continue
+
+                total_supply = decoded_data.get(f'totalSupply_{lp_token}_{block_number}'.lower()) / 10 ** decimals
+                name = decoded_data.get(f'name_{lp_token}_{block_number}'.lower())
+
+                result[lp_token] = {
+                    "total_supply": total_supply,
+                    "token0": token0,
+                    "token1": token1,
+                    "name": name,
+                    'decimals': decimals
+                }
+            except Exception:
                 continue
-
-            total_supply = decoded_data.get(f'totalSupply_{lp_token}_{block_number}'.lower()) / 10 ** decimals
-            name = decoded_data.get(f'name_{lp_token}_{block_number}'.lower())
-
-            result[lp_token] = {
-                "total_supply": total_supply,
-                "token0": token0,
-                "token1": token1,
-                "name": name,
-                'decimals': decimals
-            }
-
         return result
 
     # Get balance of token
@@ -169,21 +172,23 @@ class UniswapV2Services(DexProtocolServices):
 
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
-            decimals = decoded_data.get(f'decimals_{lp_token}_{block_number}'.lower())
-            total_supply = decoded_data.get(f'totalSupply_{lp_token}_{block_number}'.lower()) / 10 ** decimals
-            result[lp_token] = {
-                'total_supply': total_supply,
-                'decimals': decimals
-            }
+            try:
+                decimals = decoded_data.get(f'decimals_{lp_token}_{block_number}'.lower())
+                total_supply = decoded_data.get(f'totalSupply_{lp_token}_{block_number}'.lower()) / 10 ** decimals
+                result[lp_token] = {
+                    'total_supply': total_supply,
+                    'decimals': decimals
+                }
 
-            for token_key in ["token0", "token1"]:
-                token_address = info.get(token_key, None)
-                query_id = f'balanceOf_{token_address}_{lp_token}_{block_number}'.lower()
+                for token_key in ["token0", "token1"]:
+                    token_address = info.get(token_key, None)
+                    query_id = f'balanceOf_{token_address}_{lp_token}_{block_number}'.lower()
 
-                if (token_address is not None) and (decoded_data.get(query_id) is not None):
-                    token_decimals = decoded_data.get(f'decimals_{token_address}_{block_number}'.lower()) or 18
-                    result[lp_token][f'{token_key}_amount'] = decoded_data.get(query_id) / 10 ** token_decimals
-
+                    if (token_address is not None) and (decoded_data.get(query_id) is not None):
+                        token_decimals = decoded_data.get(f'decimals_{token_address}_{block_number}'.lower()) or 18
+                        result[lp_token][f'{token_key}_amount'] = decoded_data.get(query_id) / 10 ** token_decimals
+            except Exception:
+                continue
         return result
 
     def calculate_lp_token_price_info(
@@ -236,25 +241,28 @@ class UniswapV2Services(DexProtocolServices):
 
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
-            query_id = f'balanceOf_{lp_token}_{wallet}_{block_number}'.lower()
-            decimals = decoded_data.get(f'decimals_{lp_token}_{block_number}'.lower())
-            amount = decoded_data.get(query_id) / 10 ** decimals
+            try:
+                query_id = f'balanceOf_{lp_token}_{wallet}_{block_number}'.lower()
+                decimals = decoded_data.get(f'decimals_{lp_token}_{block_number}'.lower())
+                amount = decoded_data.get(query_id) / 10 ** decimals
 
-            total_supply = info.get('total_supply')
+                total_supply = info.get('total_supply')
 
-            result[lp_token] = {
-                "amount": amount,
-                "tokens": {
-                    info['token0']: {
-                        'idx': 0,
-                        'amount': amount * info.get('token0_amount', 0) / total_supply if total_supply else 0
-                    },
-                    info['token1']: {
-                        'idx': 1,
-                        'amount': amount * info.get('token1_amount', 0) / total_supply if total_supply else 0
+                result[lp_token] = {
+                    "amount": amount,
+                    "tokens": {
+                        info['token0']: {
+                            'idx': 0,
+                            'amount': amount * info.get('token0_amount', 0) / total_supply if total_supply else 0
+                        },
+                        info['token1']: {
+                            'idx': 1,
+                            'amount': amount * info.get('token1_amount', 0) / total_supply if total_supply else 0
+                        }
                     }
                 }
-            }
+            except Exception:
+                continue
 
         return result
 

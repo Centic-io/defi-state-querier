@@ -38,12 +38,12 @@ class SushiSwapServices(PancakeSwapServices):
     def get_rewards_balance_function_info(self, wallet, supplied_data, block_number: int = "latest"):
         rpc_calls = {}
 
-        reward_token = self.pool_info.get("rewardToken")
+        reward_token = self.pool_info.get("reward_token")
         decimals_query_id = f'decimals_{reward_token}_{block_number}'.lower()
         rpc_calls[decimals_query_id] = self.state_service.get_function_info(
             address=reward_token, abi=ERC20_ABI, fn_name="decimals", block_number=block_number)
 
-        masterchef_addr = self.pool_info.get('masterchefAddress')
+        masterchef_addr = self.pool_info.get('master_chef_address')
 
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
@@ -58,12 +58,12 @@ class SushiSwapServices(PancakeSwapServices):
 
     def calculate_rewards_balance(
             self, wallet: str, supplied_data: dict, decoded_data: dict, block_number: int = "latest") -> dict:
-        reward_token = self.pool_info.get("rewardToken")
+        reward_token = self.pool_info.get("reward_token")
         reward_decimals = decoded_data.get(f'decimals_{reward_token}_{block_number}'.lower())
 
         result = {}
 
-        masterchef_addr = self.pool_info.get('masterchefAddress')
+        masterchef_addr = self.pool_info.get('master_chef_address')
 
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():

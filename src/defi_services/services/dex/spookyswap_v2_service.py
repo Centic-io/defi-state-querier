@@ -1,6 +1,6 @@
 import logging
 
-from defi_services.abis.dex.pancakeswap.pancakeswap_factory_abi import PANCAKESWAP_FACTORY_ABI
+from defi_services.abis.dex.pancakeswap.pancakeswap_v2_factory_abi import PANCAKESWAP_V2_FACTORY_ABI
 from defi_services.abis.dex.pancakeswap.pancakeswap_lp_token_abi import LP_TOKEN_ABI
 from defi_services.abis.dex.spookyswap.masterchef_v2_abi import SPOOKYSWAP_MASTERCHEF_V2_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
@@ -26,7 +26,7 @@ class SpookySwapV2Services(PancakeSwapV2Services):
         self.pool_info = SpookySwapV2Info.mapping.get(chain_id)
 
         self.masterchef_abi = SPOOKYSWAP_MASTERCHEF_V2_ABI
-        self.factory_abi = PANCAKESWAP_FACTORY_ABI
+        self.factory_abi = PANCAKESWAP_V2_FACTORY_ABI
 
     def get_service_info(self):
         info = {

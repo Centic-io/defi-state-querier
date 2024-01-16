@@ -1,4 +1,4 @@
-PANCAKESWAP_FACTORY_ABI = [
+PANCAKESWAP_V2_FACTORY_ABI = [
     {
         "inputs": [
             {

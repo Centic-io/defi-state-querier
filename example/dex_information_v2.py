@@ -5,8 +5,11 @@ from dotenv import load_dotenv
 
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.dex_constant import Dex
+from defi_services.constants.entities.dex_info_constant import DexInfo
 from defi_services.constants.query_constant import Query
 from defi_services.jobs.processors.state_processor import StateProcessor
+
+from defi_services.databases.mongodb_exporter import MongoExporter
 
 load_dotenv()
 
@@ -25,17 +28,17 @@ provider_url = {
 def get_lp_token_list(job, wallet, dex_protocol):
     """Get all LP"""
     queries = [
-        {
-            'query_id': f'{dex_protocol}_{Query.lp_token_list}',
-            "entity_id": dex_protocol,
-            'query_type': Query.lp_token_list,
-            'number_lp': 10
-        },
+        # {
+        #     'query_id': f'{dex_protocol}_{Query.lp_token_list}',
+        #     "entity_id": dex_protocol,
+        #     'query_type': Query.lp_token_list,
+        #     'number_lp': 20
+        # },
         {
             'query_id': f'{dex_protocol}_{Query.farming_lp_token_list}',
             "entity_id": dex_protocol,
             'query_type': Query.farming_lp_token_list,
-            'number_lp': 10
+            'number_lp': 20
         }
     ]
 
@@ -64,8 +67,8 @@ def get_lp_token_info(job, wallet, dex_protocol):
     #     }
     # }
     lp_token_info = {}
-    lp_token_info.update(dict(list(lp_token_list[0][Query.lp_token_list].items())[-2:]))
-    lp_token_info.update(dict(list(lp_token_list[1][Query.farming_lp_token_list].items())[-2:]))
+    # lp_token_info.update(dict(list(lp_token_list[0][Query.lp_token_list].items())))
+    lp_token_info.update(dict(list(lp_token_list[0][Query.farming_lp_token_list].items())))
 
     queries = [
         {
@@ -88,26 +91,66 @@ def get_lp_token_info(job, wallet, dex_protocol):
 def get_lp_token_liquidity(job, wallet, dex_protocol):
     with open('test/lp_token_info.json') as f:
         lp_token_info = json.load(f)
+    lp_token_info = lp_token_info[0][Query.lp_token_info]
 
     # Input format
     # lp_token_info = {
-    #     "0x168b273278f3a8d302de5e879aa30690b7e6c28f": {
-    #         "pid": 4,
-    #         "token0": "0xad6caeb32cd2c308980a548bd0bc5aa4306c6c18",
-    #         "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+    #       "0x06da0fd433c1a5d7a4faa01111c044910a184553": {
+    #         "total_supply": 0.08599627202057003,
+    #         "token0": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    #         "token1": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    #         "name": "SushiSwap LP Token",
+    #         "decimals": 18,
+    #         "stake_balance": 0.08245173084735195,
+    #         "acc_reward_per_share": 13.87566465730498,
+    #         "alloc_point": 1100,
+    #         "farming_pid": 0
+    #       },
+    #       "0x397ff1542f962076d0bfe58ea045ffa2d347aca0": {
+    #         "total_supply": 0.0739607160789963,
+    #         "token0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    #         "token1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    #         "name": "SushiSwap LP Token",
+    #         "decimals": 18,
+    #         "stake_balance": 0.05191755786871983,
+    #         "acc_reward_per_share": 15.913618906828649,
+    #         "alloc_point": 3000,
+    #         "farming_pid": 1
+    #       },
+    #     "0xe7e656893030187f1073e5b2d768e3c1e8861f26": {
+    #         "total_supply": 1.0,
+    #         "token0": None,
+    #         "token1": None,
+    #         "name": "Bsc Dummy Token",
+    #         "decimals": 0,
+    #         "stake_balance": 1.0,
+    #         "acc_reward_per_share": 4571214724711396.0,
+    #         "alloc_point": 0,
+    #         "farming_pid": 359
     #     },
-    #     "0xdd5bad8f8b360d76d12fda230f8baf42fe0022cf": {
-    #         "farming_pid": 5,
-    #         "token0": "0x7083609fce4d1d8dc0c979aab8c869ea2c873402",
-    #         "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+    #     "0xcb277e48526f30f625e24850cf293d89301ea470": {
+    #         "total_supply": 1.0,
+    #         "token0": None,
+    #         "token1": None,
+    #         "name": "Bttc Dummy Token",
+    #         "decimals": 0,
+    #         "stake_balance": 1.0,
+    #         "acc_reward_per_share": 2.0635693678518308e+16,
+    #         "alloc_point": 450,
+    #         "farming_pid": 360
     #     },
-    #     "0x3dcb1787a95d2ea0eb7d00887704eebf0d79bb13": {
-    #         "farming_pid": 8,
-    #         "token0": "0x4b0f1812e5df2a09796481ff14017e6005508003",
-    #         "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+    #     "0x11b66abb675b955bd6f066fde849442865c60e29": {
+    #         "total_supply": 1.0,
+    #         "token0": None,
+    #         "token1": None,
+    #         "name": "OP Dummy Token",
+    #         "decimals": 0,
+    #         "stake_balance": 1.0,
+    #         "acc_reward_per_share": 4.407230162602343e+16,
+    #         "alloc_point": 0,
+    #         "farming_pid": 361
     #     }
     # }
-    lp_token_info = lp_token_info[0][Query.lp_token_info]
 
     queries = [
         {
@@ -193,7 +236,7 @@ def get_user_info(job, wallet, dex_protocol):
     ]
 
     user_info = job.run(wallet, queries, batch_size=100, max_workers=8, ignore_error=True)
-    with open('test/dex_user_info.json', 'w') as f:
+    with open('test/user_info.json', 'w') as f:
         json.dump(user_info, f, indent=2)
 
     return user_info
@@ -235,18 +278,48 @@ def get_user_reward(job, wallet, dex_protocol):
     return user_reward
 
 
-if __name__ == "__main__":
-    w = "0x89089fd89dfEdC7350861C99b71DABF4fdEA2fc0"
-    dex_id = Dex.sushi_v2
+def export_to_mongodb(chain_id, dex_protocol):
+    with open('test/lp_token_info.json', 'r') as f:
+        data = json.loads(f.read())
+        lp_token_info = data[0].get('lp_token_info')
+    with open('test/token_pair_balance.json', 'r') as f:
+        data = json.loads(f.read())
+        token_pair_balance = data[0].get('token_pair_balance')
 
-    for chain_id in [Chain.ethereum]:
-        try:
-            job_ = StateProcessor(provider_url[chain_id], chain_id)
-            get_lp_token_list(job=job_, wallet=w, dex_protocol=dex_id)
-            get_lp_token_info(job=job_, wallet=w, dex_protocol=dex_id)
-            get_lp_token_liquidity(job=job_, wallet=w, dex_protocol=dex_id)
-            get_user_info(job=job_, wallet=w, dex_protocol=dex_id)
-            get_user_reward(job=job_, wallet=w, dex_protocol=dex_id)
-        except Exception as ex:
-            print(f'Error with chain {chain_id}')
-            raise ex
+    lastest_info = []
+    for lp_token, value in lp_token_info.items():
+        lptoken_dict = {}
+        lptoken_dict['lp_token'] = lp_token
+        lptoken_dict['master_chef_address'] = DexInfo.mapping.get(chain_id).get(dex_protocol).get('master_chef_address')
+        lptoken_dict['service'] = dex_protocol
+        lptoken_dict.update(value)
+
+        if lp_token in token_pair_balance:
+            value2 = token_pair_balance[lp_token]
+            lptoken_dict.update(value2)
+
+        lastest_info.append(lptoken_dict)
+
+    item_exporter = MongoExporter(collector_id='lptoken', db_prefix='', chain_id=chain_id)
+    item_exporter.export_items(lastest_info)
+
+
+if __name__ == "__main__":
+    w = "0x0646e5acae817042d0b39fb519a22e5cd2fdacb5"
+    dex_ids = [Dex.pancake]
+
+    for chain_id in [Chain.bsc, Chain.ethereum, Chain.fantom, Chain.polygon, Chain.arbitrum, Chain.avalanche]:
+        for dex_id in dex_ids:
+            try:
+                job_ = StateProcessor(provider_url[chain_id], chain_id)
+                if dex_id in job_.services:
+                    # get_lp_token_list(job=job_, wallet=w, dex_protocol=dex_id)
+                    # get_lp_token_info(job=job_, wallet=w, dex_protocol=dex_id)
+                    get_lp_token_liquidity(job=job_, wallet=w, dex_protocol=dex_id)
+                    get_user_info(job=job_, wallet=w, dex_protocol=dex_id)
+                    get_user_reward(job=job_, wallet=w, dex_protocol=dex_id)
+                    # export_to_mongodb(chain_id, dex_id)
+                    print(f'export {dex_id}  in {chain_id}')
+            except Exception as ex:
+                print(f'Error with chain {chain_id}')
+                raise ex
