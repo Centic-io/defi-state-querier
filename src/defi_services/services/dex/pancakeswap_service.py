@@ -33,12 +33,6 @@ class PancakeSwapServices(PancakeSwapV2Services):
         }
         return info
 
-    def get_all_supported_lp_token(self, limit: int = 1, supplied_data:dict = None):
-        return {}
-
-    def decode_all_supported_lp_token(self, response_data, supplied_data:dict = None):
-        return {}
-
     def get_farming_supported_lp_token(self, limit: int = 1):
         web3 = self.state_service.get_w3()
         masterchef_addr = self.pool_info.get('master_chef_address')
@@ -62,53 +56,6 @@ class PancakeSwapServices(PancakeSwapV2Services):
             lp_token = value[0].lower()
             pid = int(query_id.split("_")[-2])
             result[lp_token] = {"farming_pid": pid}
-
-        return result
-
-    # Get lp token info
-    def decode_lp_token_info(self, supplied_data, decoded_data, block_number: int = "latest"):
-        masterchef_addr = self.pool_info.get('master_chef_address')
-
-        result = {}
-
-        lp_token_info = supplied_data['lp_token_info']
-        for lp_token, info in lp_token_info.items():
-            try:
-                token0 = decoded_data.get(f'token0_{lp_token}_{block_number}'.lower())
-                token1 = decoded_data.get(f'token1_{lp_token}_{block_number}'.lower())
-                decimals = decoded_data.get(f'decimals_{lp_token}_{block_number}'.lower())
-
-                total_supply = decoded_data.get(f'totalSupply_{lp_token}_{block_number}'.lower()) / 10 ** decimals
-
-                name = decoded_data.get(f'name_{lp_token}_{block_number}'.lower())
-
-                staked_balance_query_id = f'balanceOf_{lp_token}_{masterchef_addr}_{block_number}'.lower()
-                masterchef_balance = decoded_data.get(
-                    staked_balance_query_id) / 10 ** decimals
-
-                result[lp_token] = {
-                    "total_supply": total_supply,
-                    "token0": token0,
-                    "token1": token1,
-                    "name": name,
-                    "decimals": decimals,
-                    "stake_balance": masterchef_balance
-                }
-
-                if info.get('farming_pid') is not None:
-                    pid = int(info.get('farming_pid'))
-                    pool_info_query_id = f'poolInfo_{masterchef_addr}_{pid}_{block_number}'.lower()
-                    pool_info = decoded_data.get(pool_info_query_id)
-                    acc_cake_per_share = pool_info[3] / 10 ** 18
-                    alloc_point = pool_info[1]
-
-                    result[lp_token].update({
-                        'acc_reward_per_share': acc_cake_per_share,
-                        'alloc_point': alloc_point,
-                        'farming_pid': pid
-                    })
-            except Exception :
-                continue
 
         return result
 
@@ -154,11 +101,13 @@ class PancakeSwapServices(PancakeSwapV2Services):
                     'tokens': {
                         info['token0']: {
                             'idx': 0,
-                            'stake_amount': stake_amount * info.get('token0_amount', 0) / total_supply if total_supply else 0
+                            'stake_amount': stake_amount * info.get('token0_amount',
+                                                                    0) / total_supply if total_supply else 0
                         },
                         info['token1']: {
                             'idx': 1,
-                            'stake_amount': stake_amount * info.get('token1_amount', 0) / total_supply if total_supply else 0
+                            'stake_amount': stake_amount * info.get('token1_amount',
+                                                                    0) / total_supply if total_supply else 0
                         }
                     }
                 }

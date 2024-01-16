@@ -28,18 +28,18 @@ provider_url = {
 def get_lp_token_list(job, wallet, dex_protocol):
     """Get all LP"""
     queries = [
-        # {
-        #     'query_id': f'{dex_protocol}_{Query.lp_token_list}',
-        #     "entity_id": dex_protocol,
-        #     'query_type': Query.lp_token_list,
-        #     'number_lp': 20
-        # },
         {
-            'query_id': f'{dex_protocol}_{Query.farming_lp_token_list}',
+            'query_id': f'{dex_protocol}_{Query.lp_token_list}',
             "entity_id": dex_protocol,
-            'query_type': Query.farming_lp_token_list,
-            'number_lp': 20
-        }
+            'query_type': Query.lp_token_list,
+            'number_lp': 100
+        },
+        # {
+        #     'query_id': f'{dex_protocol}_{Query.farming_lp_token_list}',
+        #     "entity_id": dex_protocol,
+        #     'query_type': Query.farming_lp_token_list,
+        #     'number_lp': 10
+        # }
     ]
 
     lp_token_list = job.run(wallet, queries, batch_size=100, max_workers=8, ignore_error=True)
@@ -54,29 +54,13 @@ def get_lp_token_info(job, wallet, dex_protocol):
     with open('test/lp_token_list.json') as f:
         lp_token_list = json.load(f)
 
-    # Input Format
-    # lp_token_info = {
-    #     "0x168b273278f3a8d302de5e879aa30690b7e6c28f": {
-    #         "pid": 4
-    #     },
-    #     "0xdd5bad8f8b360d76d12fda230f8baf42fe0022cf": {
-    #         "farming_pid": 5
-    #     },
-    #     "0x3dcb1787a95d2ea0eb7d00887704eebf0d79bb13": {
-    #         "farming_pid": 8
-    #     }
-    # }
-    lp_token_info = {}
-    # lp_token_info.update(dict(list(lp_token_list[0][Query.lp_token_list].items())))
-    lp_token_info.update(dict(list(lp_token_list[0][Query.farming_lp_token_list].items())))
-
     queries = [
         {
-            'query_id': f'{dex_protocol}_{Query.lp_token_info}',
+            'query_id': f'{dex_protocol}_{Query.lp_token_list}',
             "entity_id": dex_protocol,
             'query_type': Query.lp_token_info,
             'supplied_data': {
-                'lp_token_info': lp_token_info
+                'lp_token_info':  lp_token_list[0][Query.lp_token_list]
             }
         }
     ]
@@ -91,66 +75,6 @@ def get_lp_token_info(job, wallet, dex_protocol):
 def get_lp_token_liquidity(job, wallet, dex_protocol):
     with open('test/lp_token_info.json') as f:
         lp_token_info = json.load(f)
-    lp_token_info = lp_token_info[0][Query.lp_token_info]
-
-    # Input format
-    # lp_token_info = {
-    #       "0x06da0fd433c1a5d7a4faa01111c044910a184553": {
-    #         "total_supply": 0.08599627202057003,
-    #         "token0": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-    #         "token1": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-    #         "name": "SushiSwap LP Token",
-    #         "decimals": 18,
-    #         "stake_balance": 0.08245173084735195,
-    #         "acc_reward_per_share": 13.87566465730498,
-    #         "alloc_point": 1100,
-    #         "farming_pid": 0
-    #       },
-    #       "0x397ff1542f962076d0bfe58ea045ffa2d347aca0": {
-    #         "total_supply": 0.0739607160789963,
-    #         "token0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    #         "token1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-    #         "name": "SushiSwap LP Token",
-    #         "decimals": 18,
-    #         "stake_balance": 0.05191755786871983,
-    #         "acc_reward_per_share": 15.913618906828649,
-    #         "alloc_point": 3000,
-    #         "farming_pid": 1
-    #       },
-    #     "0xe7e656893030187f1073e5b2d768e3c1e8861f26": {
-    #         "total_supply": 1.0,
-    #         "token0": None,
-    #         "token1": None,
-    #         "name": "Bsc Dummy Token",
-    #         "decimals": 0,
-    #         "stake_balance": 1.0,
-    #         "acc_reward_per_share": 4571214724711396.0,
-    #         "alloc_point": 0,
-    #         "farming_pid": 359
-    #     },
-    #     "0xcb277e48526f30f625e24850cf293d89301ea470": {
-    #         "total_supply": 1.0,
-    #         "token0": None,
-    #         "token1": None,
-    #         "name": "Bttc Dummy Token",
-    #         "decimals": 0,
-    #         "stake_balance": 1.0,
-    #         "acc_reward_per_share": 2.0635693678518308e+16,
-    #         "alloc_point": 450,
-    #         "farming_pid": 360
-    #     },
-    #     "0x11b66abb675b955bd6f066fde849442865c60e29": {
-    #         "total_supply": 1.0,
-    #         "token0": None,
-    #         "token1": None,
-    #         "name": "OP Dummy Token",
-    #         "decimals": 0,
-    #         "stake_balance": 1.0,
-    #         "acc_reward_per_share": 4.407230162602343e+16,
-    #         "alloc_point": 0,
-    #         "farming_pid": 361
-    #     }
-    # }
 
     queries = [
         {
@@ -158,7 +82,7 @@ def get_lp_token_liquidity(job, wallet, dex_protocol):
             "entity_id": dex_protocol,
             'query_type': Query.token_pair_balance,
             'supplied_data': {
-                'lp_token_info': lp_token_info
+                'lp_token_info': lp_token_info[0][Query.lp_token_info]
             }
         }
     ]
@@ -182,47 +106,6 @@ def get_user_info(job, wallet, dex_protocol):
 
     for lp_token, info in lp_token_info.items():
         info.update(lp_token_liquidity_info[lp_token])
-
-    # Input format
-    # lp_token_info = {
-    #     "0x168b273278f3a8d302de5e879aa30690b7e6c28f": {
-    #         "pid": 4,
-    #         "token0": "0xad6caeb32cd2c308980a548bd0bc5aa4306c6c18",
-    #         "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
-    #         "total_supply": 1200.2464779364304,
-    #         "decimals": 18,
-    #         "token0_amount": 18448.04236946028,
-    #         "token1_amount": 121.70884726666941,
-    #         "stake_balance": 0.0,
-    #         "token0_stake_amount": 0.0,
-    #         "token1_stake_amount": 0.0
-    #     },
-    #     "0xdd5bad8f8b360d76d12fda230f8baf42fe0022cf": {
-    #         "farming_pid": 5,
-    #         "token0": "0x7083609fce4d1d8dc0c979aab8c869ea2c873402",
-    #         "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
-    #         "total_supply": 7255.38761224426,
-    #         "decimals": 18,
-    #         "token0_amount": 50582.682462821846,
-    #         "token1_amount": 1362.10369903655,
-    #         "stake_balance": 3862.313577411147,
-    #         "token0_stake_amount": 26927.049483659805,
-    #         "token1_stake_amount": 725.0986290177685
-    #     },
-    #     "0x3dcb1787a95d2ea0eb7d00887704eebf0d79bb13": {
-    #         "farming_pid": 8,
-    #         "token0": "0x4b0f1812e5df2a09796481ff14017e6005508003",
-    #         "token1": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
-    #         "total_supply": 16407.43254875897,
-    #         "decimals": 18,
-    #         "token0_amount": 352605.673046255,
-    #         "token1_amount": 1561.1056042802186,
-    #         "stake_balance": 10681.897524257238,
-    #         "token0_stake_amount": 229560.4540660897,
-    #         "token1_stake_amount": 1016.3424435791009
-    #     }
-    # }
-
     queries = [
         {
             'query_id': f'{dex_protocol}_{Query.dex_user_info}',
@@ -247,19 +130,6 @@ def get_user_reward(job, wallet, dex_protocol):
         lp_token_info = json.load(f)
     lp_token_info = lp_token_info[0][Query.lp_token_info]
 
-    # Input Format
-    # lp_token_info = {
-    #     "0x168b273278f3a8d302de5e879aa30690b7e6c28f": {
-    #         "pid": 4
-    #     },
-    #     "0xdd5bad8f8b360d76d12fda230f8baf42fe0022cf": {
-    #         "farming_pid": 5
-    #     },
-    #     "0x3dcb1787a95d2ea0eb7d00887704eebf0d79bb13": {
-    #         "farming_pid": 8
-    #     }
-    # }
-
     queries = [
         {
             'query_id': f'{dex_protocol}_{Query.protocol_reward}',
@@ -270,7 +140,6 @@ def get_user_reward(job, wallet, dex_protocol):
             }
         }
     ]
-
     user_reward = job.run(wallet, queries, batch_size=100, max_workers=8, ignore_error=True)
     with open('test/dex_user_reward.json', 'w') as f:
         json.dump(user_reward, f, indent=2)
@@ -306,7 +175,7 @@ def export_to_mongodb(chain_id, dex_protocol):
 
 if __name__ == "__main__":
     w = "0x0646e5acae817042d0b39fb519a22e5cd2fdacb5"
-    dex_ids = [Dex.pancake]
+    dex_ids = [Dex.pancake_v2]
 
     for chain_id in [Chain.bsc, Chain.ethereum, Chain.fantom, Chain.polygon, Chain.arbitrum, Chain.avalanche]:
         for dex_id in dex_ids:
@@ -314,10 +183,10 @@ if __name__ == "__main__":
                 job_ = StateProcessor(provider_url[chain_id], chain_id)
                 if dex_id in job_.services:
                     # get_lp_token_list(job=job_, wallet=w, dex_protocol=dex_id)
-                    # get_lp_token_info(job=job_, wallet=w, dex_protocol=dex_id)
+                    get_lp_token_info(job=job_, wallet=w, dex_protocol=dex_id)
                     get_lp_token_liquidity(job=job_, wallet=w, dex_protocol=dex_id)
-                    get_user_info(job=job_, wallet=w, dex_protocol=dex_id)
-                    get_user_reward(job=job_, wallet=w, dex_protocol=dex_id)
+                    # get_user_info(job=job_, wallet=w, dex_protocol=dex_id)
+                    # get_user_reward(job=job_, wallet=w, dex_protocol=dex_id)
                     # export_to_mongodb(chain_id, dex_id)
                     print(f'export {dex_id}  in {chain_id}')
             except Exception as ex:

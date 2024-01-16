@@ -36,9 +36,9 @@ class UniswapV2Services(DexProtocolServices):
         }
         return info
 
-    def get_all_supported_lp_token(self, limit=1, supplied_data: dict = None):
+    def get_all_supported_lp_token(self, limit=10000, supplied_data: dict = None):
         web3 = self.state_service.get_w3()
-        factory_addr = self.pool_info.get('factoryAddress')
+        factory_addr = self.pool_info.get('factory_address')
 
         factory_contract = web3.eth.contract(
             address=web3.toChecksumAddress(factory_addr), abi=self.factory_abi)
@@ -114,7 +114,6 @@ class UniswapV2Services(DexProtocolServices):
         return rpc_calls
 
     def decode_lp_token_info(self, supplied_data, decoded_data, block_number: int = "latest"):
-        result = {}
 
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
@@ -128,16 +127,16 @@ class UniswapV2Services(DexProtocolServices):
                 total_supply = decoded_data.get(f'totalSupply_{lp_token}_{block_number}'.lower()) / 10 ** decimals
                 name = decoded_data.get(f'name_{lp_token}_{block_number}'.lower())
 
-                result[lp_token] = {
+                lp_token_info[lp_token].update({
                     "total_supply": total_supply,
                     "token0": token0,
                     "token1": token1,
                     "name": name,
                     'decimals': decimals
-                }
+                })
             except Exception:
                 continue
-        return result
+        return lp_token_info
 
     # Get balance of token
     def get_balance_of_token_function_info(self, supplied_data, block_number: int = "latest"):
@@ -168,17 +167,16 @@ class UniswapV2Services(DexProtocolServices):
 
     def decode_balance_of_token_function_info(
             self, supplied_data, decoded_data, block_number: int = "latest"):
-        result = {}
 
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
             try:
                 decimals = decoded_data.get(f'decimals_{lp_token}_{block_number}'.lower())
                 total_supply = decoded_data.get(f'totalSupply_{lp_token}_{block_number}'.lower()) / 10 ** decimals
-                result[lp_token] = {
+                lp_token_info[lp_token].update({
                     'total_supply': total_supply,
                     'decimals': decimals
-                }
+                })
 
                 for token_key in ["token0", "token1"]:
                     token_address = info.get(token_key, None)
@@ -186,33 +184,10 @@ class UniswapV2Services(DexProtocolServices):
 
                     if (token_address is not None) and (decoded_data.get(query_id) is not None):
                         token_decimals = decoded_data.get(f'decimals_{token_address}_{block_number}'.lower()) or 18
-                        result[lp_token][f'{token_key}_amount'] = decoded_data.get(query_id) / 10 ** token_decimals
+                        lp_token_info[lp_token][f'{token_key}_amount'] = decoded_data.get(
+                            query_id) / 10 ** token_decimals
             except Exception:
                 continue
-        return result
-
-    def calculate_lp_token_price_info(
-            self, supplied_data, lp_token_balance, token_info):
-        """Deprecated"""
-        lp_token_info = supplied_data['lp_token_info']
-        for lp_token, value in lp_token_info.items():
-            total_supply = value.get("totalSupply")
-            token0 = value.get("token0", 0)
-            token1 = value.get("token1", 0)
-            if token0 and token1:
-                balance_of_token0 = lp_token_balance[lp_token].get(token0, 0)
-                balance_of_token1 = lp_token_balance[lp_token].get(token1, 0)
-                token0_price = token_info.get(token0)['price']
-                token1_price = token_info.get(token1)['price']
-                total_of_token0 = balance_of_token0 * token0_price
-                total_of_token1 = balance_of_token1 * token1_price
-                lp_token_price = (total_of_token0 + total_of_token1) / total_supply
-                lp_token_info[lp_token].update({
-                    "totalSupply": total_supply,
-                    "token0Amount": balance_of_token0,
-                    "token1Amount": balance_of_token1,
-                    'price': lp_token_price
-                })
         return lp_token_info
 
     # User
@@ -266,37 +241,6 @@ class UniswapV2Services(DexProtocolServices):
 
         return result
 
-    def update_token_amount_of_wallet(
-            self, user_info, supplied_data: dict = None, token_info: dict = None):
-        """Deprecated"""
-        user_info_token_amount = {}
-        lp_token_info = supplied_data['lp_token_info']
-        for lp_token, value in user_info.items():
-            amount = value.get("amount", 0)
-            pair_info = lp_token_info.get(lp_token)
-            token0 = pair_info.get("token0")
-            token1 = pair_info.get("token1")
-            token0_price = token_info.get(token0)['price']
-            token1_price = token_info.get(token1)['price']
-            lp_token_price = pair_info.get("price")
-            lp_token_amount_in_usd = amount * lp_token_price
-
-            token0_amount = lp_token_amount_in_usd / 2 / token0_price
-            token1_amount = lp_token_amount_in_usd / 2 / token1_price
-
-            user_info_token_amount[lp_token] = {
-                "amount": amount,
-                'amountInUSD': lp_token_amount_in_usd,
-                token0: {
-                    'amount': token0_amount,
-                },
-                token1: {
-                    'amount': token1_amount,
-                }
-            }
-
-        return user_info_token_amount
-
     def get_rewards_balance_function_info(self, wallet, supplied_data, block_number: int = "latest"):
         return {}
 
@@ -305,7 +249,7 @@ class UniswapV2Services(DexProtocolServices):
         return {}
 
     def get_factory_function_info(self, fn_name, fn_paras, block_number: int = 'latest'):
-        factory_addr = self.pool_info['factoryAddress']
+        factory_addr = self.pool_info.get('factory_address')
         return self.state_service.get_function_info(
             factory_addr, self.factory_abi, fn_name, fn_paras, block_number
         )
