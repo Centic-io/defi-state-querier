@@ -60,16 +60,6 @@ class PancakeSwapV2Services(UniswapV2Services):
             pid = int(query_id.split("_")[-2])
             result[value.lower()] = {"farming_pid": pid}
 
-            # For another version
-            # elif query_id.startswith('poolInfo'):
-            #     lp_token = value[0].lower()
-            #     if lp_token not in result:
-            #         result[lp_token] = {}
-            #
-            #     # Format query_id: f'poolInfo_{self.masterchef_addr}_{pid}_latest'
-            #     pid = int(query_id.split("_")[-2])
-            #     result[lp_token] = {"farming_v1_pid": pid}
-
         return result
 
     # Get lp token info
@@ -85,12 +75,6 @@ class PancakeSwapV2Services(UniswapV2Services):
                 address=lp_token, abi=LP_TOKEN_ABI, fn_name="balanceOf", fn_paras=[masterchef_addr],
                 block_number=block_number)
 
-            if info.get('farming_pid') is not None:
-                pid = int(info.get('farming_pid'))
-                query_id = f'poolInfo_{masterchef_addr}_{pid}_{block_number}'.lower()
-                rpc_calls[query_id] = self.get_masterchef_function_info(
-                    fn_name="poolInfo", fn_paras=[pid], block_number=block_number)
-
         return rpc_calls
 
     def decode_lp_token_info(self, supplied_data, decoded_data, block_number: int = "latest"):
@@ -98,32 +82,12 @@ class PancakeSwapV2Services(UniswapV2Services):
             supplied_data=supplied_data, decoded_data=decoded_data, block_number=block_number)
 
         masterchef_addr = self.pool_info.get('master_chef_address')
-
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
-            lp_info = result.get(lp_token, {})
-
             staked_balance_query_id = f'balanceOf_{lp_token}_{masterchef_addr}_{block_number}'.lower()
-
-            if (not lp_info) or (decoded_data.get(staked_balance_query_id) is None):
-                continue
-
             masterchef_balance = decoded_data.get(
-                staked_balance_query_id) / 10 ** lp_info.get('decimals', 18)
-            lp_info.update({"stake_balance": masterchef_balance})
-
-            if info.get('farming_pid') is not None:
-                pid = int(info.get('farming_pid'))
-                pool_info_query_id = f'poolInfo_{masterchef_addr}_{pid}_{block_number}'.lower()
-                pool_info = decoded_data.get(pool_info_query_id)
-                acc_cake_per_share = pool_info[0] / 10 ** 18
-                alloc_point = pool_info[2]
-
-                lp_info.update({
-                    'acc_reward_per_share': acc_cake_per_share,
-                    'alloc_point': alloc_point,
-                    'farming_pid': pid
-                })
+                staked_balance_query_id) / 10 ** lp_token_info.get('decimals', 18)
+            result[lp_token].update({"stake_balance": masterchef_balance})
 
         return result
 
@@ -150,23 +114,17 @@ class PancakeSwapV2Services(UniswapV2Services):
         )
 
         masterchef_addr = self.pool_info.get('master_chef_address')
-
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
-            lp_info = result.get(lp_token, {})
-
             staked_balance_query_id = f'balanceOf_{lp_token}_{masterchef_addr}_{block_number}'.lower()
-
-            if (not lp_info) or (decoded_data.get(staked_balance_query_id) is None):
-                continue
-
             staked_balance = decoded_data.get(
-                staked_balance_query_id) / 10 ** lp_info.get('decimals', 18)
-            lp_info.update({"stake_balance": staked_balance})
+                staked_balance_query_id) / 10 ** lp_token_info.get('decimals', 18)
+            result[lp_token].update({"stake_balance": staked_balance})
 
             for token_key in ["token0", "token1"]:
-                token_amount = lp_info.get(f'{token_key}_amount', 0)
-                token_stake_amount = token_amount * staked_balance / lp_info.get('total_supply') if lp_info.get(
+                token_amount = lp_token_info.get(f'{token_key}_amount', 0)
+                token_stake_amount = token_amount * staked_balance / lp_token_info.get(
+                    'total_supply') if lp_token_info.get(
                     'total_supply') else 0
                 result[lp_token][f'{token_key}_stake_amount'] = token_stake_amount
 

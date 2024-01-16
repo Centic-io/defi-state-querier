@@ -42,6 +42,12 @@ class UniswapV3Services(DexProtocolServices):
         }
         return info
 
+    def get_farming_supported_lp_token(self, limit: int = 10) -> dict:
+        return {}
+
+    def decode_farming_supported_lp_token(self, response_data) -> dict:
+        return {}
+
     def get_all_supported_lp_token(self, limit: int = 100, supplied_data: dict = None):
         rpc_calls = {}
         top_token = supplied_data['token_info']
