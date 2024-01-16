@@ -9,7 +9,7 @@ class MongoDBConfig:
     PORT = os.environ.get("MONGODB_PORT", '8529')
     USERNAME = os.environ.get("MONGODB_USERNAME", "root")
     PASSWORD = os.environ.get("MONGODB_PASSWORD", "dev123")
-    CONNECTION_URL = os.getenv("MONGODB_CONNECTION_URL") or f"mongodb@{USERNAME}:{PASSWORD}@http://{HOST}:{PORT}"
+    CONNECTION_URL = os.getenv("MONGODB_CONNECTION_URL") or f"mongodb://localhost:27017/"
     DATABASE = os.getenv('MONGODB_DATABASE', 'knowledge_graph')
 
 class MongoDbKLGConfig:
