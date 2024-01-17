@@ -32,7 +32,7 @@ def get_lp_token_list(job, wallet, dex_protocol):
             'query_id': f'{dex_protocol}_{Query.lp_token_list}',
             "entity_id": dex_protocol,
             'query_type': Query.lp_token_list,
-            'number_lp': 100
+            'number_lp': 10
         },
         # {
         #     'query_id': f'{dex_protocol}_{Query.farming_lp_token_list}',
@@ -175,14 +175,14 @@ def export_to_mongodb(chain_id, dex_protocol):
 
 if __name__ == "__main__":
     w = "0x0646e5acae817042d0b39fb519a22e5cd2fdacb5"
-    dex_ids = [Dex.pancake_v2]
+    dex_ids = [Dex.sushi_v2]
 
     for chain_id in [Chain.bsc, Chain.ethereum, Chain.fantom, Chain.polygon, Chain.arbitrum, Chain.avalanche]:
         for dex_id in dex_ids:
             try:
                 job_ = StateProcessor(provider_url[chain_id], chain_id)
                 if dex_id in job_.services:
-                    # get_lp_token_list(job=job_, wallet=w, dex_protocol=dex_id)
+                    get_lp_token_list(job=job_, wallet=w, dex_protocol=dex_id)
                     get_lp_token_info(job=job_, wallet=w, dex_protocol=dex_id)
                     get_lp_token_liquidity(job=job_, wallet=w, dex_protocol=dex_id)
                     # get_user_info(job=job_, wallet=w, dex_protocol=dex_id)
