@@ -159,7 +159,7 @@ class UniswapV3Services(DexProtocolServices):
 
             tick = value.get('tick')
             tick_spacing = value.get('tick_spacing')
-            tick_lower = tick // tick_spacing * tick_spacing
+            tick_lower = (tick // tick_spacing) * tick_spacing
             tick_upper = (tick // tick_spacing + 1) * tick_spacing
             liquidity = value.get('liquidity_in_range')
             sqrt_price_x96 = math.sqrt(value.get('price')) * 2 ** 96
@@ -225,7 +225,7 @@ class UniswapV3Services(DexProtocolServices):
                 'fee_growth_inside0': position[8],
                 'fee_growth_inside1': position[9],
                 'tokens_owed0': position[10],
-                'tokens_owed0': position[11]
+                'tokens_owed1': position[11]
             })
 
         return user_data
