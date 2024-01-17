@@ -28,7 +28,6 @@ class QuickSwapV3Services(UniswapV3Services):
             self.nft_token_manager_abi = self.pool_info.get('NFT_manager_abi')
             self.factory_addr = self.pool_info.get('factory_address')
 
-
     def get_service_info(self):
         info = {
             Dex.quickswap_v3: {
@@ -38,6 +37,7 @@ class QuickSwapV3Services(UniswapV3Services):
             }
         }
         return info
+
     def get_all_supported_lp_token(self, limit: int = 100, supplied_data: dict = None):
         rpc_calls = {}
         top_token = supplied_data['token_info']
@@ -101,13 +101,13 @@ class QuickSwapV3Services(UniswapV3Services):
             tick_spacing = response_data.get(f'tickSpacing_{lp_token}_{block_number}'.lower())
 
             lp_token_info[lp_token].update({
-                "liquidityInRange": liquidity_in_range,
+                "liquidity_in_range": liquidity_in_range,
                 "price": price,
                 'tick': slot0[1],
                 'fee': slot0[2],
-                'tickSpacing': tick_spacing,
-                'token0Decimals': token0_decimals,
-                'token1Decimals': token1_decimals
+                'tick_spacing': tick_spacing,
+                'token0_decimals': token0_decimals,
+                'token1_decimals': token1_decimals
 
             })
         return lp_token_info
@@ -121,13 +121,13 @@ class QuickSwapV3Services(UniswapV3Services):
             user_data[token_id].update({
                 'token0': position[2],
                 'token1': position[3],
-                'tickLower': position[4],
-                'tickUpper': position[5],
+                'tick_lower': position[4],
+                'tick_upper': position[5],
                 'liquidity': position[6],
-                'feeGrowthInside0': position[7],
-                'feeGrowthInside1': position[8],
-                'tokensOwed0': position[9],
-                'tokensOwed1': position[10]
+                'fee_growth_inside0': position[7],
+                'fee_growth_inside1': position[8],
+                'tokens_owed0': position[9],
+                'tokens_owed1': position[10]
 
             })
         return user_data
@@ -159,31 +159,31 @@ class QuickSwapV3Services(UniswapV3Services):
         for token_id, value in user_data.items():
             liquidity = value.get('liquidity')
             if liquidity > 0:
-                lp_token_address = value.get('poolAddress')
-                tick_lower = value.get('tickLower')
-                tick_upper = value.get('tickUpper')
+                lp_token_address = value.get('pool_address')
+                tick_lower = value.get('tick_lower')
+                tick_upper = value.get('tick_upper')
                 pool_position = decoded_data.get(
                     f'positions_{lp_token_address}_{[tick_upper, tick_lower]}_{block_number}'.lower())
 
                 pool_fee_growth_inside0 = pool_position[2]
                 pool_fee_growth_inside1 = pool_position[3]
-                fee_growth_inside0 = value.get('feeGrowthInside0')
-                fee_growth_inside1 = value.get('feeGrowthInside1')
+                fee_growth_inside0 = value.get('fee_growth_inside0')
+                fee_growth_inside1 = value.get('fee_growth_inside1')
                 liquidity = value.get('liquidity')
-                token0_decimals = lp_token_info.get(lp_token_address, {}).get("token0Decimals")
-                token1_decimals = lp_token_info.get(lp_token_address, {}).get("token1Decimals")
+                token0_decimals = lp_token_info.get(lp_token_address, {}).get("token0_decimals")
+                token1_decimals = lp_token_info.get(lp_token_address, {}).get("token1_decimals")
                 token0_reward = ((pool_fee_growth_inside0 - fee_growth_inside0) / 2 ** 128 * liquidity + value.get(
-                    'tokensOwed0')) / 10 ** token0_decimals
+                    'tokens_owed0')) / 10 ** token0_decimals
                 token1_reward = ((pool_fee_growth_inside1 - fee_growth_inside1) / 2 ** 128 * liquidity + value.get(
-                    'tokensOwed1')) / 10 ** token1_decimals
+                    'tokens_owed1')) / 10 ** token1_decimals
 
             else:
                 token0_reward = 0
                 token1_reward = 0
 
             user_data[token_id].update({
-                'token0Reward': token0_reward,
-                'token1Reward': token1_reward
+                'token0_reward': token0_reward,
+                'token1_reward': token1_reward
             })
 
         return user_data
