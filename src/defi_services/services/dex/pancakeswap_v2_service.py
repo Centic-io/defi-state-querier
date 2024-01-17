@@ -122,10 +122,9 @@ class PancakeSwapV2Services(UniswapV2Services):
             result[lp_token].update({"stake_balance": staked_balance})
 
             for token_key in ["token0", "token1"]:
-                token_amount = lp_token_info.get(f'{token_key}_amount', 0)
-                token_stake_amount = token_amount * staked_balance / lp_token_info.get(
-                    'total_supply') if lp_token_info.get(
-                    'total_supply') else 0
+                token_amount = result[lp_token].get(f'{token_key}_amount', 0)
+                total_supply = lp_token_info.get(lp_token, {}).get('total_supply')
+                token_stake_amount = token_amount * staked_balance / total_supply if total_supply > 0 else 0
                 result[lp_token][f'{token_key}_stake_amount'] = token_stake_amount
 
         return result
