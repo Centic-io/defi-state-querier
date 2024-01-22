@@ -11,7 +11,7 @@ from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain, BlockTime
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.time_constant import TimeConstants
-from defi_services.constants.token_constant import ContractAddresses, Token
+from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.compound_service import CompoundInfo
 from defi_services.services.lending.lending_info.ethereum.morpho_compound_eth import MORPHO_COMPOUND_ETH
@@ -271,6 +271,7 @@ class MorphoCompoundStateService(ProtocolServices):
             data[token] = {
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
+                "is_collateral": True if value.get('liquidationThreshold') > 0 else False
             }
             if token_prices:
                 token_price = token_prices.get(underlying)

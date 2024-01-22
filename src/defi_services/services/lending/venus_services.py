@@ -161,25 +161,31 @@ class VenusStateService(CompoundStateService):
     # WALLET DEPOSIT BORROW BALANCE
     def get_wallet_deposit_borrow_balance_function_info(
             self,
-            wallets: str,
+            wallet: str,
             reserves_info: dict,
             block_number: int = "latest",
             health_factor: bool = False
     ):
 
         rpc_calls = {}
+
+        # Check asset is collateral
+        assets_in_query_id = f"getAssetsIn_{self.pool_info['comptrollerAddress']}_{wallet}_{block_number}".lower()
+        rpc_calls[assets_in_query_id] = self.get_comptroller_function_info(
+            fn_name='getAssetsIn', fn_paras=[wallet], block_number=block_number)
+
         for token, value in reserves_info.items():
             underlying = token
             ctoken = value.get('cToken')
             if token == Token.native_token:
                 underlying = Token.wrapped_token.get(self.chain_id)
-            underlying_borrow_key = f"borrowBalanceCurrent_{ctoken}_{wallets}_{block_number}".lower()
-            underlying_balance_key = f"balanceOfUnderlying_{ctoken}_{wallets}_{block_number}".lower()
+            underlying_borrow_key = f"borrowBalanceCurrent_{ctoken}_{wallet}_{block_number}".lower()
+            underlying_balance_key = f"balanceOfUnderlying_{ctoken}_{wallet}_{block_number}".lower()
             underlying_decimals_key = f"decimals_{underlying}_{block_number}".lower()
             rpc_calls[underlying_borrow_key] = self.get_ctoken_function_info(
-                ctoken, "borrowBalanceCurrent", [wallets], block_number)
+                ctoken, "borrowBalanceCurrent", [wallet], block_number)
             rpc_calls[underlying_balance_key] = self.get_ctoken_function_info(
-                ctoken, "balanceOfUnderlying", [wallets], block_number)
+                ctoken, "balanceOfUnderlying", [wallet], block_number)
             rpc_calls[underlying_decimals_key] = self.state_service.get_function_info(
                 underlying, ERC20_ABI, "decimals", [], block_number
             )
@@ -188,7 +194,7 @@ class VenusStateService(CompoundStateService):
 
     def calculate_wallet_deposit_borrow_balance(
             self,
-            wallets: str,
+            wallet: str,
             reserves_info: dict,
             decoded_data: dict,
             token_prices: dict = None,
@@ -196,6 +202,9 @@ class VenusStateService(CompoundStateService):
             block_number: int = "latest",
             health_factor: bool = False
     ):
+        assets_in_query_id = f"getAssetsIn_{self.pool_info['comptrollerAddress']}_{wallet}_{block_number}".lower()
+        assets_in = [t.lower() for t in decoded_data[assets_in_query_id]]
+
         if token_prices is None:
             token_prices = {}
         result = {}
@@ -207,8 +216,8 @@ class VenusStateService(CompoundStateService):
             ctoken = value.get("cToken")
             if token == Token.native_token:
                 underlying = Token.wrapped_token.get(self.chain_id)
-            get_total_deposit_id = f"balanceOfUnderlying_{ctoken}_{wallets}_{block_number}".lower()
-            get_total_borrow_id = f"borrowBalanceCurrent_{ctoken}_{wallets}_{block_number}".lower()
+            get_total_deposit_id = f"balanceOfUnderlying_{ctoken}_{wallet}_{block_number}".lower()
+            get_total_borrow_id = f"borrowBalanceCurrent_{ctoken}_{wallet}_{block_number}".lower()
             get_decimals_id = f"decimals_{underlying}_{block_number}".lower()
             decimals = decoded_data[get_decimals_id]
             deposit_amount = decoded_data[get_total_deposit_id] / 10 ** decimals
@@ -216,6 +225,7 @@ class VenusStateService(CompoundStateService):
             data[token] = {
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
+                "is_collateral": ctoken in assets_in
             }
             if token_prices:
                 token_price = token_prices.get(underlying)
@@ -227,7 +237,9 @@ class VenusStateService(CompoundStateService):
                 data[token]['borrow_amount_in_usd'] += borrow_amount_in_usd
                 data[token]['deposit_amount_in_usd'] += deposit_amount_in_usd
                 total_borrow += borrow_amount_in_usd
-                total_collateral += deposit_amount_in_usd * value.get("liquidationThreshold")
+                if data[token]['isCollateral']:
+                    total_collateral += deposit_amount_in_usd * value.get("liquidationThreshold")
+
             result[ctoken] = data
         if health_factor:
             if total_collateral and total_borrow:
