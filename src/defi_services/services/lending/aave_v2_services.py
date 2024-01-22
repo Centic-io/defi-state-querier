@@ -329,7 +329,7 @@ class AaveV2StateService(ProtocolServices):
             stable_borrow_amount
     ):
         result = {}
-        for token in reserves_info:
+        for token, info in reserves_info.items():
             decimals_token = decimals.get(token)
             deposit_amount_wallet = deposit_amount.get(token) / 10 ** decimals_token
             borrow_amount_wallet = borrow_amount.get(token) / 10 ** decimals_token
@@ -337,6 +337,7 @@ class AaveV2StateService(ProtocolServices):
             result[token] = {
                 "borrow_amount": borrow_amount_wallet,
                 "deposit_amount": deposit_amount_wallet,
+                "is_collateral": True if info.get('liquidationThreshold') > 0 else False
             }
             if token_prices:
                 deposit_amount_in_usd = deposit_amount_wallet * token_prices.get(token, 0)
