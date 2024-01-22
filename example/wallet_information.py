@@ -9,10 +9,10 @@ job = StateProcessor(
 queries = [
     {
         "query_id": 4,
-        "entity_id": 'compound',
+        "entity_id": 'aave-v2',
         "query_type": Query.deposit_borrow
     }
 ]
 info = job.get_service_info()
-data = job.run('0x23291905585578f57e155def1fc5cd66dd00db4e', queries)
+data = job.run('0xf1df824419879bb8a7e758173523f88efb7af193', queries)
 print(data)

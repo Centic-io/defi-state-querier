@@ -253,7 +253,7 @@ class LiqeeStateService(CompoundStateService):
             data[token] = {
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
-                "is_collateral": True
+                "is_collateral": True if value.get('liquidationThreshold') > 0 else False
             }
             if token_prices:
                 token_price = token_prices.get(underlying)
