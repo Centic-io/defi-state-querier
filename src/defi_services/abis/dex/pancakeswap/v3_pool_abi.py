@@ -1,4 +1,4 @@
-V3_POOL_ABI = [{"inputs": [], "stateMutability": "nonpayable", "type": "constructor"}, {
+PANCAKESWAP_V3_POOL_ABI = [{"inputs": [], "stateMutability": "nonpayable", "type": "constructor"}, {
     "anonymous": False, "inputs": [{"indexed": True, "internalType": "address", "name": "owner", "type": "address"},
                                    {"indexed": True, "internalType": "int24", "name": "tickLower", "type": "int24"},
                                    {"indexed": True, "internalType": "int24", "name": "tickUpper", "type": "int24"},
