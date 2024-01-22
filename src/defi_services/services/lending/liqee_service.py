@@ -253,6 +253,7 @@ class LiqeeStateService(CompoundStateService):
             data[token] = {
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
+                "is_collateral": True
             }
             if token_prices:
                 token_price = token_prices.get(underlying)
@@ -264,7 +265,9 @@ class LiqeeStateService(CompoundStateService):
                 data[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
                 data[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
                 total_borrow += borrow_amount_in_usd
-                total_collateral += deposit_amount_in_usd * value.get("liquidationThreshold")
+                if data[token]['isCollateral']:
+                    total_collateral += deposit_amount_in_usd * value.get("liquidationThreshold")
+
             result[ctoken] = data
         if health_factor:
             if total_collateral and total_borrow:

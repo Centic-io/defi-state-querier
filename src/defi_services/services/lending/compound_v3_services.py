@@ -339,6 +339,7 @@ class CompoundV3StateService(CompoundStateService):
                 deposit_borrow[asset] = {
                         "borrow_amount": 0,
                         "deposit_amount": deposit_amount,
+                        "is_collateral": True
                     }
                 if token_prices:
                     deposit_amount_in_usd = deposit_amount * token_prices.get(asset)
@@ -347,7 +348,8 @@ class CompoundV3StateService(CompoundStateService):
             if underlying not in deposit_borrow:
                 deposit_borrow[underlying] = {
                     "borrow_amount": borrow_amount,
-                    "deposit_amount": 0
+                    "deposit_amount": 0,
+                    "is_collateral": False
                 }
             else:
                 deposit_borrow[underlying]["borrow_amount"] = borrow_amount
@@ -360,7 +362,7 @@ class CompoundV3StateService(CompoundStateService):
 
         if health_factor:
             if total_collateral and total_borrow:
-                result['health_factor'] = total_collateral/total_borrow
+                result['health_factor'] = total_collateral / total_borrow
             elif total_collateral:
                 result['health_factor'] = 100
             else:

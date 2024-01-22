@@ -120,6 +120,12 @@ class JustLendStateService(CompoundStateService):
     ):
 
         rpc_calls = {}
+
+        # Check asset is collateral
+        assets_in_query_id = f"getAssetsIn_{self.pool_info['comptrollerAddress']}_{wallet}_{block_number}".lower()
+        rpc_calls[assets_in_query_id] = self.get_comptroller_function_info(
+            fn_name='getAssetsIn', fn_paras=[wallet], block_number=block_number)
+
         for token, value in reserves_info.items():
             underlying = token
             ctoken = value.get('cToken')
@@ -148,6 +154,9 @@ class JustLendStateService(CompoundStateService):
             block_number: int = "latest",
             health_factor: bool = False
     ):
+        assets_in_query_id = f"getAssetsIn_{self.pool_info['comptrollerAddress']}_{wallet}_{block_number}".lower()
+        assets_in = [t.lower() for t in decoded_data[assets_in_query_id]]
+
         if token_prices is None:
             token_prices = {}
         result = {}
@@ -168,6 +177,7 @@ class JustLendStateService(CompoundStateService):
             data[token] = {
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
+                "is_collateral": ctoken in assets_in
             }
 
             if token_prices:
@@ -180,7 +190,9 @@ class JustLendStateService(CompoundStateService):
                 data[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
                 data[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
                 total_borrow += borrow_amount_in_usd
-                total_collateral += deposit_amount_in_usd * value.get("liquidationThreshold")
+                if data[token]['isCollateral']:
+                    total_collateral += deposit_amount_in_usd * value.get("liquidationThreshold")
+
             result[ctoken] = data
         if health_factor:
             if total_collateral and total_borrow:

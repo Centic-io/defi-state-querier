@@ -169,6 +169,7 @@ class MorphoAaveV3StateService(MorphoCompoundStateService):
             data[token] = {
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
+                "is_collateral": True
             }
             if token_prices:
                 token_price = token_prices.get(underlying)

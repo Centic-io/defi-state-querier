@@ -337,6 +337,7 @@ class AaveV2StateService(ProtocolServices):
             result[token] = {
                 "borrow_amount": borrow_amount_wallet,
                 "deposit_amount": deposit_amount_wallet,
+                "is_collateral": True
             }
             if token_prices:
                 deposit_amount_in_usd = deposit_amount_wallet * token_prices.get(token, 0)
