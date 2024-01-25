@@ -8,7 +8,7 @@ from defi_services.constants.entities.dex_constant import Dex
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.dex.dex_info.uniswap_info import UNISWAP_V3_ETH_INFO
 from defi_services.services.dex_protocol_services import DexProtocolServices
-from defi_services.utils.sqrt_price_math import get_token_amount_of_user
+from defi_services.utils.sqrt_price_math import get_token_amount_of_user, get_token_amount_of_pool
 
 logger = logging.getLogger("UniSwap V3 State Service")
 
@@ -162,9 +162,8 @@ class UniswapV3Services(DexProtocolServices):
             tick_lower = (tick // tick_spacing) * tick_spacing
             tick_upper = (tick // tick_spacing + 1) * tick_spacing
             liquidity = value.get('liquidity_in_range')
-            sqrt_price_x96 = math.sqrt(value.get('price')) * 2 ** 96
-            amount0, amount1 = get_token_amount_of_user(liquidity=liquidity, sqrt_price_x96=sqrt_price_x96, tick=tick,
-                                                        tick_lower=tick_lower, tick_upper=tick_upper)
+            amount0, amount1 = get_token_amount_of_pool(liquidity=liquidity, tick_lower=tick_lower,
+                                                        tick_upper=tick_upper)
             lp_token_info[lp_token].update({
                 'token0_amount_in_range': amount0 / 10 ** value.get('token0_decimals'),
                 'token1_amount_in_range': amount1 / 10 ** value.get('token1_decimals')
