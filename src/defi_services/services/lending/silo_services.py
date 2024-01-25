@@ -316,6 +316,7 @@ class SiloStateService(ProtocolServices):
                     data[asset] = {
                         "borrow_amount": borrow_amount,
                         "deposit_amount": deposit_amount,
+                        "is_collateral": True
                     }
                 else:
                     data[asset]["borrow_amount"] += borrow_amount

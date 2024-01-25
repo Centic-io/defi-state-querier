@@ -2,7 +2,9 @@ SPARK_ETH = {
     "address": "0xc13e21b648a5ee794902342038ff3adab66be987",
     "name": "Spark Lending Pool",
     "stakedIncentiveAddress": '0x4370d3b6c9588e02ce9d22e684387859c7ff5b34',
-    "rewardTokensList": [],
+    "rewardTokensList": [
+        "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0"
+    ],
     "oracleAddress": "0x8105f69d9c41644c6a0803fda7d03aa70996cfd9",
     "type": "LENDING_POOL",
     "poolToken": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",

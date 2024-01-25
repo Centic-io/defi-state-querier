@@ -2,7 +2,7 @@ import os
 
 from defi_services.constants.query_constant import Query
 from defi_services.jobs.processors.state_processor import StateProcessor
-from example.dex_information import provider_url
+from example.dex_information_v2 import provider_url
 from example.dex_information_v2 import get_lp_token_list, get_lp_token_info, get_lp_token_liquidity, get_user_info, \
     get_user_reward
 

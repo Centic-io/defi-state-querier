@@ -305,6 +305,6 @@ class AaveV3StateService(AaveV2StateService):
         result = dict(zip(*rewards))
         for key, value in result.items():
             decimals_call_id = f"decimals_{key}_{block_number}".lower()
-            value /= 10**decoded_data.get(decimals_call_id)
+            value /= 10 ** decoded_data.get(decimals_call_id, 18)
             result[key] = {"amount": value}
         return result
