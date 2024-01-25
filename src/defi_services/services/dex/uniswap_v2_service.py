@@ -144,12 +144,6 @@ class UniswapV2Services(DexProtocolServices):
 
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
-            for fn_name in ["decimals", "totalSupply"]:
-                query_id = f"{fn_name}_{lp_token}_{block_number}".lower()
-                rpc_calls[query_id] = self.state_service.get_function_info(
-                    address=lp_token, abi=LP_TOKEN_ABI, fn_name=fn_name, fn_paras=None,
-                    block_number=block_number)
-
             for token_key in ["token0", "token1"]:
                 token_address = info.get(token_key, None)
                 if token_address is not None:
@@ -171,13 +165,6 @@ class UniswapV2Services(DexProtocolServices):
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
             try:
-                decimals = decoded_data.get(f'decimals_{lp_token}_{block_number}'.lower())
-                total_supply = decoded_data.get(f'totalSupply_{lp_token}_{block_number}'.lower()) / 10 ** decimals
-                lp_token_info[lp_token].update({
-                    'total_supply': total_supply,
-                    'decimals': decimals
-                })
-
                 for token_key in ["token0", "token1"]:
                     token_address = info.get(token_key, None)
                     query_id = f'balanceOf_{token_address}_{lp_token}_{block_number}'.lower()
