@@ -154,12 +154,12 @@ class Denoms:
             "denom": "ibc/8870c4203cebf2279ba065e3de95fc3f8e05a4a93424e7dc707a21514be353a0",
             "decimal": 6
         },
-        "ibc/e070ce91cc4bd15aec9b5788c0826755aad35052a3037e9ac62be70b4c9a7dbb": {
+        "ibc/b93f321238f7bb15ab5b882660aae72286c8e9035de34e2b30f60e54c623c63c": {
             "name": "EEUR",
             "denom": "ibc/b93f321238f7bb15ab5b882660aae72286c8e9035de34e2b30f60e54c623c63c",
             "decimal": 6
         },
-        "": {
+        "ibc/e070ce91cc4bd15aec9b5788c0826755aad35052a3037e9ac62be70b4c9a7dbb": {
             "name": "NGM",
             "denom": "ibc/e070ce91cc4bd15aec9b5788c0826755aad35052a3037e9ac62be70b4c9a7dbb",
             "decimal": 6
