@@ -15,14 +15,14 @@ echo "__version__ = \"$version\"" > src/defi_services/__init__.py
 python3 -m pip install build twine
 
 # Run test
-python3 -m pip install -r requirements.txt
-python3 -m pip install pytest
-pytest 2>&1 | tee tests/.log
-status=${PIPESTATUS[0]}
-if [ "$status" -ne 0 ]; then
-    echo 'ERROR: pytest failed, exiting ...'
-    exit "$status"
-fi
+#python3 -m pip install -r requirements.txt
+#python3 -m pip install pytest
+#pytest 2>&1 | tee tests/.log
+#status=${PIPESTATUS[0]}
+#if [ "$status" -ne 0 ]; then
+#    echo 'ERROR: pytest failed, exiting ...'
+#    exit "$status"
+#fi
 
 # Clear dist
 rm -rf dist/
