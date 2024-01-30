@@ -4,7 +4,7 @@ VENUS_BSC = {
     "name": "Venus Lending Pool",
     "rewardToken": "0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63",
     "comptrollerAddress": "0xfd36e2c2a6789db23113685031d7f16329158384",
-    "lensAddress": "0xcda4a4ab96dfc1728ee265b9392373db40e769f2",
+    "lensAddress": "0xfb0f09db330dc842a6637bfb959209424bbfe8c7",
     "poolToken": "0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63",
     "type": "LENDING_POOL",
     "forked": "compound",

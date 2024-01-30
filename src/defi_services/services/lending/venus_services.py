@@ -144,17 +144,23 @@ class VenusStateService(CompoundStateService):
             reserves_info: dict = None,
             block_number: int = "latest",
     ):
-        rpc_call = self.get_comptroller_function_info("venusAccrued", [wallet], block_number)
-        get_reward_id = f"venusAccrued_{self.name}_{wallet}_{block_number}".lower()
-        return {get_reward_id: rpc_call}
+        # rpc_call = self.get_lens_function_info("pendingRewards", [wallet, self.pool_info['comptrollerAddress']], block_number)
+        # get_reward_id = f"pendingRewards_{self.name}_{wallet}_{block_number}".lower()
+        # return {get_reward_id: rpc_call}
+        return {}
 
     def calculate_rewards_balance(
             self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
-        get_reward_id = f"venusAccrued_{self.name}_{wallet}_{block_number}".lower()
-        rewards = decoded_data.get(get_reward_id) / 10 ** 18
+        w3 = self.state_service.get_w3()
+        contract = w3.eth.contract(address=w3.toChecksumAddress(self.pool_info.get("lensAddress")), abi = self.lens_abi)
+        # get_reward_id = f"pendingRewards_{self.name}_{wallet}_{block_number}".lower()
+        return_data = contract.functions.pendingRewards(w3.toChecksumAddress(wallet), w3.toChecksumAddress(self.pool_info.get("comptrollerAddress"))).call(block_identifier=block_number)
+        rewards = return_data[2]
+        for item in return_data[-1]:
+            rewards += item[-1]
         reward_token = self.pool_info.get("rewardToken")
         result = {
-            reward_token: {"amount": rewards}
+            reward_token: {"amount": rewards/10**18}
         }
         return result
 
