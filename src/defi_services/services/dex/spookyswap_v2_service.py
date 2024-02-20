@@ -1,7 +1,6 @@
 import logging
 
 from defi_services.abis.dex.pancakeswap.pancakeswap_v2_factory_abi import PANCAKESWAP_V2_FACTORY_ABI
-from defi_services.abis.dex.pancakeswap.pancakeswap_lp_token_abi import LP_TOKEN_ABI
 from defi_services.abis.dex.spookyswap.masterchef_v2_abi import SPOOKYSWAP_MASTERCHEF_V2_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
@@ -118,7 +117,7 @@ class SpookySwapV2Services(PancakeSwapV2Services):
     def get_rewards_balance_function_info(self, wallet, supplied_data, block_number: int = "latest"):
         rpc_calls = {}
 
-        reward_token = self.pool_info.get("rewardToken")
+        reward_token = self.pool_info.get("reward_token")
         decimals_query_id = f'decimals_{reward_token}_{block_number}'.lower()
         rpc_calls[decimals_query_id] = self.state_service.get_function_info(
             address=reward_token, abi=ERC20_ABI, fn_name="decimals", block_number=block_number)
@@ -138,7 +137,7 @@ class SpookySwapV2Services(PancakeSwapV2Services):
 
     def calculate_rewards_balance(self, wallet: str, supplied_data: dict, decoded_data: dict,
                                   block_number: int = "latest") -> dict:
-        reward_token = self.pool_info.get("rewardToken")
+        reward_token = self.pool_info.get("reward_token")
         reward_decimals = decoded_data.get(f'decimals_{reward_token}_{block_number}'.lower())
 
         result = {}
