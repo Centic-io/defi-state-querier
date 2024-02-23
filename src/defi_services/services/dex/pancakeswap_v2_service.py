@@ -84,9 +84,8 @@ class PancakeSwapV2Services(UniswapV2Services):
         masterchef_addr = self.pool_info.get('master_chef_address')
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
-            staked_balance_query_id = f'balanceOf_{lp_token}_{masterchef_addr}_{block_number}'.lower()
-            masterchef_balance = decoded_data.get(
-                staked_balance_query_id) / 10 ** lp_token_info.get('decimals', 18)
+            staked_balance = decoded_data.get(f'balanceOf_{lp_token}_{masterchef_addr}_{block_number}'.lower())
+            masterchef_balance = staked_balance / 10 ** lp_token_info.get('decimals', 18) if staked_balance else 0
             result[lp_token].update({"stake_balance": masterchef_balance})
 
         return result
@@ -116,15 +115,14 @@ class PancakeSwapV2Services(UniswapV2Services):
         masterchef_addr = self.pool_info.get('master_chef_address')
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
-            staked_balance_query_id = f'balanceOf_{lp_token}_{masterchef_addr}_{block_number}'.lower()
-            staked_balance = decoded_data.get(
-                staked_balance_query_id) / 10 ** lp_token_info.get('decimals', 18)
-            result[lp_token].update({"stake_balance": staked_balance})
+            staked_balance = decoded_data.get(f'balanceOf_{lp_token}_{masterchef_addr}_{block_number}'.lower())
+            staked_balance_decimals = staked_balance / 10 ** lp_token_info.get('decimals', 18) if staked_balance else 0
+            result[lp_token].update({"stake_balance": staked_balance_decimals})
 
             for token_key in ["token0", "token1"]:
                 token_amount = result[lp_token].get(f'{token_key}_amount', 0)
                 total_supply = lp_token_info.get(lp_token, {}).get('total_supply')
-                token_stake_amount = token_amount * staked_balance / total_supply if total_supply > 0 else 0
+                token_stake_amount = token_amount * staked_balance_decimals / total_supply if total_supply else 0
                 result[lp_token][f'{token_key}_stake_amount'] = token_stake_amount
 
         return result

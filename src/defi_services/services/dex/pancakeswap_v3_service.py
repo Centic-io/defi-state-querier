@@ -286,7 +286,7 @@ class PancakeSwapV3Service(UniswapV3Services):
         user_data['all_token'] = super().decode_user_token_amount_function(user, supplied_param, decoded_data,
                                                                            block_number)
         for token_id, value in user_data['stake_token'].items():
-            pid = value.get('pid')
+            pid = value.get('farming_pid')
             lp_token_address = decoded_data.get(f'poolInfo_{self.masterchef_addr}_{pid}_{block_number}'.lower())[1]
             user_data['stake_token'][token_id].update({
                 'pool_address': lp_token_address
