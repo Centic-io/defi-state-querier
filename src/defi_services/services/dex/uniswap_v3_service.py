@@ -274,15 +274,15 @@ class UniswapV3Services(DexProtocolServices):
             if price and tick:
                 sqrt_price_x96 = (math.sqrt(price)) * 2 ** 96
 
-                token0_amount, token1_amount = get_token_amount_of_user(liquidity=liquidity,
-                                                                        sqrt_price_x96=sqrt_price_x96,
-                                                                        tick=tick, tick_upper=tick_upper,
-                                                                        tick_lower=tick_lower)
+                token0_amount, token1_amount = get_token_amount_of_user(
+                    liquidity=liquidity,
+                    sqrt_price_x96=sqrt_price_x96,
+                    tick=tick, tick_upper=tick_upper,
+                    tick_lower=tick_lower)
                 result[token_id].update(
                     {
                         'token0_amount': token0_amount / 10 ** token0_decimals,
                         'token1_amount': token1_amount / 10 ** token1_decimals,
-
                     }
                 )
 
@@ -322,30 +322,27 @@ class UniswapV3Services(DexProtocolServices):
                 f'feeGrowthGlobal0X128_{lp_token_address}_{block_number}'.lower())
             fee_growth_global_1 = decoded_data.get(
                 f'feeGrowthGlobal1X128_{lp_token_address}_{block_number}'.lower())
-            fee_growth_0_low_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_lower}_{block_number}'.lower())[
-                2]
-            fee_growth_1_low_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_lower}_{block_number}'.lower())[
-                3]
-            fee_growth_0_hi_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_upper}_{block_number}'.lower())[
-                2]
-            fee_growth_1_hi_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_upper}_{block_number}'.lower())[
-                3]
+            fee_growth_0_low_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_lower}_{block_number}'.lower())[2]
+            fee_growth_1_low_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_lower}_{block_number}'.lower())[3]
+            fee_growth_0_hi_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_upper}_{block_number}'.lower())[2]
+            fee_growth_1_hi_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_upper}_{block_number}'.lower())[3]
             liquidity = value.get('liquidity')
             tick = lp_token_info.get(lp_token_address, {}).get('tick')
             token0_decimals = lp_token_info.get(lp_token_address, {}).get("token0_decimals")
             token1_decimals = lp_token_info.get(lp_token_address, {}).get("token1_decimals")
             if tick and token0_decimals and token1_decimals:
-                token0_reward, token1_reward = get_fees(fee_growth_global_0=fee_growth_global_0,
-                                                        fee_growth_global_1=fee_growth_global_1,
-                                                        fee_growth_0_low=fee_growth_0_low_x128,
-                                                        fee_growth_1_low=fee_growth_1_low_x128,
-                                                        fee_growth_0_hi=fee_growth_0_hi_x128,
-                                                        fee_growth_1_hi=fee_growth_1_hi_x128,
-                                                        fee_growth_inside_0=fee_growth_inside_0_x128,
-                                                        fee_growth_inside_1=fee_growth_inside_1_x128,
-                                                        liquidity=liquidity, tick_lower=tick_lower,
-                                                        tick_upper=tick_upper, tick_current=tick,
-                                                        decimals0=token0_decimals, decimals1=token1_decimals)
+                token0_reward, token1_reward = get_fees(
+                    fee_growth_global_0=fee_growth_global_0,
+                    fee_growth_global_1=fee_growth_global_1,
+                    fee_growth_0_low=fee_growth_0_low_x128,
+                    fee_growth_1_low=fee_growth_1_low_x128,
+                    fee_growth_0_hi=fee_growth_0_hi_x128,
+                    fee_growth_1_hi=fee_growth_1_hi_x128,
+                    fee_growth_inside_0=fee_growth_inside_0_x128,
+                    fee_growth_inside_1=fee_growth_inside_1_x128,
+                    liquidity=liquidity, tick_lower=tick_lower,
+                    tick_upper=tick_upper, tick_current=tick,
+                    decimals0=token0_decimals, decimals1=token1_decimals)
 
                 if token0_reward > 0 or token1_reward > 0:
                     print(token_id)
