@@ -1,13 +1,13 @@
 import copy
 import logging
 import math
-from web3 import Web3
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.dex_constant import Dex
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.dex.dex_info.uniswap_info import UNISWAP_V3_ETH_INFO
 from defi_services.services.dex_protocol_services import DexProtocolServices
+from defi_services.utils.get_fees import get_fees
 from defi_services.utils.sqrt_price_math import get_token_amount_of_user, get_token_amount_of_pool
 
 logger = logging.getLogger("UniSwap V3 State Service")
@@ -212,22 +212,22 @@ class UniswapV3Services(DexProtocolServices):
     def decode_user_info_function(self, user: str, supplied_data: dict, decoded_data: dict = None, stake: bool = False,
                                   block_number: int = "latest"):
         user_data = supplied_data['user_data']
+        user_data_with_liquidity = {}
         for token_id, value in user_data.items():
             position = decoded_data.get(f'positions_{self.nft_token_manager_addr}_{token_id}_{block_number}'.lower())
-            user_data[token_id].update({
-                'token0': position[2],
-                'token1': position[3],
-                'fee': position[4],
-                'tick_lower': position[5],
-                'tick_upper': position[6],
-                'liquidity': position[7],
-                'fee_growth_inside0': position[8],
-                'fee_growth_inside1': position[9],
-                'tokens_owed0': position[10],
-                'tokens_owed1': position[11]
-            })
-
-        return user_data
+            liquidity = position[7]
+            if liquidity > 0:
+                user_data_with_liquidity[token_id] = {
+                    'token0': position[2],
+                    'token1': position[3],
+                    'fee': position[4],
+                    'tick_lower': position[5],
+                    'tick_upper': position[6],
+                    'liquidity': position[7],
+                    'fee_growth_inside0_x128': position[8],
+                    'fee_growth_inside1_x128': position[9],
+                }
+        return user_data_with_liquidity
 
     def get_user_token_amount_function(self, user: str, supplied_data: dict, block_number: int = "latest"):
         user_data = supplied_data['user_data']
@@ -236,7 +236,7 @@ class UniswapV3Services(DexProtocolServices):
             token0 = value.get('token0')
             token1 = value.get('token1')
             fee = value.get('fee')
-            query_id = f'allPool_{self.factory_addr}_{token_id}_{block_number}'.lower()
+            query_id = f'getPool_{self.factory_addr}_{token_id}_{block_number}'.lower()
             rpc_calls[query_id] = self.state_service.get_function_info(
                 self.factory_addr, self.factory_abi, fn_name="getPool", fn_paras=[token0, token1, fee]
             )
@@ -256,36 +256,35 @@ class UniswapV3Services(DexProtocolServices):
         result = {}
 
         for token_id, value in user_data.items():
-            lp_token_address = decoded_data.get(f'allPool_{self.factory_addr}_{token_id}_{block_number}'.lower())
+            lp_token_address = decoded_data.get(f'getPool_{self.factory_addr}_{token_id}_{block_number}'.lower())
             user_data[token_id].update({
                 'pool_address': lp_token_address
             })
             liquidity = value.get('liquidity')
-            if liquidity > 0:
-                result[token_id] = copy.deepcopy(user_data[token_id])
-                token0 = value.get('token0')
-                token1 = value.get('token1')
-                token0_decimals = decoded_data.get(f'decimals_{token0}_{block_number}'.lower())
-                token1_decimals = decoded_data.get(f'decimals_{token1}_{block_number}'.lower())
-                price = lp_token_info.get(lp_token_address, {}).get("price")
+            result[token_id] = copy.deepcopy(user_data[token_id])
+            token0 = value.get('token0')
+            token1 = value.get('token1')
+            token0_decimals = decoded_data.get(f'decimals_{token0}_{block_number}'.lower())
+            token1_decimals = decoded_data.get(f'decimals_{token1}_{block_number}'.lower())
+            price = lp_token_info.get(lp_token_address, {}).get("price")
 
-                tick = lp_token_info.get(lp_token_address, {}).get('tick')
-                tick_upper = value.get('tick_upper')
-                tick_lower = value.get('tick_lower')
-                if price and tick:
-                    sqrt_price_x96 = (math.sqrt(price)) * 2 ** 96
+            tick = lp_token_info.get(lp_token_address, {}).get('tick')
+            tick_upper = value.get('tick_upper')
+            tick_lower = value.get('tick_lower')
+            if price and tick:
+                sqrt_price_x96 = (math.sqrt(price)) * 2 ** 96
 
-                    token0_amount, token1_amount = get_token_amount_of_user(liquidity=liquidity,
-                                                                            sqrt_price_x96=sqrt_price_x96,
-                                                                            tick=tick, tick_upper=tick_upper,
-                                                                            tick_lower=tick_lower)
-                    result[token_id].update(
-                        {
-                            'token0_amount': token0_amount / 10 ** token0_decimals,
-                            'token1_amount': token1_amount / 10 ** token1_decimals,
-
-                        }
-                    )
+                token0_amount, token1_amount = get_token_amount_of_user(
+                    liquidity=liquidity,
+                    sqrt_price_x96=sqrt_price_x96,
+                    tick=tick, tick_upper=tick_upper,
+                    tick_lower=tick_lower)
+                result[token_id].update(
+                    {
+                        'token0_amount': token0_amount / 10 ** token0_decimals,
+                        'token1_amount': token1_amount / 10 ** token1_decimals,
+                    }
+                )
 
         return result
 
@@ -296,11 +295,16 @@ class UniswapV3Services(DexProtocolServices):
             lp_token_address = value.get('pool_address')
             tick_lower = value.get('tick_lower')
             tick_upper = value.get('tick_upper')
-            position_key = self.get_position_key(tick_lower, tick_upper)
-            query_id = f'positions_{lp_token_address}_{[tick_upper, tick_lower]}_{block_number}'.lower()
-            rpc_calls[query_id] = self.state_service.get_function_info(
-                address=lp_token_address, abi=self.pool_info['pool_abi'], fn_name="positions", fn_paras=[position_key]
-            )
+            for fnct in ['feeGrowthGlobal0X128', 'feeGrowthGlobal1X128']:
+                query_id = f'{fnct}_{lp_token_address}_{block_number}'.lower()
+                rpc_calls[query_id] = self.state_service.get_function_info(
+                    address=lp_token_address, abi=self.pool_info['pool_abi'], fn_name=fnct)
+
+            for param in [tick_lower, tick_upper]:
+                query_id = f'ticks_{lp_token_address}_{param}_{block_number}'.lower()
+                rpc_calls[query_id] = self.state_service.get_function_info(
+                    address=lp_token_address, abi=self.pool_info['pool_abi'], fn_name="ticks", fn_paras=[param])
+
         return rpc_calls
 
     def calculate_rewards_balance(
@@ -309,45 +313,49 @@ class UniswapV3Services(DexProtocolServices):
         user_data = supplied_data['user_data']
 
         for token_id, value in user_data.items():
+            lp_token_address = value.get('pool_address')
+            tick_lower = value.get('tick_lower')
+            tick_upper = value.get('tick_upper')
+            fee_growth_inside_0_x128 = value.get('fee_growth_inside0_x128')
+            fee_growth_inside_1_x128 = value.get('fee_growth_inside1_x128')
+            fee_growth_global_0 = decoded_data.get(
+                f'feeGrowthGlobal0X128_{lp_token_address}_{block_number}'.lower())
+            fee_growth_global_1 = decoded_data.get(
+                f'feeGrowthGlobal1X128_{lp_token_address}_{block_number}'.lower())
+            fee_growth_0_low_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_lower}_{block_number}'.lower())[2]
+            fee_growth_1_low_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_lower}_{block_number}'.lower())[3]
+            fee_growth_0_hi_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_upper}_{block_number}'.lower())[2]
+            fee_growth_1_hi_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_upper}_{block_number}'.lower())[3]
             liquidity = value.get('liquidity')
-            if liquidity > 0:
-                lp_token_address = value.get('pool_address')
-                tick_lower = value.get('tick_lower')
-                tick_upper = value.get('tick_upper')
-                pool_position = decoded_data.get(
-                    f'positions_{lp_token_address}_{[tick_upper, tick_lower]}_{block_number}'.lower())
+            tick = lp_token_info.get(lp_token_address, {}).get('tick')
+            token0_decimals = lp_token_info.get(lp_token_address, {}).get("token0_decimals")
+            token1_decimals = lp_token_info.get(lp_token_address, {}).get("token1_decimals")
+            if tick and token0_decimals and token1_decimals:
+                token0_reward, token1_reward = get_fees(
+                    fee_growth_global_0=fee_growth_global_0,
+                    fee_growth_global_1=fee_growth_global_1,
+                    fee_growth_0_low=fee_growth_0_low_x128,
+                    fee_growth_1_low=fee_growth_1_low_x128,
+                    fee_growth_0_hi=fee_growth_0_hi_x128,
+                    fee_growth_1_hi=fee_growth_1_hi_x128,
+                    fee_growth_inside_0=fee_growth_inside_0_x128,
+                    fee_growth_inside_1=fee_growth_inside_1_x128,
+                    liquidity=liquidity, tick_lower=tick_lower,
+                    tick_upper=tick_upper, tick_current=tick,
+                    decimals0=token0_decimals, decimals1=token1_decimals)
 
-                pool_fee_growth_inside0 = pool_position[1]
-                pool_fee_growth_inside1 = pool_position[2]
-                fee_growth_inside0 = value.get('fee_growth_inside0')
-                fee_growth_inside1 = value.get('fee_growth_inside1')
-                liquidity = value.get('liquidity')
-                token0_decimals = lp_token_info.get(lp_token_address, {}).get("token0_decimals")
-                token1_decimals = lp_token_info.get(lp_token_address, {}).get("token1_decimals")
-                token0_reward = ((pool_fee_growth_inside0 - fee_growth_inside0) / 2 ** 128 * liquidity + value.get(
-                    'tokens_owed0')) / 10 ** token0_decimals
-                token1_reward = ((pool_fee_growth_inside1 - fee_growth_inside1) / 2 ** 128 * liquidity + value.get(
-                    'tokens_owed1')) / 10 ** token1_decimals
                 if token0_reward > 0 or token1_reward > 0:
                     print(token_id)
+                else:
+                    token0_reward = 0
+                    token1_reward = 0
 
-            else:
-                token0_reward = 0
-                token1_reward = 0
-
-            user_data[token_id].update({
-                'token0_reward': token0_reward,
-                'token1_reward': token1_reward
-            })
+                user_data[token_id].update({
+                    'token0_reward': token0_reward,
+                    'token1_reward': token1_reward
+                })
 
         return user_data
-
-    def get_position_key(self, tick_lower, tick_upper):
-        data_to_hash = Web3.solidityKeccak(
-            ['address', 'int24', 'int24'],
-            [Web3.toChecksumAddress(self.nft_token_manager_addr), tick_lower, tick_upper]
-        )
-        return data_to_hash.hex()
 
     def checksum_address(self, address):
         if self.web3.isAddress(address):

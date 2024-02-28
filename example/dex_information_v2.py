@@ -194,8 +194,8 @@ if __name__ == "__main__":
                     get_lp_token_list(job=job_, wallet=w, dex_protocol=dex_id)
                     get_lp_token_info(job=job_, wallet=w, dex_protocol=dex_id)
                     get_lp_token_liquidity(job=job_, wallet=w, dex_protocol=dex_id)
-                    # get_user_info(job=job_, wallet=w, dex_protocol=dex_id)
-                    # get_user_reward(job=job_, wallet=w, dex_protocol=dex_id)
+                    get_user_info(job=job_, wallet=w, dex_protocol=dex_id)
+                    get_user_reward(job=job_, wallet=w, dex_protocol=dex_id)
                     # export_to_mongodb(chain_id, dex_id)
                     print(f'export {dex_id}  in {chain_id}')
             except Exception as ex:
