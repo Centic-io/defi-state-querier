@@ -5,6 +5,7 @@ from defi_services.constants.entities.dex_constant import Dex
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.dex.dex_info.quickswap_info import QUICKSWAP_POLYGON_V3_INFO
 from defi_services.services.dex.uniswap_v3_service import UniswapV3Services
+from defi_services.utils.get_fees import get_fees
 
 logger = logging.getLogger("QuickSwap V3 State Service")
 
@@ -116,21 +117,21 @@ class QuickSwapV3Services(UniswapV3Services):
     def decode_user_info_function(self, user: str, supplied_data: dict, decoded_data: dict = None, stake: bool = False,
                                   block_number: int = "latest"):
         user_data = supplied_data['user_data']
+        user_data_with_liquidity = {}
         for token_id, value in user_data.items():
             position = decoded_data.get(f'positions_{self.nft_token_manager_addr}_{token_id}_{block_number}'.lower())
-            user_data[token_id].update({
-                'token0': position[2],
-                'token1': position[3],
-                'tick_lower': position[4],
-                'tick_upper': position[5],
-                'liquidity': position[6],
-                'fee_growth_inside0': position[7],
-                'fee_growth_inside1': position[8],
-                'tokens_owed0': position[9],
-                'tokens_owed1': position[10]
-
-            })
-        return user_data
+            liquidity = position[6]
+            if liquidity > 0:
+                user_data_with_liquidity[token_id] = {
+                    'token0': position[2],
+                    'token1': position[3],
+                    'tick_lower': position[4],
+                    'tick_upper': position[5],
+                    'liquidity': liquidity,
+                    'fee_growth_inside0_x128': position[7],
+                    'fee_growth_inside1_x128': position[8],
+                }
+        return user_data_with_liquidity
 
     def get_user_token_amount_function(self, user: str, supplied_data: dict, block_number: int = "latest"):
         user_data = supplied_data['user_data']
@@ -138,7 +139,7 @@ class QuickSwapV3Services(UniswapV3Services):
         for token_id, value in user_data.items():
             token0 = value.get('token0')
             token1 = value.get('token1')
-            query_id = f'allPool_{self.factory_addr}_{token_id}_{block_number}'.lower()
+            query_id = f'getPool_{self.factory_addr}_{token_id}_{block_number}'.lower()
             rpc_calls[query_id] = self.state_service.get_function_info(
                 self.factory_addr, self.factory_abi, fn_name="poolByPair", fn_paras=[token0, token1]
             )
@@ -151,44 +152,65 @@ class QuickSwapV3Services(UniswapV3Services):
 
         return rpc_calls
 
+    def get_rewards_balance_function_info(self, user, supplied_data, block_number: int = "latest"):
+        user_data = supplied_data['user_data']
+        rpc_calls = {}
+        for token_id, value in user_data.items():
+            lp_token_address = value.get('pool_address')
+            tick_lower = value.get('tick_lower')
+            tick_upper = value.get('tick_upper')
+            for fnc in ['totalFeeGrowth0Token', 'totalFeeGrowth1Token']:
+                query_id = f'{fnc}_{lp_token_address}_{block_number}'.lower()
+                rpc_calls[query_id] = self.state_service.get_function_info(
+                    address=lp_token_address, abi=self.pool_info['pool_abi'], fn_name=fnc)
+
+            for param in [tick_lower, tick_upper]:
+                query_id = f'ticks_{lp_token_address}_{param}_{block_number}'.lower()
+                rpc_calls[query_id] = self.state_service.get_function_info(
+                    address=lp_token_address, abi=self.pool_info['pool_abi'], fn_name="ticks", fn_paras=[param])
+
+        return rpc_calls
+
     def calculate_rewards_balance(
             self, user: str, supplied_data: dict, decoded_data: dict, block_number: int = "latest"):
         lp_token_info = supplied_data['lp_token_info']
         user_data = supplied_data['user_data']
 
         for token_id, value in user_data.items():
+            lp_token_address = value.get('pool_address')
+            tick_lower = value.get('tick_lower')
+            tick_upper = value.get('tick_upper')
+            fee_growth_inside_0_x128 = value.get('fee_growth_inside0_x128')
+            fee_growth_inside_1_x128 = value.get('fee_growth_inside1_x128')
+            fee_growth_global_0 = decoded_data.get(
+                f'totalFeeGrowth0Token_{lp_token_address}_{block_number}'.lower())
+            fee_growth_global_1 = decoded_data.get(
+                f'totalFeeGrowth1Token_{lp_token_address}_{block_number}'.lower())
+            fee_growth_0_low_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_lower}_{block_number}'.lower())[2]
+            fee_growth_1_low_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_lower}_{block_number}'.lower())[3]
+            fee_growth_0_hi_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_upper}_{block_number}'.lower())[2]
+            fee_growth_1_hi_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_upper}_{block_number}'.lower())[3]
             liquidity = value.get('liquidity')
-            if liquidity > 0:
-                lp_token_address = value.get('pool_address')
-                tick_lower = value.get('tick_lower')
-                tick_upper = value.get('tick_upper')
-                pool_position = decoded_data.get(
-                    f'positions_{lp_token_address}_{[tick_upper, tick_lower]}_{block_number}'.lower())
+            tick = lp_token_info.get(lp_token_address, {}).get('tick')
+            token0_decimals = lp_token_info.get(lp_token_address, {}).get("token0_decimals")
+            token1_decimals = lp_token_info.get(lp_token_address, {}).get("token1_decimals")
+            if tick and token0_decimals and token1_decimals:
+                token0_reward, token1_reward = get_fees(
+                    fee_growth_global_0=fee_growth_global_0,
+                    fee_growth_global_1=fee_growth_global_1,
+                    fee_growth_0_low=fee_growth_0_low_x128,
+                    fee_growth_1_low=fee_growth_1_low_x128,
+                    fee_growth_0_hi=fee_growth_0_hi_x128,
+                    fee_growth_1_hi=fee_growth_1_hi_x128,
+                    fee_growth_inside_0=fee_growth_inside_0_x128,
+                    fee_growth_inside_1=fee_growth_inside_1_x128,
+                    liquidity=liquidity, tick_lower=tick_lower,
+                    tick_upper=tick_upper, tick_current=tick,
+                    decimals0=token0_decimals, decimals1=token1_decimals)
 
-                pool_fee_growth_inside0 = pool_position[2]
-                pool_fee_growth_inside1 = pool_position[3]
-                fee_growth_inside0 = value.get('fee_growth_inside0')
-                fee_growth_inside1 = value.get('fee_growth_inside1')
-                liquidity = value.get('liquidity')
-                token0_decimals = lp_token_info.get(lp_token_address, {}).get("token0_decimals")
-                token1_decimals = lp_token_info.get(lp_token_address, {}).get("token1_decimals")
-                token0_reward = ((pool_fee_growth_inside0 - fee_growth_inside0) / 2 ** 128 * liquidity + value.get(
-                    'tokens_owed0')) / 10 ** token0_decimals
-                token1_reward = ((pool_fee_growth_inside1 - fee_growth_inside1) / 2 ** 128 * liquidity + value.get(
-                    'tokens_owed1')) / 10 ** token1_decimals
-
-            else:
-                token0_reward = 0
-                token1_reward = 0
-
-            user_data[token_id].update({
-                'token0_reward': token0_reward,
-                'token1_reward': token1_reward
-            })
+                user_data[token_id].update({
+                    'token0_reward': token0_reward,
+                    'token1_reward': token1_reward
+                })
 
         return user_data
-
-    def get_position_key(self, tick_lower, tick_upper):
-        owner = int(self.nft_token_manager_addr, 16)
-        key = (((owner << 24) | (tick_lower & 0xFFFFFF)) << 24) | (tick_upper & 0xFFFFFF)
-        return '0x' + format(key, '064x')

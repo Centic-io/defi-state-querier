@@ -8,6 +8,7 @@ from defi_services.constants.entities.dex_constant import Dex
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.dex.dex_info.pancakeswap_info import PANCAKESWAP_V3_BSC_INFO
 from defi_services.services.dex.uniswap_v3_service import UniswapV3Services
+from defi_services.utils.get_fees import get_fees
 from defi_services.utils.sqrt_price_math import get_token_amount_of_pool, get_token_amount_of_user
 
 logger = logging.getLogger("PancakeSwap V3 State Service")
@@ -199,8 +200,7 @@ class PancakeSwapV3Service(UniswapV3Services):
 
     def decode_all_nft_token_of_user_function(
             self, decode_data: dict):
-        result = {'all_token': {}, 'stake_token': {}}
-        result['all_token'] = super().decode_all_nft_token_of_user_function(decode_data)
+        result = {'all_token': super().decode_all_nft_token_of_user_function(decode_data), 'stake_token': {}}
 
         for query_id, token_id in decode_data.items():
             contract_addr = query_id.split("_")[1]
@@ -235,33 +235,31 @@ class PancakeSwapV3Service(UniswapV3Services):
     def decode_user_info_function(self, user: str, supplied_data: dict, decoded_data: dict = None,
                                   stake: bool = True,
                                   block_number: int = "latest"):
-        user_data = supplied_data['user_data']
-        supplied_param = {'user_data': user_data['all_token']}
-        user_data['all_token'] = super().decode_user_info_function(user, supplied_param, decoded_data, stake,
-                                                                   block_number)
+        supplied_param = {'user_data': supplied_data['user_data'].get('all_token')}
+        user_data_with_liquidity = {
+            'all_token': super().decode_user_info_function(user, supplied_param, decoded_data, stake,
+                                                           block_number), 'stake_token': {}}
 
-        for token_id, value in user_data['stake_token'].items():
+        for token_id, value in supplied_data['user_data'].get('stake_token').items():
             master_chef_position = decoded_data.get(
                 f'userPositionInfos_{self.masterchef_addr}_{token_id}_{block_number}'.lower())
-            pending_cake = decoded_data.get(f'pendingCake_{self.masterchef_addr}_{token_id}_{block_number}'.lower())
-            nft_position = decoded_data.get(
-                f'positions_{self.nft_token_manager_addr}_{token_id}_{block_number}'.lower())
+            liquidity = master_chef_position[0]
+            if liquidity > 0:
+                nft_position = decoded_data.get(
+                    f'positions_{self.nft_token_manager_addr}_{token_id}_{block_number}'.lower())
+                user_data_with_liquidity['stake_token'][token_id] = {
+                    'liquidity': master_chef_position[0],
+                    'tick_lower': master_chef_position[2],
+                    'tick_upper': master_chef_position[3],
+                    'reward': master_chef_position[5] / 10 ** 18,
+                    'farming_pid': master_chef_position[7],
+                    'pending_cake': decoded_data.get(
+                        f'pendingCake_{self.masterchef_addr}_{token_id}_{block_number}'.lower()) / 10 ** 18,
+                    'fee_growth_inside0_x128': nft_position[8],
+                    'fee_growth_inside1_x128': nft_position[9],
+                }
 
-            user_data['stake_token'][token_id].update({
-                'liquidity': master_chef_position[0],
-                'tick_lower': master_chef_position[2],
-                'tick_upper': master_chef_position[3],
-                'reward': master_chef_position[5] / 10 ** 18,
-                'farming_pid': master_chef_position[7],
-                'pending_cake': pending_cake / 10 ** 18,
-                'fee_growth_inside0': nft_position[8],
-                'fee_growth_inside1': nft_position[9],
-                'tokens_owed0': nft_position[10],
-                'tokens_owed1': nft_position[11]
-
-            })
-
-        return user_data
+        return user_data_with_liquidity
 
     def get_user_token_amount_function(self, user: str, supplied_data: dict, block_number: int = "latest"):
         user_data = supplied_data['user_data']
@@ -280,7 +278,6 @@ class PancakeSwapV3Service(UniswapV3Services):
                                           block_number: int = "latest"):
         user_data = supplied_data['user_data']
         lp_token_info = supplied_data['lp_token_info']
-
         supplied_param = {'user_data': user_data['all_token'],
                           'lp_token_info': lp_token_info}
         user_data['all_token'] = super().decode_user_token_amount_function(user, supplied_param, decoded_data,
@@ -292,28 +289,24 @@ class PancakeSwapV3Service(UniswapV3Services):
                 'pool_address': lp_token_address
             })
             liquidity = value.get('liquidity')
-            if liquidity > 0:
-                token0_decimals = lp_token_info.get(lp_token_address, {}).get("token0_decimals")
-                token1_decimals = lp_token_info.get(lp_token_address, {}).get("token1_decimals")
-                price = lp_token_info.get(lp_token_address, {}).get("price")
-
-                tick = lp_token_info.get(lp_token_address, {}).get('tick')
-                tick_lower = value.get('tick_lower')
-                tick_upper = value.get('tick_upper')
-                if price and tick:
-                    sqrt_price_x96 = math.sqrt(price) * 2 ** 96
-
-                    token0_amount, token1_amount = get_token_amount_of_user(liquidity=liquidity,
-                                                                            sqrt_price_x96=sqrt_price_x96,
-                                                                            tick=tick, tick_upper=tick_upper,
-                                                                            tick_lower=tick_lower)
-
-                    user_data['stake_token'][token_id].update(
-                        {
-                            'token0_amount': token0_amount / 10 ** token0_decimals,
-                            'token1_amount': token1_amount / 10 ** token1_decimals,
-                        }
-                    )
+            token0_decimals = lp_token_info.get(lp_token_address, {}).get("token0_decimals")
+            token1_decimals = lp_token_info.get(lp_token_address, {}).get("token1_decimals")
+            price = lp_token_info.get(lp_token_address, {}).get("price")
+            tick = lp_token_info.get(lp_token_address, {}).get('tick')
+            tick_lower = value.get('tick_lower')
+            tick_upper = value.get('tick_upper')
+            if price and tick:
+                sqrt_price_x96 = math.sqrt(price) * 2 ** 96
+                token0_amount, token1_amount = get_token_amount_of_user(liquidity=liquidity,
+                                                                        sqrt_price_x96=sqrt_price_x96,
+                                                                        tick=tick, tick_upper=tick_upper,
+                                                                        tick_lower=tick_lower)
+                user_data['stake_token'][token_id].update(
+                    {
+                        'token0_amount': token0_amount / 10 ** token0_decimals,
+                        'token1_amount': token1_amount / 10 ** token1_decimals,
+                    }
+                )
         return user_data
 
     def get_rewards_balance_function_info(self, user, supplied_data, block_number: int = "latest"):
@@ -324,11 +317,15 @@ class PancakeSwapV3Service(UniswapV3Services):
             lp_token_address = value.get('pool_address')
             tick_lower = value.get('tick_lower')
             tick_upper = value.get('tick_upper')
-            position_key = self.get_position_key(tick_lower, tick_upper)
-            query_id = f'positions_{lp_token_address}_{[tick_upper, tick_lower]}_{block_number}'.lower()
-            rpc_calls[query_id] = self.state_service.get_function_info(
-                address=lp_token_address, abi=self.pool_info['pool_abi'], fn_name="positions", fn_paras=[position_key]
-            )
+            for fnc in ['feeGrowthGlobal0X128', 'feeGrowthGlobal1X128']:
+                query_id = f'{fnc}_{lp_token_address}_{block_number}'.lower()
+                rpc_calls[query_id] = self.state_service.get_function_info(
+                    address=lp_token_address, abi=self.pool_info['pool_abi'], fn_name=fnc)
+
+            for param in [tick_lower, tick_upper]:
+                query_id = f'ticks_{lp_token_address}_{param}_{block_number}'.lower()
+                rpc_calls[query_id] = self.state_service.get_function_info(
+                    address=lp_token_address, abi=self.pool_info['pool_abi'], fn_name="ticks", fn_paras=[param])
         return rpc_calls
 
     def calculate_rewards_balance(
@@ -338,39 +335,40 @@ class PancakeSwapV3Service(UniswapV3Services):
 
         supplied_param = {'user_data': user_data['all_token'],
                           'lp_token_info': lp_token_info}
-        user_data['all_token'] = super().calculate_rewards_balance(user, supplied_param, decoded_data,
-                                                                   block_number)
+        user_data['all_token'] = super().calculate_rewards_balance(user, supplied_param, decoded_data, block_number)
         for token_id, value in user_data['stake_token'].items():
+            lp_token_address = value.get('pool_address')
+            tick_lower = value.get('tick_lower')
+            tick_upper = value.get('tick_upper')
+            fee_growth_inside_0_x128 = value.get('fee_growth_inside0_x128')
+            fee_growth_inside_1_x128 = value.get('fee_growth_inside1_x128')
+            fee_growth_global_0 = decoded_data.get(f'feeGrowthGlobal0X128_{lp_token_address}_{block_number}'.lower())
+            fee_growth_global_1 = decoded_data.get(f'feeGrowthGlobal1X128_{lp_token_address}_{block_number}'.lower())
+            fee_growth_0_low_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_lower}_{block_number}'.lower())[2]
+            fee_growth_1_low_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_lower}_{block_number}'.lower())[3]
+            fee_growth_0_hi_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_upper}_{block_number}'.lower())[2]
+            fee_growth_1_hi_x128 = decoded_data.get(f'ticks_{lp_token_address}_{tick_upper}_{block_number}'.lower())[3]
             liquidity = value.get('liquidity')
-            if liquidity > 0:
-                try:
-                    lp_token_address = value.get('pool_address')
-                    tick_lower = value.get('tick_lower')
-                    tick_upper = value.get('tick_upper')
-                    pool_position = decoded_data.get(
-                        f'positions_{lp_token_address}_{[tick_upper, tick_lower]}_{block_number}'.lower())
+            token0_decimals = lp_token_info.get(lp_token_address, {}).get("token0_decimals")
+            token1_decimals = lp_token_info.get(lp_token_address, {}).get("token1_decimals")
+            tick = lp_token_info.get(lp_token_address, {}).get('tick')
+            if tick and token0_decimals and token1_decimals:
+                token0_reward, token1_reward = get_fees(
+                    fee_growth_global_0=fee_growth_global_0,
+                    fee_growth_global_1=fee_growth_global_1,
+                    fee_growth_0_low=fee_growth_0_low_x128,
+                    fee_growth_1_low=fee_growth_1_low_x128,
+                    fee_growth_0_hi=fee_growth_0_hi_x128,
+                    fee_growth_1_hi=fee_growth_1_hi_x128,
+                    fee_growth_inside_0=fee_growth_inside_0_x128,
+                    fee_growth_inside_1=fee_growth_inside_1_x128,
+                    liquidity=liquidity, tick_lower=tick_lower,
+                    tick_upper=tick_upper, tick_current=tick,
+                    decimals0=token0_decimals, decimals1=token1_decimals)
 
-                    pool_fee_growth_inside0 = pool_position[1]
-                    pool_fee_growth_inside1 = pool_position[2]
-                    fee_growth_inside0 = value.get('fee_growth_inside0')
-                    fee_growth_inside1 = value.get('fee_growth_inside1')
-                    liquidity = value.get('liquidity')
-                    token0_decimals = lp_token_info.get(lp_token_address, {}).get("token0_decimals")
-                    token1_decimals = lp_token_info.get(lp_token_address, {}).get("token1_decimals")
-                    token0_reward = ((pool_fee_growth_inside0 - fee_growth_inside0) / 2 ** 128 * liquidity + value.get(
-                        'tokens_owed0')) / 10 ** token0_decimals
-                    token1_reward = ((pool_fee_growth_inside1 - fee_growth_inside1) / 2 ** 128 * liquidity + value.get(
-                        'tokens_owed1')) / 10 ** token1_decimals
-                except Exception:
-                    continue
-
-            else:
-                token0_reward = 0
-                token1_reward = 0
-
-            user_data['stake_token'][token_id].update({
-                'token0_reward': token0_reward,
-                'token1_reward': token1_reward
-            })
+                user_data['stake_token'][token_id].update({
+                    'token0_reward': token0_reward,
+                    'token1_reward': token1_reward
+                })
 
         return user_data
