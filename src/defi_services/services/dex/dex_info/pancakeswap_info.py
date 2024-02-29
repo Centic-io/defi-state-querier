@@ -22,14 +22,14 @@ PANCAKESWAP_V2_BSC_INFO = {
 }
 
 PANCAKESWAP_V3_BSC_INFO = {
-    'factory_address': '0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865',
+    'factory_address': '0x0bfbcf9fa4f9c56b0f40a671ad40e0805a091865',
     'factory_abi': PANCAKESWAP_V3_FACTORY_ABI,
-    'master_chef_address': '0x556B9306565093C855AEA9AE92A594704c2Cd59e',
+    'master_chef_address': '0x556b9306565093c855aea9ae92a594704c2cd59e',
     'master_chef_abi': PANCAKESWAP_MASTERCHEF_V3_ABI,
-    "reward_token": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82".lower(),
-    "NFT_manager_address": "0x46A15B0b27311cedF172AB29E4f4766fbE7F4364".lower(),
+    "NFT_manager_address": "0x46a15b0b27311cedf172ab29e4f4766fbe7f4364",
     "NFT_manager_abi": PANCAKE_V3_NON_FUNGIBLE_POSITION_TOKEN_ABI,
     'pool_abi': PANCAKESWAP_V3_POOL_ABI,
-    'forked': 'uniswap-v3'
+    'forked': 'uniswap-v3',
+    "reward_token": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
 
 }

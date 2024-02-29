@@ -191,17 +191,19 @@ def get_token_info():
 
 
 if __name__ == "__main__":
-    w = "0xc36442b4a4522e871399cd717abdd847ab11fe88"
-    dex_ids = [Dex.uniswap_v3]
+    # w = "0xfa81cbdb41939843e5ebcdee9a8046802ff355f3" #pancake
+    # w = '0x71045fc1cb4e5470c152f61ac888d753fa12442f' # quickswap
+    w ='0xa01be392e521abf54841910d2934bf52ec8bcab9'
+    dex_ids = [Dex.sushi_v3]
 
-    for chain_id in [Chain.bsc, Chain.ethereum, Chain.fantom, Chain.polygon, Chain.arbitrum, Chain.avalanche]:
+    # for chain_id in [Chain.bsc, Chain.ethereum, Chain.fantom, Chain.polygon, Chain.arbitrum, Chain.avalanche]:
+    for chain_id in [ Chain.ethereum]:
         for dex_id in dex_ids:
-
             try:
                 job_ = StateProcessor(provider_url[chain_id], chain_id)
                 if dex_id in job_.services:
                     # get_lp_token_list(job=job_, wallet=w, dex_protocol=dex_id)
-                    # get_lp_token_info(job=job_, wallet=w, dex_protocol=dex_id)
+                    get_lp_token_info(job=job_, wallet=w, dex_protocol=dex_id)
                     # get_user_nft(job=job_, wallet=w, dex_protocol=dex_id)
                     # get_user_info(job=job_, wallet=w, dex_protocol=dex_id)
                     get_user_token_balance(job_, w, dex_id)

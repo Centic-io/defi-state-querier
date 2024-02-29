@@ -14,9 +14,9 @@ QUICKSWAP_POLYGON_V3_INFO = {
     "NFT_manager_address": "0x8ef88e4c7cfbbac1c163f7eddd4b578792201de6",
     "NFT_manager_abi": QUICKSWAP_V3_NON_FUNGIBLE_POSITION_TOKEN_ABI,
     'pool_abi':QUICKSWAP_V3_POOL_ABI,
-    'finite_farming': '0x9923f42a02A82dA63EE0DbbC5f8E311e3DD8A1f8',
-    'infinite_farming': '0x8a26436e41d0b5fc4C6Ed36C1976fafBe173444E',
-    'farming_center': '0x7F281A8cdF66eF5e9db8434Ec6D97acc1bc01E78',
+    'finite_farming': '0x9923f42a02a82da63ee0dbbc5f8e311e3dd8a1f8',
+    'infinite_farming': '0x8a26436e41d0b5fc4c6ed36c1976fafbe173444e',
+    'farming_center': '0x7f281a8cdf66ef5e9db8434ec6d97acc1bc01e78',
     'forked': 'uniswap-v3'
 
 }

@@ -295,10 +295,10 @@ class UniswapV3Services(DexProtocolServices):
             lp_token_address = value.get('pool_address')
             tick_lower = value.get('tick_lower')
             tick_upper = value.get('tick_upper')
-            for fnct in ['feeGrowthGlobal0X128', 'feeGrowthGlobal1X128']:
-                query_id = f'{fnct}_{lp_token_address}_{block_number}'.lower()
+            for fnc in ['feeGrowthGlobal0X128', 'feeGrowthGlobal1X128']:
+                query_id = f'{fnc}_{lp_token_address}_{block_number}'.lower()
                 rpc_calls[query_id] = self.state_service.get_function_info(
-                    address=lp_token_address, abi=self.pool_info['pool_abi'], fn_name=fnct)
+                    address=lp_token_address, abi=self.pool_info['pool_abi'], fn_name=fnc)
 
             for param in [tick_lower, tick_upper]:
                 query_id = f'ticks_{lp_token_address}_{param}_{block_number}'.lower()
@@ -343,12 +343,6 @@ class UniswapV3Services(DexProtocolServices):
                     liquidity=liquidity, tick_lower=tick_lower,
                     tick_upper=tick_upper, tick_current=tick,
                     decimals0=token0_decimals, decimals1=token1_decimals)
-
-                if token0_reward > 0 or token1_reward > 0:
-                    print(token_id)
-                else:
-                    token0_reward = 0
-                    token1_reward = 0
 
                 user_data[token_id].update({
                     'token0_reward': token0_reward,
