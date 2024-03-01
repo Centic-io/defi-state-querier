@@ -126,6 +126,10 @@ class PancakeSwapV3Service(UniswapV3Services):
                 query_id = f'decimals_{token_address}_{block_number}'.lower()
                 rpc_calls[query_id] = self.state_service.get_function_info(
                     address=token_address, abi=ERC20_ABI, fn_name="decimals", block_number=block_number)
+                query_id = f'{token_key}_{lp_token}_{block_number}'.lower()
+                rpc_calls[query_id] = self.state_service.get_function_info(
+                    address=lp_token, abi=self.pool_info['pool_abi'], fn_name=token_key, fn_paras=None,
+                    block_number=block_number)
 
         return rpc_calls
 
@@ -133,15 +137,21 @@ class PancakeSwapV3Service(UniswapV3Services):
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, value in lp_token_info.items():
             slot0 = response_data.get(f"slot0_{lp_token}_{block_number}".lower())
-            price = (slot0[0] / 2 ** 96) ** 2
             token0_address = value.get('token0')
             token1_address = value.get('token1')
-            token0_decimals = response_data.get(f'decimals_{token0_address}_{block_number}'.lower())
-            token1_decimals = response_data.get(f'decimals_{token1_address}_{block_number}'.lower())
+            if token0_address == response_data.get(f'token0_{lp_token}_{block_number}'.lower()):
+                token0_decimals = response_data.get(f'decimals_{token0_address}_{block_number}'.lower())
+                token1_decimals = response_data.get(f'decimals_{token1_address}_{block_number}'.lower())
+            else:
+                token1_decimals = response_data.get(f'decimals_{token0_address}_{block_number}'.lower())
+                token0_decimals = response_data.get(f'decimals_{token1_address}_{block_number}'.lower())
+            price = (slot0[0] / 2 ** 96) ** 2 * 10 ** (token0_decimals - token1_decimals)
             unstake_liquidity = response_data.get(f"liquidity_{lp_token}_{block_number}".lower())
             tick_spacing = response_data.get(f'tickSpacing_{lp_token}_{block_number}'.lower())
 
             lp_token_info[lp_token].update({
+                "token0": token0_address,
+                "token1": token1_address,
                 'liquidity_in_range': unstake_liquidity,
                 "price": price,
                 'tick': slot0[1],
@@ -174,9 +184,12 @@ class PancakeSwapV3Service(UniswapV3Services):
             tick_upper = (tick // tick_spacing + 1) * tick_spacing
             amount0, amount1 = get_token_amount_of_pool(liquidity=liquidity_in_range,
                                                         tick_lower=tick_lower, tick_upper=tick_upper)
+            # stake_amount0, stake_amount1 = get_token_amount_of_pool(liquidity=value.get("stake_liquidity"), tick_lower= tick_lower, tick_upper=tick_upper)
             lp_token_info[lp_token].update({
                 'token0_amount_in_range': amount0 / 10 ** value.get('token0_decimals'),
-                'token1_amount_in_range': amount1 / 10 ** value.get('token1_decimals')
+                'token1_amount_in_range': amount1 / 10 ** value.get('token1_decimals'),
+                # 'token0_amount_stake': stake_amount0 / 10 ** value.get('token0_decimals'),
+                # 'token1_amount_stake': stake_amount1 / 10 ** value.get('token1_decimals')
             })
 
         return lp_token_info
@@ -253,6 +266,7 @@ class PancakeSwapV3Service(UniswapV3Services):
                     'tick_upper': master_chef_position[3],
                     'reward': master_chef_position[5] / 10 ** 18,
                     'farming_pid': master_chef_position[7],
+                    'reward_token': self.pool_info['reward_token'],
                     'pending_cake': decoded_data.get(
                         f'pendingCake_{self.masterchef_addr}_{token_id}_{block_number}'.lower()) / 10 ** 18,
                     'fee_growth_inside0_x128': nft_position[8],
@@ -284,9 +298,13 @@ class PancakeSwapV3Service(UniswapV3Services):
                                                                            block_number)
         for token_id, value in user_data['stake_token'].items():
             pid = value.get('farming_pid')
-            lp_token_address = decoded_data.get(f'poolInfo_{self.masterchef_addr}_{pid}_{block_number}'.lower())[1]
+            pool_info = decoded_data.get(f'poolInfo_{self.masterchef_addr}_{pid}_{block_number}'.lower())
+            lp_token_address = pool_info[1]
             user_data['stake_token'][token_id].update({
-                'pool_address': lp_token_address
+                'pool_address': lp_token_address,
+                'token0': pool_info[2],
+                'token1': pool_info[3],
+                'fee': pool_info[4]
             })
             liquidity = value.get('liquidity')
             token0_decimals = lp_token_info.get(lp_token_address, {}).get("token0_decimals")
@@ -296,7 +314,7 @@ class PancakeSwapV3Service(UniswapV3Services):
             tick_lower = value.get('tick_lower')
             tick_upper = value.get('tick_upper')
             if price and tick:
-                sqrt_price_x96 = math.sqrt(price) * 2 ** 96
+                sqrt_price_x96 = (math.sqrt(price / 10 ** (token0_decimals - token1_decimals))) * 2 ** 96
                 token0_amount, token1_amount = get_token_amount_of_user(liquidity=liquidity,
                                                                         sqrt_price_x96=sqrt_price_x96,
                                                                         tick=tick, tick_upper=tick_upper,

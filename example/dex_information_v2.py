@@ -183,8 +183,9 @@ def export_to_mongodb(chain_id, dex_protocol):
 
 
 if __name__ == "__main__":
-    w = "0x65e19d6835986279fdef3f1d75444e1537d573bc"
-    dex_ids = [Dex.pancake, Dex.uniswap_v2, Dex.quickswap_v2, Dex.sushi_v2, Dex.spooky_v2]
+    w = "0x48ee54660db56ec007e129c2b2b52cc7d27b8b35"
+
+    dex_ids = [Dex.pancake]
 
     for chain_id in [Chain.bsc, Chain.ethereum, Chain.fantom, Chain.polygon, Chain.arbitrum, Chain.avalanche]:
         for dex_id in dex_ids:

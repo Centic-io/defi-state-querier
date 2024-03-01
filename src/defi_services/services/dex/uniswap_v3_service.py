@@ -98,6 +98,10 @@ class UniswapV3Services(DexProtocolServices):
                 query_id = f'decimals_{token_address}_{block_number}'.lower()
                 rpc_calls[query_id] = self.state_service.get_function_info(
                     address=token_address, abi=ERC20_ABI, fn_name="decimals", block_number=block_number)
+                query_id = f'{token_key}_{lp_token}_{block_number}'.lower()
+                rpc_calls[query_id] = self.state_service.get_function_info(
+                    address=lp_token, abi=self.pool_info['pool_abi'], fn_name=token_key, fn_paras=None,
+                    block_number=block_number)
 
         return rpc_calls
 
@@ -106,14 +110,19 @@ class UniswapV3Services(DexProtocolServices):
         for lp_token, value in lp_token_info.items():
             liquidity_in_range = response_data.get(f'liquidity_{lp_token}_{block_number}'.lower(), 0)
             slot0 = response_data.get(f"slot0_{lp_token}_{block_number}".lower())
-            price = (slot0[0] / 2 ** 96) ** 2
             token0_address = value.get('token0')
             token1_address = value.get('token1')
-            token0_decimals = response_data.get(f'decimals_{token0_address}_{block_number}'.lower())
-            token1_decimals = response_data.get(f'decimals_{token1_address}_{block_number}'.lower())
+            if token0_address == response_data.get(f'token0_{lp_token}_{block_number}'.lower()):
+                token0_decimals = response_data.get(f'decimals_{token0_address}_{block_number}'.lower())
+                token1_decimals = response_data.get(f'decimals_{token1_address}_{block_number}'.lower())
+            else:
+                token1_decimals = response_data.get(f'decimals_{token0_address}_{block_number}'.lower())
+                token0_decimals = response_data.get(f'decimals_{token1_address}_{block_number}'.lower())
+            price = (slot0[0] / 2 ** 96) ** 2 * 10 ** (token0_decimals - token1_decimals)
             tick_spacing = response_data.get(f'tickSpacing_{lp_token}_{block_number}'.lower())
-
             lp_token_info[lp_token].update({
+                "token0": token0_address,
+                "token1": token1_address,
                 "liquidity_in_range": liquidity_in_range,
                 "price": price,
                 'tick': slot0[1],
@@ -272,7 +281,7 @@ class UniswapV3Services(DexProtocolServices):
             tick_upper = value.get('tick_upper')
             tick_lower = value.get('tick_lower')
             if price and tick:
-                sqrt_price_x96 = (math.sqrt(price)) * 2 ** 96
+                sqrt_price_x96 = (math.sqrt(price / 10 ** (token0_decimals - token1_decimals))) * 2 ** 96
 
                 token0_amount, token1_amount = get_token_amount_of_user(
                     liquidity=liquidity,
