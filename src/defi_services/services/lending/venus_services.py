@@ -50,7 +50,7 @@ class VenusStateService(CompoundStateService):
             block_number: int = "latest"):
         _w3 = self.state_service.get_w3()
         comptroller_contract = _w3.eth.contract(
-            address=_w3.toChecksumAddress(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
+            address=_w3.to_checksum_address(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
         ctokens = []
         for token in comptroller_contract.functions.getAllMarkets().call(block_identifier=block_number):
             # if token in [ContractAddresses.LUNA.lower(), ContractAddresses.UST.lower(), ContractAddresses.LUNA,
@@ -59,7 +59,7 @@ class VenusStateService(CompoundStateService):
             ctokens.append(token)
 
         reserves_info = {}
-        tokens = [Web3.toChecksumAddress(i) for i in ctokens]
+        tokens = [Web3.to_checksum_address(i) for i in ctokens]
         queries = {}
         for token in tokens:
             key = f"underlying_{token}_{block_number}".lower()
@@ -83,7 +83,7 @@ class VenusStateService(CompoundStateService):
             ltv = liquidation_threshold
 
             if underlying != Token.native_token:
-                underlying_contract = _w3.eth.contract(address=Web3.toChecksumAddress(underlying), abi=ERC20_ABI)
+                underlying_contract = _w3.eth.contract(address=Web3.to_checksum_address(underlying), abi=ERC20_ABI)
                 underlying_decimal = underlying_contract.functions.decimals().call()
             else:
                 underlying_decimal = Chain.native_decimals.get(self.chain_id, 18)
@@ -152,9 +152,9 @@ class VenusStateService(CompoundStateService):
     def calculate_rewards_balance(
             self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         w3 = self.state_service.get_w3()
-        contract = w3.eth.contract(address=w3.toChecksumAddress(self.pool_info.get("lensAddress")), abi = self.lens_abi)
+        contract = w3.eth.contract(address=w3.to_checksum_address(self.pool_info.get("lensAddress")), abi = self.lens_abi)
         # get_reward_id = f"pendingRewards_{self.name}_{wallet}_{block_number}".lower()
-        return_data = contract.functions.pendingRewards(w3.toChecksumAddress(wallet), w3.toChecksumAddress(self.pool_info.get("comptrollerAddress"))).call(block_identifier=block_number)
+        return_data = contract.functions.pendingRewards(w3.to_checksum_address(wallet), w3.to_checksum_address(self.pool_info.get("comptrollerAddress"))).call(block_identifier=block_number)
         rewards = return_data[2]
         for item in return_data[-1]:
             rewards += item[-1]
@@ -365,7 +365,7 @@ class VenusStateService(CompoundStateService):
             reserves_info: dict = None,
             block_number: int = "latest"
     ):
-        tokens = [Web3.toChecksumAddress(value['cToken']) for key, value in reserves_info.items()]
+        tokens = [Web3.to_checksum_address(value['cToken']) for key, value in reserves_info.items()]
         key = f"vTokenMetadataAll_{self.pool_info.get('lensAddress')}_{block_number}".lower()
         return {
             key: self.get_lens_function_info("vTokenMetadataAll", tokens, block_number)
@@ -373,7 +373,7 @@ class VenusStateService(CompoundStateService):
 
     def ctoken_underlying_price_all(
             self, reserves_info, block_number: int = 'latest'):
-        tokens = [Web3.toChecksumAddress(value['cToken']) for key, value in reserves_info.items()]
+        tokens = [Web3.to_checksum_address(value['cToken']) for key, value in reserves_info.items()]
         key = f"vTokenUnderlyingPriceAll_{self.pool_info.get('lensAddress')}_{block_number}".lower()
         return {
             key: self.get_lens_function_info("cTokenUnderlyingPriceAll", tokens, block_number)

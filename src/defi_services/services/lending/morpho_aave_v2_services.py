@@ -57,10 +57,10 @@ class MorphoAaveV2StateService(MorphoCompoundStateService):
             block_number: int = "latest"):
         begin = time.time()
         _w3 = self.state_service.get_w3()
-        pool_address = Web3.toChecksumAddress(self.aave_info['address'])
+        pool_address = Web3.to_checksum_address(self.aave_info['address'])
         contract = _w3.eth.contract(address=pool_address, abi=self.lending_abi)
         comptroller_contract = _w3.eth.contract(
-            address=_w3.toChecksumAddress(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
+            address=_w3.to_checksum_address(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
         markets = comptroller_contract.functions.getMarketsCreated().call(block_identifier=block_number)
         reserves_list = contract.functions.getReservesList().call(block_identifier=block_number)
         reserves_info = {}

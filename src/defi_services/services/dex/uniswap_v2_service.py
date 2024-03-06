@@ -41,7 +41,7 @@ class UniswapV2Services(DexProtocolServices):
         factory_addr = self.pool_info.get('factory_address')
 
         factory_contract = web3.eth.contract(
-            address=web3.toChecksumAddress(factory_addr), abi=self.factory_abi)
+            address=web3.to_checksum_address(factory_addr), abi=self.factory_abi)
         pool_length = factory_contract.functions.allPairsLength().call()
 
         rpc_calls = {}

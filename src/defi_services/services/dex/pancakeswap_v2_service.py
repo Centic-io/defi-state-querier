@@ -42,7 +42,7 @@ class PancakeSwapV2Services(UniswapV2Services):
         masterchef_addr = self.pool_info.get('master_chef_address')
 
         master_chef_contract = web3.eth.contract(abi=self.masterchef_abi,
-                                                 address=web3.toChecksumAddress(masterchef_addr))
+                                                 address=web3.to_checksum_address(masterchef_addr))
         pool_length = master_chef_contract.functions.poolLength().call()
 
         rpc_calls = {}

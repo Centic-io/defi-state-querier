@@ -361,6 +361,6 @@ class UniswapV3Services(DexProtocolServices):
         return user_data
 
     def checksum_address(self, address):
-        if self.web3.isAddress(address):
-            address = self.web3.toChecksumAddress(address)
+        if self.Web3.is_address(address):
+            address = self.web3.to_checksum_address(address)
         return address

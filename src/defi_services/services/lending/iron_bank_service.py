@@ -53,7 +53,7 @@ class IronBankStateService(CompoundStateService):
             block_number: int = "latest"):
         _w3 = self.state_service.get_w3()
         comptroller_contract = _w3.eth.contract(
-            address=_w3.toChecksumAddress(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
+            address=_w3.to_checksum_address(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
         ctokens = []
         for token in comptroller_contract.functions.getAllMarkets().call(block_identifier=block_number):
             # if token in [ContractAddresses.LUNA.lower(), ContractAddresses.UST.lower(), ContractAddresses.LUNA,
@@ -62,9 +62,9 @@ class IronBankStateService(CompoundStateService):
             ctokens.append(token)
 
         lens_contract = _w3.eth.contract(
-            address=Web3.toChecksumAddress(self.pool_info.get("lensAddress")), abi=self.lens_abi
+            address=Web3.to_checksum_address(self.pool_info.get("lensAddress")), abi=self.lens_abi
         )
-        tokens = [Web3.toChecksumAddress(i) for i in ctokens]
+        tokens = [Web3.to_checksum_address(i) for i in ctokens]
         reserves_info = {}
         queries = {}
         for token in tokens:
@@ -91,7 +91,7 @@ class IronBankStateService(CompoundStateService):
             liquidation_threshold = decoded_data.get(markets)[1] / 10 ** 18
 
             if underlying != Token.native_token:
-                underlying_contract = _w3.eth.contract(address=Web3.toChecksumAddress(underlying), abi=ERC20_ABI)
+                underlying_contract = _w3.eth.contract(address=Web3.to_checksum_address(underlying), abi=ERC20_ABI)
                 underlying_decimal = underlying_contract.functions.decimals().call()
             else:
                 underlying_decimal = Chain.native_decimals.get(self.chain_id, 18)

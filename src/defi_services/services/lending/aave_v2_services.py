@@ -54,7 +54,7 @@ class AaveV2StateService(ProtocolServices):
     def get_dapp_asset_info(self, block_number: int = 'latest'):
         begin = time.time()
         _w3 = self.state_service.get_w3()
-        pool_address = Web3.toChecksumAddress(self.pool_info['address'])
+        pool_address = Web3.to_checksum_address(self.pool_info['address'])
         contract = _w3.eth.contract(address=pool_address, abi=self.lending_abi)
         reserves_list = contract.functions.getReservesList().call(block_identifier=block_number)
         reserves_info = {}
@@ -430,7 +430,7 @@ class AaveV2StateService(ProtocolServices):
         rpc_calls = {}
         tokens = []
         for token, value in reserves_info.items():
-            atoken, debt_token = Web3.toChecksumAddress(value['tToken']), Web3.toChecksumAddress(value['dToken'])
+            atoken, debt_token = Web3.to_checksum_address(value['tToken']), Web3.to_checksum_address(value['dToken'])
             tokens += [atoken, debt_token]
         key = f"getRewardsBalance_{self.name}_{wallet}_{block_number}".lower()
         rpc_calls[key] = self.get_function_incentive_info(

@@ -59,13 +59,13 @@ class AaveV3StateService(AaveV2StateService):
     def get_dapp_asset_info(self, block_number: int = 'latest'):
         _w3 = self.state_service.get_w3()
         pool_address = self.pool_info.get("address")
-        pool_contract = _w3.eth.contract(address=_w3.toChecksumAddress(pool_address), abi=self.lending_abi)
+        pool_contract = _w3.eth.contract(address=_w3.to_checksum_address(pool_address), abi=self.lending_abi)
         reserve_list = pool_contract.functions.getReservesList().call(block_identifier=block_number)
         reserves_info = {}
         for token in reserve_list:
             token = token.lower()
             reserve_data = pool_contract.functions.getReserveData(
-                _w3.toChecksumAddress(token)).call(block_identifier=block_number)
+                _w3.to_checksum_address(token)).call(block_identifier=block_number)
             reserves_info[token] = {}
             reserves_info[token]["tToken"] = reserve_data[8].lower()
             reserves_info[token]["sdToken"] = reserve_data[9].lower()
@@ -293,9 +293,9 @@ class AaveV3StateService(AaveV2StateService):
                 reward_token, ERC20_ABI, "decimals", block_number=block_number)
         tokens = []
         for key, value in reserves_info.items():
-            tokens += [Web3.toChecksumAddress(value["tToken"]), Web3.toChecksumAddress(value["dToken"])]
+            tokens += [Web3.to_checksum_address(value["tToken"]), Web3.to_checksum_address(value["dToken"])]
         key = f"getAllUserRewards_{self.name}_{wallet}_{block_number}".lower()
-        rpc_calls[key] = self.get_function_incentive_info("getAllUserRewards", [tokens, Web3.toChecksumAddress(wallet)], block_number)
+        rpc_calls[key] = self.get_function_incentive_info("getAllUserRewards", [tokens, Web3.to_checksum_address(wallet)], block_number)
         return rpc_calls
 
     def calculate_rewards_balance(

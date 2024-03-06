@@ -51,7 +51,7 @@ class CompoundV3StateService(CompoundStateService):
         if comets:
             pools += comets
         for pool in pools:
-            contract = w3.eth.contract(address=w3.toChecksumAddress(pool), abi=self.comet_abi)
+            contract = w3.eth.contract(address=w3.to_checksum_address(pool), abi=self.comet_abi)
             base_token = contract.functions.baseToken().call().lower()
             number_assets = contract.functions.numAssets().call()
             asset_data = {}

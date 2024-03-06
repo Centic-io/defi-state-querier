@@ -51,7 +51,7 @@ class ValasStateService(ProtocolServices):
     def get_dapp_asset_info(self, block_number: int = 'latest'):
         begin = time.time()
         _w3 = self.state_service.get_w3()
-        pool_address = Web3.toChecksumAddress(self.pool_info['address'])
+        pool_address = Web3.to_checksum_address(self.pool_info['address'])
         contract = _w3.eth.contract(address=pool_address, abi=self.lending_abi)
         reserves_list = contract.functions.getReservesList().call(block_identifier=block_number)
         reserves_info = {}

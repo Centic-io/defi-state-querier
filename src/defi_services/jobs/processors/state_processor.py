@@ -39,11 +39,11 @@ class StateProcessor:
 
     @staticmethod
     def check_address(address):
-        return Web3.isAddress(address)
+        return Web3.is_address(address)
 
     @staticmethod
     def checksum_address(address):
-        return Web3.toChecksumAddress(address)
+        return Web3.to_checksum_address(address)
 
     def init_rpc_call_information(
             self, wallet: str, query_id: str, entity_id: str, query_type: str, block_number: int = 'latest', **kwargs):

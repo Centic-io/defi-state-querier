@@ -112,7 +112,7 @@ class StateQuerier:
     @staticmethod
     def add_native_token_balance_rpc_call(
             fn_paras: str = None, call_id: str = None, block_number: int = "latest"):
-        eth_call = GetBalance(Web3.toChecksumAddress(fn_paras), block_number, call_id)
+        eth_call = GetBalance(Web3.to_checksum_address(fn_paras), block_number, call_id)
         return eth_call
 
     def add_rpc_call(self, abi: dict, fn_name: str, contract_address: str,
@@ -120,12 +120,12 @@ class StateQuerier:
         args = []
         if fn_paras:
             for item in fn_paras:
-                if self._w3.isAddress(item):
-                    item = self._w3.toChecksumAddress(item)
+                if self._w3.is_address(item):
+                    item = self._w3.to_checksum_address(item)
                 args.append(item)
 
         data_call = encode_eth_call_data(abi=abi, fn_name=fn_name, args=args)
-        eth_call = EthCall(to=self._w3.toChecksumAddress(contract_address), block_number=block_number,
+        eth_call = EthCall(to=self._w3.to_checksum_address(contract_address), block_number=block_number,
                            data=data_call, abi=abi, fn_name=fn_name, id=call_id)
         return eth_call
 

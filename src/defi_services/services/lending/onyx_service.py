@@ -49,7 +49,7 @@ class OnyxStateService(CompoundStateService):
             block_number: int = "latest"):
         _w3 = self.state_service.get_w3()
         comptroller_contract = _w3.eth.contract(
-            address=_w3.toChecksumAddress(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
+            address=_w3.to_checksum_address(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
         ctokens = []
         for token in comptroller_contract.functions.getAllMarkets().call(block_identifier=block_number):
             # if token in [ContractAddresses.LUNA.lower(), ContractAddresses.UST.lower(), ContractAddresses.LUNA,
@@ -58,9 +58,9 @@ class OnyxStateService(CompoundStateService):
             ctokens.append(token)
 
         lens_contract = _w3.eth.contract(
-            address=Web3.toChecksumAddress(self.pool_info.get("lensAddress")), abi=self.lens_abi
+            address=Web3.to_checksum_address(self.pool_info.get("lensAddress")), abi=self.lens_abi
         )
-        tokens = [Web3.toChecksumAddress(i) for i in ctokens]
+        tokens = [Web3.to_checksum_address(i) for i in ctokens]
         metadata = lens_contract.functions.oTokenMetadataAll(tokens).call(block_identifier=block_number)
         reserves_info = {}
         for data in metadata:
@@ -199,7 +199,7 @@ class OnyxStateService(CompoundStateService):
             )
             key = f"oTokenBalances_{self.name}_{wallet}_{token}_{block_number}".lower()
             rpc_calls[key] = self.get_lens_function_info(
-                "oTokenBalances", [value.get("cToken"), Web3.toChecksumAddress(wallet)])
+                "oTokenBalances", [value.get("cToken"), Web3.to_checksum_address(wallet)])
         return rpc_calls
 
     def calculate_wallet_deposit_borrow_balance(

@@ -64,15 +64,15 @@ class SiloStateService(ProtocolServices):
     ):
         _w3 = self.state_service.get_w3()
         repository_contract = _w3.eth.contract(
-            address=_w3.toChecksumAddress(self.pool_info.get("repositoryAddress")), abi=self.repository_abi)
+            address=_w3.to_checksum_address(self.pool_info.get("repositoryAddress")), abi=self.repository_abi)
         result = {}
         if not tokens:
             tokens = self.pool_info.get("reservesList").keys()
         for token in tokens:
-            silo_token = repository_contract.functions.getSilo(_w3.toChecksumAddress(token)).call(block_identifier=block_number)
+            silo_token = repository_contract.functions.getSilo(_w3.to_checksum_address(token)).call(block_identifier=block_number)
             if not silo_token:
                 continue
-            contract = _w3.eth.contract(address=_w3.toChecksumAddress(silo_token), abi=self.silo_abi)
+            contract = _w3.eth.contract(address=_w3.to_checksum_address(silo_token), abi=self.silo_abi)
             assets = contract.functions.getAssets().call()
             main_asset = contract.functions.siloAsset().call()
             all_assets = [i.lower() for i in assets]
