@@ -53,21 +53,24 @@ class LiqeeStateService(CompoundStateService):
             block_number: int = "latest"):
         _w3 = self.state_service.get_w3()
         comptroller_contract = _w3.eth.contract(
-            address=_w3.toChecksumAddress(self.pool_info.get("controllerAddress")), abi=self.controller_abi)
+            address=_w3.to_checksum_address(self.pool_info.get("controllerAddress")), abi=self.controller_abi)
         ctokens = []
         for token in comptroller_contract.functions.getAlliTokens().call(block_identifier=block_number):
             ctokens.append(token)
         reserves_info = {}
         for token in ctokens:
-            address = _w3.toChecksumAddress(token)
-            contract = _w3.eth.contract(
-                address=address, abi=self.lquee_token_abi)
+            address = _w3.to_checksum_address(token)
+            contract = _w3.eth.contract(address=address, abi=self.lquee_token_abi)
             underlying = contract.functions.underlying().call(block_identifier=block_number)
             liquidation_threshold = comptroller_contract.functions.markets(address).call(block_identifier=block_number)
-            liquidation_threshold = liquidation_threshold[0] / 10**18
+            liquidation_threshold = liquidation_threshold[0] / 10 ** 18
+
+            exchange_rate = contract.functions.exchangeRateStored().call(block_identifier=block_number)
+            exchange_rate = exchange_rate / 10 ** 18
 
             reserves_info[underlying.lower()] = {
                 "cToken": token.lower(),
+                "exchangeRate": exchange_rate,
                 "liquidationThreshold": liquidation_threshold,
                 "loanToValue": liquidation_threshold
             }
@@ -179,12 +182,12 @@ class LiqeeStateService(CompoundStateService):
             reserves_info: dict = None,
             block_number: int = "latest",
     ):
-        fn_paras = [Web3.toChecksumAddress(wallet)]
+        fn_paras = [Web3.to_checksum_address(wallet)]
         rpc_call = self.get_lending_function_info("getAccountRewardAmount", fn_paras, block_number)
         get_reward_id = f"getAccountRewardAmount_{self.name}_{wallet}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
-    def calculate_rewards_balance(self, decoded_data: dict, wallet: str,  block_number: int = "latest"):
+    def calculate_rewards_balance(self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         get_reward_id = f"getAccountRewardAmount_{self.name}_{wallet}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
@@ -250,6 +253,7 @@ class LiqeeStateService(CompoundStateService):
             data[token] = {
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
+                "is_collateral": True if value.get('liquidationThreshold') > 0 else False
             }
             if token_prices:
                 token_price = token_prices.get(underlying)
@@ -261,7 +265,9 @@ class LiqeeStateService(CompoundStateService):
                 data[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
                 data[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
                 total_borrow += borrow_amount_in_usd
-                total_collateral += deposit_amount_in_usd * value.get("liquidationThreshold")
+                if data[token]['isCollateral']:
+                    total_collateral += deposit_amount_in_usd * value.get("liquidationThreshold")
+
             result[ctoken] = data
         if health_factor:
             if total_collateral and total_borrow:

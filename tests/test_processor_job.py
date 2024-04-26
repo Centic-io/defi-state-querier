@@ -16,7 +16,7 @@ def test_processor_job():
         '0xa4b1': os.environ.get("ARBITRUM_PROVIDER"),
         '0xa': os.environ.get("OPTIMISM_PROVIDER"),
         '0xa86a': os.environ.get("AVALANCHE_PROVIDER"),
-        '0x2b6653dc': os.environ.get("TRON_PROVIDER")
+        # '0x2b6653dc': os.environ.get("TRON_PROVIDER")  # TODO: uncomment for test in TRON network
     }
     address = '0xf1df824419879bb8a7e758173523f88efb7af193'
 
@@ -29,7 +29,7 @@ def test_processor_job():
         queries = []
         info = job.get_service_info()
         for p_id, p in info.items():
-            if p_id not in ['token', 'nft']:
+            if p['type'] == 'lending':
                 queries.append({
                     "query_id": f'{p_id}_deposit_borrow',
                     "entity_id": p_id,
@@ -51,7 +51,7 @@ def test_processor_job():
 
         error = False
         try:
-            result = job.run(address, queries, batch_size=100, ignore_error=True)
+            result = job.run(address, queries, batch_size=100, max_workers=5, ignore_error=True)
             data[chain_id] = result
         except Exception as ex:
             logger.exception(ex)

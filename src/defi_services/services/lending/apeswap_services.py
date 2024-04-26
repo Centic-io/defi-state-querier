@@ -7,7 +7,6 @@ from defi_services.abis.lending.apeswape.apeswap_lens_abi import APESWAP_LENS_AB
 from defi_services.abis.lending.apeswape.apswap_ctoken_abi import APESWAP_CTOKEN_ABI
 from defi_services.constants.chain_constant import Chain, BlockTime
 from defi_services.constants.entities.lending_constant import Lending
-from defi_services.constants.token_constant import ContractAddresses
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.compound_service import CompoundStateService
 from defi_services.services.lending.lending_info.bsc.apeswap_bsc import APESWAP_BSC
@@ -44,7 +43,7 @@ class ApeSwapStateService(CompoundStateService):
             block_number: int = "latest"):
         _w3 = self.state_service.get_w3()
         comptroller_contract = _w3.eth.contract(
-            address=_w3.toChecksumAddress(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
+            address=_w3.to_checksum_address(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
         ctokens = []
         for token in comptroller_contract.functions.getAllMarkets().call(block_identifier=block_number):
             # if token in [ContractAddresses.LUNA.lower(), ContractAddresses.UST.lower(), ContractAddresses.LUNA,
@@ -53,9 +52,9 @@ class ApeSwapStateService(CompoundStateService):
             ctokens.append(token)
 
         lens_contract = _w3.eth.contract(
-            address=Web3.toChecksumAddress(self.pool_info.get("lensAddress")), abi=self.lens_abi
+            address=Web3.to_checksum_address(self.pool_info.get("lensAddress")), abi=self.lens_abi
         )
-        tokens = [Web3.toChecksumAddress(i) for i in ctokens]
+        tokens = [Web3.to_checksum_address(i) for i in ctokens]
         metadata = lens_contract.functions.cTokenMetadataAll(tokens).call(block_identifier=block_number)
         reserves_info = {}
         for data in metadata:
@@ -63,8 +62,12 @@ class ApeSwapStateService(CompoundStateService):
             ctoken = data[0].lower()
             lt = data[10] / 10 ** 18
             ltv = data[10] / 10 ** 18
+
+            underlying_decimal = int(data[15])
+            exchange_rate = data[1] / 10 ** (18 - 8 + underlying_decimal)
             reserves_info[underlying] = {
                 "cToken": ctoken,
+                "exchangeRate": exchange_rate,
                 "liquidationThreshold": lt,
                 "loanToValue": ltv
             }
@@ -113,7 +116,7 @@ class ApeSwapStateService(CompoundStateService):
         return {}
 
     def calculate_rewards_balance(
-            self, decoded_data: dict, wallet: str, block_number: int = "latest"):
+            self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         return {}
 
     def get_ctoken_function_info(self, ctoken: str, fn_name: str, fn_paras: list = None, block_number: int = "latest"):

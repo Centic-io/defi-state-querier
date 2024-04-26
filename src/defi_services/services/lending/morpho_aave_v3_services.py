@@ -55,10 +55,10 @@ class MorphoAaveV3StateService(MorphoCompoundStateService):
             block_number: int = "latest"):
         begin = time.time()
         _w3 = self.state_service.get_w3()
-        pool_address = Web3.toChecksumAddress(self.aave_info['address'])
+        pool_address = Web3.to_checksum_address(self.aave_info['address'])
         contract = _w3.eth.contract(address=pool_address, abi=self.lending_abi)
         comptroller_contract = _w3.eth.contract(
-            address=_w3.toChecksumAddress(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
+            address=_w3.to_checksum_address(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
         markets = comptroller_contract.functions.marketsCreated().call(block_identifier=block_number)
         markets = [i.lower() for i in markets]
         reserves_list = contract.functions.getReservesList().call(block_identifier=block_number)
@@ -111,10 +111,7 @@ class MorphoAaveV3StateService(MorphoCompoundStateService):
         return {}
 
     def calculate_rewards_balance(
-            self,
-            decoded_data: dict,
-            wallet: str,
-            block_number: int = "latest"):
+            self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         return {}
 
     # WALLET DEPOSIT BORROW BALANCE
@@ -172,6 +169,7 @@ class MorphoAaveV3StateService(MorphoCompoundStateService):
             data[token] = {
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
+                "is_collateral": True if value.get('liquidationThreshold') > 0 else False
             }
             if token_prices:
                 token_price = token_prices.get(underlying)

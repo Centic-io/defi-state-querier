@@ -64,15 +64,15 @@ class SiloStateService(ProtocolServices):
     ):
         _w3 = self.state_service.get_w3()
         repository_contract = _w3.eth.contract(
-            address=_w3.toChecksumAddress(self.pool_info.get("repositoryAddress")), abi=self.repository_abi)
+            address=_w3.to_checksum_address(self.pool_info.get("repositoryAddress")), abi=self.repository_abi)
         result = {}
         if not tokens:
             tokens = self.pool_info.get("reservesList").keys()
         for token in tokens:
-            silo_token = repository_contract.functions.getSilo(_w3.toChecksumAddress(token)).call(block_identifier=block_number)
+            silo_token = repository_contract.functions.getSilo(_w3.to_checksum_address(token)).call(block_identifier=block_number)
             if not silo_token:
                 continue
-            contract = _w3.eth.contract(address=_w3.toChecksumAddress(silo_token), abi=self.silo_abi)
+            contract = _w3.eth.contract(address=_w3.to_checksum_address(silo_token), abi=self.silo_abi)
             assets = contract.functions.getAssets().call()
             main_asset = contract.functions.siloAsset().call()
             all_assets = [i.lower() for i in assets]
@@ -240,7 +240,7 @@ class SiloStateService(ProtocolServices):
         decimals_id = f"decimals_{self.name}_{reward_token}_{block_number}".lower()
         return {get_reward_id: rpc_call, decimals_id: decimals_call}
 
-    def calculate_rewards_balance(self, decoded_data: dict, wallet: str, block_number: int = "latest"):
+    def calculate_rewards_balance(self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         reward_token = self.pool_info.get("rewardToken")
         get_reward_id = f"getUserUnclaimedRewards_{self.name}_{wallet}_{block_number}".lower()
         decimals_id = f"decimals_{self.name}_{reward_token}_{block_number}".lower()
@@ -316,6 +316,7 @@ class SiloStateService(ProtocolServices):
                     data[asset] = {
                         "borrow_amount": borrow_amount,
                         "deposit_amount": deposit_amount,
+                        "is_collateral": True
                     }
                 else:
                     data[asset]["borrow_amount"] += borrow_amount

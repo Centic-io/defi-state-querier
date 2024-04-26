@@ -9,5 +9,21 @@ class MongoDBConfig:
     PORT = os.environ.get("MONGODB_PORT", '8529')
     USERNAME = os.environ.get("MONGODB_USERNAME", "root")
     PASSWORD = os.environ.get("MONGODB_PASSWORD", "dev123")
-    CONNECTION_URL = os.getenv("MONGODB_CONNECTION_URL") or f"mongodb@{USERNAME}:{PASSWORD}@http://{HOST}:{PORT}"
+    CONNECTION_URL = os.getenv("MONGODB_CONNECTION_URL") or f"mongodb://localhost:27017/"
     DATABASE = os.getenv('MONGODB_DATABASE', 'knowledge_graph')
+
+class MongoDbKLGConfig:
+    HOST =os.environ.get("MONGODB_KLG_HOST", '0.0.0.0')
+    USERNAME = os.environ.get("MONGODB_USERNAME", "root")
+    PASSWORD = os.environ.get("MONGODB_PASSWORD", "dev123")
+    # KLG_DATABASE = "klg_database"
+    KLG_DATABASE = "knowledge_graph"
+    KLG = "knowledge_graph"
+    WALLETS = "wallets"
+    MULTICHAIN_WALLETS = "multichain_wallets"
+    DEPOSITS = "deposits"
+    BORROWS = "borrows"
+    REPAYS = "repays"
+    WITHDRAWS = "withdraws"
+    LIQUIDATES = "liquidates"
+    SMART_CONTRACTS = "smart_contracts"

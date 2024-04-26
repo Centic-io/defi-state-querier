@@ -11,7 +11,7 @@ from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain, BlockTime
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.time_constant import TimeConstants
-from defi_services.constants.token_constant import ContractAddresses, Token
+from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.compound_service import CompoundInfo
 from defi_services.services.lending.lending_info.ethereum.morpho_compound_eth import MORPHO_COMPOUND_ETH
@@ -56,7 +56,7 @@ class MorphoCompoundStateService(ProtocolServices):
             block_number: int = "latest"):
         _w3 = self.state_service.get_w3()
         comptroller_contract = _w3.eth.contract(
-            address=_w3.toChecksumAddress(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
+            address=_w3.to_checksum_address(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
         ctokens = []
         for token in comptroller_contract.functions.getAllMarkets().call(block_identifier=block_number):
             # if token in [ContractAddresses.LUNA.lower(), ContractAddresses.UST.lower(), ContractAddresses.LUNA,
@@ -65,9 +65,9 @@ class MorphoCompoundStateService(ProtocolServices):
             ctokens.append(token)
 
         compound_lens_contract = _w3.eth.contract(
-            address=Web3.toChecksumAddress(self.compound_info.get("lensAddress")), abi=self.compound_lens_abi
+            address=Web3.to_checksum_address(self.compound_info.get("lensAddress")), abi=self.compound_lens_abi
         )
-        tokens = [Web3.toChecksumAddress(i) for i in ctokens]
+        tokens = [Web3.to_checksum_address(i) for i in ctokens]
         metadata = compound_lens_contract.functions.cTokenMetadataAll(tokens).call(block_identifier=block_number)
         reserves_info = {}
         for data in metadata:
@@ -196,19 +196,15 @@ class MorphoCompoundStateService(ProtocolServices):
         if not reserves_info:
             reserves_info = self.pool_info.get("reservesList")
         params = [
-            [Web3.toChecksumAddress(value.get(self.market_key)) for key, value in reserves_info.items()],
-            Web3.toChecksumAddress(wallet)
+            [Web3.to_checksum_address(value.get(self.market_key)) for key, value in reserves_info.items()],
+            Web3.to_checksum_address(wallet)
         ]
         rpc_call = self.get_lens_function_info("getUserUnclaimedRewards", params, block_number)
         get_reward_id = f"getUserUnclaimedRewards_{self.name}_{wallet}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
     def calculate_rewards_balance(
-            self,
-            decoded_data: dict,
-            wallet: str,
-            block_number: int = "latest"
-    ):
+            self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         get_reward_id = f"getUserUnclaimedRewards_{self.name}_{wallet}_{block_number}".lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
@@ -275,6 +271,7 @@ class MorphoCompoundStateService(ProtocolServices):
             data[token] = {
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
+                "is_collateral": True if value.get('liquidationThreshold') > 0 else False
             }
             if token_prices:
                 token_price = token_prices.get(underlying)

@@ -3,13 +3,16 @@ import logging
 from web3 import Web3
 
 from defi_services.constants.chain_constant import Chain
+from defi_services.constants.entities.dex_services import DexServices
 from defi_services.constants.entities.lending_services import LendingServices
+from defi_services.constants.entities.vault_services import VaultServices
 from defi_services.constants.query_constant import Query
 from defi_services.jobs.queriers.state_querier import StateQuerier
+from defi_services.services.dex_protocol_services import DexProtocolServices
 from defi_services.services.nft_services import NFTServices
 from defi_services.services.protocol_services import ProtocolServices
 from defi_services.services.token_services import TokenServices
-from defi_services.utils.convert_address import base58_to_hex, convert_address_dict
+from defi_services.utils.convert_address import base58_to_hex
 from defi_services.utils.init_services import init_services
 
 logger = logging.getLogger("StateProcessor")
@@ -23,6 +26,8 @@ class StateProcessor:
         self.token_service = TokenServices(self.state_querier, chain_id)
         self.nft_service = NFTServices(self.state_querier, chain_id)
         self.lending_services = LendingServices.mapping.get(chain_id)
+        self.dex_services = DexServices.mapping.get(chain_id)
+        self.vault_services = VaultServices.mapping.get(chain_id, {})
 
     def get_service_info(self):
         info = self.nft_service.get_service_info()
@@ -34,15 +39,14 @@ class StateProcessor:
 
     @staticmethod
     def check_address(address):
-        return Web3.isAddress(address)
+        return Web3.is_address(address)
 
     @staticmethod
     def checksum_address(address):
-        return Web3.toChecksumAddress(address)
+        return Web3.to_checksum_address(address)
 
     def init_rpc_call_information(
-            self, wallet: str, query_id: str, entity_id: str, query_type: str, block_number: int = 'latest',
-            **kwargs):
+            self, wallet: str, query_id: str, entity_id: str, query_type: str, block_number: int = 'latest', **kwargs):
         queries = {}
         tokens = []
         rpc_calls = {}
@@ -59,7 +63,7 @@ class StateProcessor:
                 ))
 
         if entity_id in self.services:
-            entity_service: ProtocolServices = self.services.get(entity_id)
+            entity_service = self.services.get(entity_id)
             rpc_calls.update(entity_service.get_function_info([query_type], wallet, block_number, **kwargs))
             tokens += entity_service.get_token_list()
         queries[entity_id] = rpc_calls
@@ -86,9 +90,8 @@ class StateProcessor:
 
         return result
 
-    def process_decoded_data(
-            self, query_id: str, query_type: str, wallet: str,
-            decoded_data: dict, block_number: int = 'latest', **kwargs):
+    def process_decoded_data(self, query_id: str, query_type: str, wallet: str,
+                             decoded_data: dict, block_number: int = 'latest', **kwargs):
         result = {
             "query_id": query_id,
             "query_type": query_type
@@ -104,10 +107,14 @@ class StateProcessor:
                 if Query.nft_balance == query_type:
                     data = self.nft_service.get_data(wallet, entity, entity_value, block_number)
 
-            elif entity in self.lending_services:
+            elif (entity in self.lending_services) or (entity in self.vault_services):
                 entity_service: ProtocolServices = self.services.get(entity)
                 data = entity_service.get_data(
                     [query_type], wallet, entity_value, block_number, **kwargs)
+
+            elif entity in self.dex_services:
+                entity_service: DexProtocolServices = self.services.get(entity)
+                data = entity_service.get_data([query_type], wallet, entity_value, block_number, **kwargs)
             else:
                 continue
             result[query_type] = data
@@ -115,12 +122,10 @@ class StateProcessor:
         return result
 
     def run(self, address: str, queries: list, block_number: int = 'latest',
-            batch_size: int = 100, max_workers: int = 8, ignore_error=False, token_prices=None):
+            batch_size: int = 100, max_workers: int = 8, ignore_error=False):
         wallet = address
         if self.chain_id == Chain.tron and address and not self.check_address(address):
             wallet = base58_to_hex(address)
-        if token_prices is None:
-            token_prices = {}
         all_rpc_calls = {}
         for query in queries:
             query_type = query.get("query_type")
@@ -131,21 +136,28 @@ class StateProcessor:
 
             query_type = query.get("query_type")
             reserves_list = query.get("reserves_list", None)
+            stake = query.get('stake', None)
+            number_lp = query.get('number_lp', 10e7)
+            supplied_data = query.get('supplied_data', None)
             rpc_calls, _ = self.init_rpc_call_information(
-                wallet, query_id, entity_id, query_type, block_number, reserve_info=reserves_list)
+                wallet, query_id, entity_id, query_type, block_number, reserves_list=reserves_list,
+                supplied_data=supplied_data, stake=stake, number_lp=number_lp)
             all_rpc_calls.update(rpc_calls)
-        result = []
+
         decoded_data = self.execute_rpc_calls(all_rpc_calls, batch_size, max_workers, ignore_error=ignore_error)
+
+        result = []
         for query in queries:
             query_id = query.get("query_id")
             query_type = query.get("query_type")
             reserves_list = query.get("reserves_list", None)
+            supplied_data = query.get('supplied_data', None)
+            number_lp = query.get('number_lp', 1)
+            stake = query.get('stake', None)
             processed_data = self.process_decoded_data(
-                    query_id, query_type, wallet, decoded_data, block_number,
-                    token_prices=token_prices, reserve_info=reserves_list)
-            result.append(processed_data)
+                query_id, query_type, wallet, decoded_data, block_number, reserve_info=reserves_list,
+                supplied_data=supplied_data, stake=stake, number_lp=number_lp)
 
-        # if self.chain_id == Chain.tron:
-        #     result = convert_address_dict(result)
+            result.append(processed_data)
 
         return result

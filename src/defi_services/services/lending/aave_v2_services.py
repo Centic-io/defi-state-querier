@@ -54,7 +54,7 @@ class AaveV2StateService(ProtocolServices):
     def get_dapp_asset_info(self, block_number: int = 'latest'):
         begin = time.time()
         _w3 = self.state_service.get_w3()
-        pool_address = Web3.toChecksumAddress(self.pool_info['address'])
+        pool_address = Web3.to_checksum_address(self.pool_info['address'])
         contract = _w3.eth.contract(address=pool_address, abi=self.lending_abi)
         reserves_list = contract.functions.getReservesList().call(block_identifier=block_number)
         reserves_info = {}
@@ -329,7 +329,7 @@ class AaveV2StateService(ProtocolServices):
             stable_borrow_amount
     ):
         result = {}
-        for token in reserves_info:
+        for token, info in reserves_info.items():
             decimals_token = decimals.get(token)
             deposit_amount_wallet = deposit_amount.get(token) / 10 ** decimals_token
             borrow_amount_wallet = borrow_amount.get(token) / 10 ** decimals_token
@@ -337,6 +337,7 @@ class AaveV2StateService(ProtocolServices):
             result[token] = {
                 "borrow_amount": borrow_amount_wallet,
                 "deposit_amount": deposit_amount_wallet,
+                "is_collateral": True if info.get('liquidationThreshold') > 0 else False
             }
             if token_prices:
                 deposit_amount_in_usd = deposit_amount_wallet * token_prices.get(token, 0)
@@ -429,7 +430,7 @@ class AaveV2StateService(ProtocolServices):
         rpc_calls = {}
         tokens = []
         for token, value in reserves_info.items():
-            atoken, debt_token = Web3.toChecksumAddress(value['tToken']), Web3.toChecksumAddress(value['dToken'])
+            atoken, debt_token = Web3.to_checksum_address(value['tToken']), Web3.to_checksum_address(value['dToken'])
             tokens += [atoken, debt_token]
         key = f"getRewardsBalance_{self.name}_{wallet}_{block_number}".lower()
         rpc_calls[key] = self.get_function_incentive_info(
@@ -438,7 +439,7 @@ class AaveV2StateService(ProtocolServices):
         return rpc_calls
 
     def calculate_rewards_balance(
-            self, decoded_data: dict, wallet: str, block_number: int = "latest"):
+            self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         reward_token = self.pool_info['rewardToken']
         key = f"getRewardsBalance_{self.name}_{wallet}_{block_number}".lower()
         rewards = decoded_data.get(key) / 10 ** 18

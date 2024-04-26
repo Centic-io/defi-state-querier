@@ -21,11 +21,11 @@ def convert_address_dict(data):
     if isinstance(data, dict):
         result = {}
         for key, value in data.items():
-            if Web3.isAddress(key):
+            if Web3.is_address(key):
                 key = hex_to_base58(key)
             if isinstance(value, dict):
                 value = convert_address_dict(value)
-            if Web3.isAddress(value):
+            if Web3.is_address(value):
                 value = hex_to_base58(value)
             result[key] = value
         return result

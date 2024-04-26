@@ -51,7 +51,7 @@ class CompoundV3StateService(CompoundStateService):
         if comets:
             pools += comets
         for pool in pools:
-            contract = w3.eth.contract(address=w3.toChecksumAddress(pool), abi=self.comet_abi)
+            contract = w3.eth.contract(address=w3.to_checksum_address(pool), abi=self.comet_abi)
             base_token = contract.functions.baseToken().call().lower()
             number_assets = contract.functions.numAssets().call()
             asset_data = {}
@@ -258,10 +258,7 @@ class CompoundV3StateService(CompoundStateService):
         return result
 
     def calculate_rewards_balance(
-            self,
-            decoded_data: dict,
-            wallet: str,
-            block_number: int = "latest"):
+            self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         reward_amount = 0
         reward_address = self.pool_info.get("rewardAddress")
         for token, value in self.pool_info.get("reservesList").items():
@@ -342,6 +339,7 @@ class CompoundV3StateService(CompoundStateService):
                 deposit_borrow[asset] = {
                         "borrow_amount": 0,
                         "deposit_amount": deposit_amount,
+                        "is_collateral": True
                     }
                 if token_prices:
                     deposit_amount_in_usd = deposit_amount * token_prices.get(asset)
@@ -350,7 +348,8 @@ class CompoundV3StateService(CompoundStateService):
             if underlying not in deposit_borrow:
                 deposit_borrow[underlying] = {
                     "borrow_amount": borrow_amount,
-                    "deposit_amount": 0
+                    "deposit_amount": 0,
+                    "is_collateral": False
                 }
             else:
                 deposit_borrow[underlying]["borrow_amount"] = borrow_amount
@@ -363,7 +362,7 @@ class CompoundV3StateService(CompoundStateService):
 
         if health_factor:
             if total_collateral and total_borrow:
-                result['health_factor'] = total_collateral/total_borrow
+                result['health_factor'] = total_collateral / total_borrow
             elif total_collateral:
                 result['health_factor'] = 100
             else:

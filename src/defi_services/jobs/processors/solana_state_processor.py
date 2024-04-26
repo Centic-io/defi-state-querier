@@ -21,12 +21,12 @@ class SolanaStateProcessor:
         return info
 
     def init_rpc_call_information(
-            self, wallet: str, query_id: str, entity_id: str, query_type: str):
+            self, wallet: str, query_id: str, entity_id: str, query_type: str,  block_number: int = 'latest'):
         queries = {}
         tokens = []
         rpc_calls = {}
         if entity_id not in Lending.all and query_type in [Query.token_balance, Query.nft_balance]:
-            rpc_calls.update(self.token_service.get_function_info(wallet, entity_id))
+            rpc_calls.update(self.token_service.get_function_info(wallet, entity_id, block_number))
             tokens.append(entity_id)
 
         queries[entity_id] = rpc_calls
@@ -70,7 +70,7 @@ class SolanaStateProcessor:
 
         return result
 
-    def run(self, wallet: str, queries: list,
+    def run(self, address: str, queries: list, block_number: int = 'latest',
             batch_size: int = 100, max_workers: int = 8, ignore_error: bool = False, token_prices: dict = None):
         all_rpc_calls = {}
         for query in queries:
@@ -78,7 +78,7 @@ class SolanaStateProcessor:
             entity_id = query.get("entity_id")
             query_type = query.get("query_type")
             rpc_calls, _ = self.init_rpc_call_information(
-                wallet, query_id, entity_id, query_type)
+                address, query_id, entity_id, query_type, block_number)
             all_rpc_calls.update(rpc_calls)
         result = []
         decoded_data = self.execute_rpc_calls(all_rpc_calls, batch_size, max_workers, ignore_error=ignore_error)
@@ -88,7 +88,7 @@ class SolanaStateProcessor:
             query_id = query.get("query_id")
             query_type = query.get("query_type")
             processed_data = self.process_decoded_data(
-                query_id, query_type, wallet, token_prices, decoded_data)
+                query_id, query_type, address, token_prices, decoded_data)
             result.append(processed_data)
 
         return result

@@ -96,13 +96,23 @@ class StateQuerier:
             list_rpc_call.append(eth_call)
 
         response_data = self.client_querier.sent_batch_to_provider(list_rpc_call, batch_size, workers)
+        filtered_response_data = {}
+        # loại bỏ những phần tử không có data
+        for key, value in response_data.items():
+            if value is not None:
+                filtered_response_data[key] = value
+            else:
+                print(key)
+        filtered_keys = list(filtered_response_data.keys())
+        response_data = filtered_response_data
+        list_call_id = [call_id for call_id in list_call_id if call_id in filtered_keys]
         decoded_data = self.decode_response_data(response_data, list_call_id, ignore_error=ignore_error)
         return decoded_data
 
     @staticmethod
     def add_native_token_balance_rpc_call(
             fn_paras: str = None, call_id: str = None, block_number: int = "latest"):
-        eth_call = GetBalance(Web3.toChecksumAddress(fn_paras), block_number, call_id)
+        eth_call = GetBalance(Web3.to_checksum_address(fn_paras), block_number, call_id)
         return eth_call
 
     def add_rpc_call(self, abi: dict, fn_name: str, contract_address: str,
@@ -110,12 +120,12 @@ class StateQuerier:
         args = []
         if fn_paras:
             for item in fn_paras:
-                if self._w3.isAddress(item):
-                    item = self._w3.toChecksumAddress(item)
+                if self._w3.is_address(item):
+                    item = self._w3.to_checksum_address(item)
                 args.append(item)
 
         data_call = encode_eth_call_data(abi=abi, fn_name=fn_name, args=args)
-        eth_call = EthCall(to=self._w3.toChecksumAddress(contract_address), block_number=block_number,
+        eth_call = EthCall(to=self._w3.to_checksum_address(contract_address), block_number=block_number,
                            data=data_call, abi=abi, fn_name=fn_name, id=call_id)
         return eth_call
 

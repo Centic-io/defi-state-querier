@@ -7,9 +7,18 @@ class Query:
     module = "module"
 
     # query types
+    lp_token_list = 'lp_token_list'
+    farming_lp_token_list = 'farming_lp_token_list'
+    important_lp_token_list = 'important_lp_token_list'
+    dex_user_token_balance= 'dex_user_token_balance'
+    lp_token_info = 'lp_token_info'
+    dex_user_info = 'dex_user_info'
+    dex_user_nft = 'dex_user_nft'
+    token_pair_balance = 'token_pair_balance'
     token_balance = 'token_balance'
     nft_balance = 'nft_balance'
     deposit_borrow = 'deposit_borrow'
+    staking_reward = 'staking_reward'
     protocol_reward = 'protocol_reward'
     protocol_apy = 'protocol_apy'
     health_factor = 'health_factor'

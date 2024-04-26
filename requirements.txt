@@ -1,6 +1,6 @@
-web3==5.31.1
-QueryStateLib==1.1.4
-python-dotenv==0.21.0
-pymongo==4.3.3
-requests==2.26.0
-substrate-interface==1.7.4
+web3==6.15.1
+query-blockchain-state-lib==1.0.1
+python-dotenv==1.0.1
+pymongo==4.6.2
+requests==2.31.0
+substrate-interface==1.7.7

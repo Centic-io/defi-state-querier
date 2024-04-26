@@ -3,6 +3,7 @@ WEPIGGY_BSC = {
     "rewardToken": "0x6f620ec89b8479e97a6985792d0c64f237566746",
     "comptrollerAddress": "0x8c925623708a94c7de98a8e83e8200259ff716e0",
     "lensAddress": "0xbcd55352b89c5938e8df544fda7a835f5ec429b5",
+    "lensAddressV1": "0xfe040add5e76adfd11dfcee9580d88f392731e34",
     "distributionAddress": "0xe6320460aca9e4a4385058eefd7d4d70123fc9c9",
     "poolToken": "0x6f620ec89b8479e97a6985792d0c64f237566746",
     "type": "LENDING_POOL",

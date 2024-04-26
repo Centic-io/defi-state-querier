@@ -8,7 +8,7 @@ from defi_services.abis.lending.wepiggy.wepiggy_lens_abi import WEPIGGY_LENS_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain, BlockTime
 from defi_services.constants.entities.lending_constant import Lending
-from defi_services.constants.token_constant import ContractAddresses, Token
+from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.compound_service import CompoundStateService
 from defi_services.services.lending.lending_info.arbitrum.wepiggy_arbitrum import WEPIGGY_ARB
@@ -56,7 +56,7 @@ class WepiggyStateService(CompoundStateService):
             block_number: int = "latest"):
         _w3 = self.state_service.get_w3()
         comptroller_contract = _w3.eth.contract(
-            address=_w3.toChecksumAddress(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
+            address=_w3.to_checksum_address(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
         ctokens = []
         for token in comptroller_contract.functions.getAllMarkets().call(block_identifier=block_number):
             # if token in [ContractAddresses.LUNA.lower(), ContractAddresses.UST.lower(), ContractAddresses.LUNA,
@@ -65,23 +65,28 @@ class WepiggyStateService(CompoundStateService):
             ctokens.append(token)
 
         lens_contract = _w3.eth.contract(
-            address=Web3.toChecksumAddress(self.pool_info.get("lensAddress")), abi=self.lens_abi
+            address=Web3.to_checksum_address(self.pool_info.get("lensAddress")), abi=self.lens_abi
         )
-        tokens = [Web3.toChecksumAddress(i) for i in ctokens]
+        tokens = [Web3.to_checksum_address(i) for i in ctokens]
         reserves_info = {}
         for token in tokens:
             if token.lower() == '0xef86384cf696929c3227428f539e740ee12fcdc7':
                 reserves_info[token.lower()] = self.pool_info.get("reservesList").get(
                     "0xf88506b0f1d30056b9e5580668d5875b9cd30f23")
                 continue
-            data = lens_contract.functions.pTokenMetadata(Web3.toChecksumAddress(token)).call(
+            data = lens_contract.functions.pTokenMetadata(Web3.to_checksum_address(token)).call(
                 block_identifier=block_number)
             underlying = data[2].lower()
             ctoken = data[0].lower()
             lt = data[10] / 10 ** 18
             ltv = data[10] / 10 ** 18
+
+            underlying_decimal = int(data[3])
+            exchange_rate = data[6] / 10 ** (18 - 8 + underlying_decimal)
+
             reserves_info[underlying] = {
                 "cToken": ctoken,
+                "exchangeRate": exchange_rate,
                 "liquidationThreshold": lt,
                 "loanToValue": ltv
             }
@@ -131,13 +136,13 @@ class WepiggyStateService(CompoundStateService):
             reserve_info: dict = None,
             block_number: int = "latest",
     ):
-        rpc_call = self.get_distribution_function_info("wpcAccrued", [wallet], block_number)
+        rpc_call = self.get_distribution_function_info("pendingWpcAccrued", [wallet, True, True], block_number)
         get_reward_id = f"wpcAccrued_{self.name}_{wallet}_{block_number}".lower()
         return {get_reward_id: rpc_call}
 
-    def calculate_rewards_balance(self, decoded_data: dict, wallet: str, block_number: int = "latest"):
+    def calculate_rewards_balance(self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         get_reward_id = f"wpcAccrued_{self.name}_{wallet}_{block_number}".lower()
-        rewards = decoded_data.get(get_reward_id) / 10 ** 18
+        rewards = decoded_data.get(get_reward_id) / 10 ** 15
         reward_token = self.pool_info.get("rewardToken")
         result = {
             reward_token: {"amount": rewards}
@@ -154,6 +159,12 @@ class WepiggyStateService(CompoundStateService):
     ):
 
         rpc_calls = {}
+
+        # Check asset is collateral
+        assets_in_query_id = f"getAssetsIn_{self.pool_info['comptrollerAddress']}_{wallet}_{block_number}".lower()
+        rpc_calls[assets_in_query_id] = self.get_comptroller_function_info(
+            fn_name='getAssetsIn', fn_paras=[wallet], block_number=block_number)
+
         for token, value in reserves_info.items():
             underlying = token
             ctoken = value.get('cToken')
@@ -181,6 +192,9 @@ class WepiggyStateService(CompoundStateService):
             pool_decimals: int = 18,
             block_number: int = "latest",
             health_factor: bool = False):
+        assets_in_query_id = f"getAssetsIn_{self.pool_info['comptrollerAddress']}_{wallet}_{block_number}".lower()
+        assets_in = [t.lower() for t in decoded_data[assets_in_query_id]]
+
         if token_prices is None:
             token_prices = {}
         result = {}
@@ -200,6 +214,7 @@ class WepiggyStateService(CompoundStateService):
             data[token] = {
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
+                "is_collateral": ctoken in assets_in
             }
             if token_prices:
                 token_price = token_prices.get(underlying)
@@ -211,7 +226,9 @@ class WepiggyStateService(CompoundStateService):
                 data[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
                 data[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
                 total_borrow += borrow_amount_in_usd
-                total_collateral += deposit_amount_in_usd * value.get("liquidationThreshold")
+                if data[token]['isCollateral']:
+                    total_collateral += deposit_amount_in_usd * value.get("liquidationThreshold")
+
             result[ctoken] = data
         if health_factor:
             if total_collateral and total_borrow:

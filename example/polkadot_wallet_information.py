@@ -2,7 +2,7 @@ from defi_services.constants.token_constant import Token
 from defi_services.jobs.processors.substrate_state_processor import SubstrateStateProcessor
 
 job = SubstrateStateProcessor(
-    provider_uri="https://palpable-serene-smoke.dot-mainnet.discover.quiknode.pro/11d3e5dde99446e46f9bd58d9cee0727d2735cdf/",
+    provider_uri="https://late-yolo-diagram.dot-mainnet.quiknode.pro/51a1aaf2372854dfd211fca3ab375e5451222be4/",
     chain_id="polkadot"
 )
 queries = [

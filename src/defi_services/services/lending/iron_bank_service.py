@@ -2,14 +2,13 @@ import logging
 
 from web3 import Web3
 
-from defi_services.abis.lending.cream.cream_comptroller_abi import CREAM_COMPTROLLER_ABI
 from defi_services.abis.lending.iron_bank.iron_comptroller_abi import IRON_COMPTROLLER_ABI
 from defi_services.abis.lending.iron_bank.iron_lens_abi import IRON_LENS_ABI
 from defi_services.abis.lending.iron_bank.ctoken_abi import CTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain, BlockTime
 from defi_services.constants.entities.lending_constant import Lending
-from defi_services.constants.token_constant import ContractAddresses, Token
+from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.compound_service import CompoundStateService
 from defi_services.services.lending.lending_info.avalanche.iron_bank_avalanche import IRON_BANK_AVALANCHE
@@ -54,7 +53,7 @@ class IronBankStateService(CompoundStateService):
             block_number: int = "latest"):
         _w3 = self.state_service.get_w3()
         comptroller_contract = _w3.eth.contract(
-            address=_w3.toChecksumAddress(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
+            address=_w3.to_checksum_address(self.pool_info.get("comptrollerAddress")), abi=self.comptroller_abi)
         ctokens = []
         for token in comptroller_contract.functions.getAllMarkets().call(block_identifier=block_number):
             # if token in [ContractAddresses.LUNA.lower(), ContractAddresses.UST.lower(), ContractAddresses.LUNA,
@@ -63,9 +62,9 @@ class IronBankStateService(CompoundStateService):
             ctokens.append(token)
 
         lens_contract = _w3.eth.contract(
-            address=Web3.toChecksumAddress(self.pool_info.get("lensAddress")), abi=self.lens_abi
+            address=Web3.to_checksum_address(self.pool_info.get("lensAddress")), abi=self.lens_abi
         )
-        tokens = [Web3.toChecksumAddress(i) for i in ctokens]
+        tokens = [Web3.to_checksum_address(i) for i in ctokens]
         reserves_info = {}
         queries = {}
         for token in tokens:
@@ -77,6 +76,11 @@ class IronBankStateService(CompoundStateService):
                 "function": "underlying",
                 "block_number": "latest"
             }
+
+            exchange_rate_query_id = f'exchangeRateStored_{token}_{block_number}'
+            queries[exchange_rate_query_id] = self.get_ctoken_function_info(
+                ctoken=token, fn_name='exchangeRateStored', block_number=block_number)
+
             markets = f"markets_{token}_latest".lower()
             queries[markets] = self.get_comptroller_function_info("markets", [token])
         decoded_data = self.state_service.query_state_data(queries)
@@ -85,8 +89,18 @@ class IronBankStateService(CompoundStateService):
             underlying = decoded_data.get(key).lower()
             markets = f"markets_{token}_latest".lower()
             liquidation_threshold = decoded_data.get(markets)[1] / 10 ** 18
+
+            if underlying != Token.native_token:
+                underlying_contract = _w3.eth.contract(address=Web3.to_checksum_address(underlying), abi=ERC20_ABI)
+                underlying_decimal = underlying_contract.functions.decimals().call()
+            else:
+                underlying_decimal = Chain.native_decimals.get(self.chain_id, 18)
+            exchange_rate_query_id = f'exchangeRateStored_{token}_{block_number}'
+            exchange_rate = decoded_data.get(exchange_rate_query_id) / 10 ** (18 - 8 + underlying_decimal)
+
             reserves_info[underlying] = {
                 'cToken': token.lower(),
+                "exchangeRate": exchange_rate,
                 "liquidationThreshold": liquidation_threshold,
                 "loanToValue": liquidation_threshold
             }
@@ -139,10 +153,7 @@ class IronBankStateService(CompoundStateService):
         return {get_reward_id: rpc_call}
 
     def calculate_rewards_balance(
-            self,
-            decoded_data: dict,
-            wallet: str,
-            block_number: int = "latest"):
+            self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
         if self.chain_id in [Chain.optimism, Chain.avalanche]:
             return {}
         get_reward_id = f"compAccrued_{self.name}_{wallet}_{block_number}".lower()
@@ -163,6 +174,12 @@ class IronBankStateService(CompoundStateService):
     ):
 
         rpc_calls = {}
+
+        # Check asset is collateral
+        assets_in_query_id = f"getAssetsIn_{self.pool_info['comptrollerAddress']}_{wallet}_{block_number}".lower()
+        rpc_calls[assets_in_query_id] = self.get_comptroller_function_info(
+            fn_name='getAssetsIn', fn_paras=[wallet], block_number=block_number)
+
         for token, value in reserves_info.items():
             underlying = token
             ctoken = value.get('cToken')
@@ -191,6 +208,9 @@ class IronBankStateService(CompoundStateService):
             block_number: int = "latest",
             health_factor: int = False
     ):
+        assets_in_query_id = f"getAssetsIn_{self.pool_info['comptrollerAddress']}_{wallet}_{block_number}".lower()
+        assets_in = [t.lower() for t in decoded_data[assets_in_query_id]]
+
         if token_prices is None:
             token_prices = {}
         result = {}
@@ -211,6 +231,7 @@ class IronBankStateService(CompoundStateService):
             data[token] = {
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
+                "is_collateral": ctoken in assets_in
             }
             if token_prices:
                 token_price = token_prices.get(underlying)
@@ -222,7 +243,9 @@ class IronBankStateService(CompoundStateService):
                 data[token]['borrow_amount_in_usd'] = borrow_amount_in_usd
                 data[token]['deposit_amount_in_usd'] = deposit_amount_in_usd
                 total_borrow += borrow_amount_in_usd
-                total_collateral += deposit_amount_in_usd * value.get("liquidationThreshold")
+                if data[token]['isCollateral']:
+                    total_collateral += deposit_amount_in_usd * value.get("liquidationThreshold")
+
             result[ctoken] = data
         if health_factor:
             if total_collateral and total_borrow:

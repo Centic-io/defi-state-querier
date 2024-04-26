@@ -1,6 +1,6 @@
 import json
 
-PANCAKESWAP_MASTERCHEF_ABI = json.loads('''
+PANCAKESWAP_MASTERCHEF_V2_ABI = json.loads('''
 [
   {
     "inputs": [

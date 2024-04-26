@@ -28,9 +28,9 @@ setuptools.setup(
     packages=setuptools.find_packages(where="src"),
     python_requires='>=3.6',
     install_requires=[
-        "web3<=6.0.0",
-        "QueryStateLib==1.1.4",
-        "python-dotenv>=0.18.0",
+        "web3>=6.0.0",
+        "query-blockchain-state-lib==1.0.1",
+        "python-dotenv>=1.0.0",
         "pymongo>=4.3.3"
     ],
 )
