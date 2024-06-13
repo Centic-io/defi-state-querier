@@ -2,9 +2,8 @@ import logging
 
 from query_state_lib.base.mappers.eth_call_mapper import EthCall
 from query_state_lib.base.mappers.get_balance_mapper import GetBalance
-from query_state_lib.base.utils.encoder import encode_eth_call_data
 from query_state_lib.client.client_querier import ClientQuerier
-from web3 import Web3
+from web3 import Web3, contract
 from web3.middleware import geth_poa_middleware
 
 from defi_services.constants.query_constant import Query
@@ -124,7 +123,11 @@ class StateQuerier:
                     item = self._w3.to_checksum_address(item)
                 args.append(item)
 
-        data_call = encode_eth_call_data(abi=abi, fn_name=fn_name, args=args)
+        c = contract.Contract
+        c.w3 = self._w3
+        c.abi = abi
+        data_call = c.encodeABI(fn_name=fn_name, args=args)
+        # data_call = encode_eth_call_data(abi=abi, fn_name=fn_name, args=args)
         eth_call = EthCall(to=self._w3.to_checksum_address(contract_address), block_number=block_number,
                            data=data_call, abi=abi, fn_name=fn_name, id=call_id)
         return eth_call
