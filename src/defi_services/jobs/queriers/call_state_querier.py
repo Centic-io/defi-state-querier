@@ -11,10 +11,10 @@ from defi_services.services.multicall.batch_queries_service import decode_data_r
     decode_data_response
 from defi_services.services.multicall.multicall_v2 import W3Multicall, add_rpc_multicall
 
-logger = logging.getLogger("MulticallStateQuerier")
+logger = logging.getLogger("CallStateQuerier")
 
 
-class MulticallStateQuerier(StateQuerier):
+class CallStateQuerier(StateQuerier):
     def __init__(self, provider_uri, chain_id):
         super().__init__(provider_uri)
         self.chain_id = chain_id
