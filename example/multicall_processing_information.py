@@ -2,9 +2,14 @@ import json
 
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.query_constant import Query
+from defi_services.jobs.processors.multi_call_state_processor import MultiCallStateProcessor
 from defi_services.jobs.processors.multi_state_processor import MultiStateProcessor
 
-job = MultiStateProcessor(
+# job = MultiStateProcessor(
+#     provider_uri="https://rpc.ankr.com/bsc",
+#     chain_id=Chain.bsc
+# )
+job = MultiCallStateProcessor(
     provider_uri="https://rpc.ankr.com/bsc",
     chain_id=Chain.bsc
 )

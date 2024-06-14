@@ -10,7 +10,7 @@ from defi_services.services.protocol_services import ProtocolServices
 from defi_services.services.token_services import TokenServices
 from defi_services.utils.init_services import init_services
 
-logger = logging.getLogger("StateProcessor")
+logger = logging.getLogger("MultiStateProcessor")
 
 
 class MultiStateProcessor:

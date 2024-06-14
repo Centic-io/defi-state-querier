@@ -2,7 +2,7 @@ import json
 
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.query_constant import Query
-from defi_services.jobs.processors.multicall_state_processor import MulticallStateProcessor
+from defi_services.jobs.processors.call_state_processor import MulticallStateProcessor
 from defi_services.jobs.processors.state_processor import StateProcessor
 
 # job = StateProcessor(
