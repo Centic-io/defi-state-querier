@@ -3,6 +3,7 @@ import logging
 from web3 import Web3
 
 from defi_services.constants.entities.lending_services import LendingServices
+from defi_services.constants.query_constant import Query
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.nft_services import NFTServices
 from defi_services.services.protocol_services import ProtocolServices
@@ -44,6 +45,15 @@ class MultiStateProcessor:
         if entity_id in self.services:
             entity_service: ProtocolServices = self.services.get(entity_id)
             rpc_calls.update(entity_service.get_function_info([query_type], wallet, block_number, **kwargs))
+
+        if query_type == Query.token_balance:
+            entity_service: TokenServices = self.token_service
+            rpc_calls.update(entity_service.get_function_info(wallet, entity_id, block_number))
+
+        if query_type == Query.nft_balance:
+            entity_service: NFTServices = self.nft_service
+            rpc_calls.update(entity_service.get_function_info(wallet, entity_id, block_number))
+
         queries[entity_id] = rpc_calls
 
         return {query_id: queries}
@@ -77,7 +87,17 @@ class MultiStateProcessor:
         query_value = decoded_data.get(query_id)
         for entity, entity_value in query_value.items():
             result["entity_id"] = entity
-            if entity in self.lending_services:
+            if query_type == Query.token_balance:
+                entity_service: TokenServices = self.token_service
+                data = entity_service.get_data(
+                    wallet, entity, entity_value, block_number, **kwargs
+                )
+            elif query_type == Query.nft_balance:
+                entity_service: NFTServices = self.nft_service
+                data = entity_service.get_data(
+                    wallet, entity, entity_value, block_number, **kwargs
+                )
+            elif entity in self.lending_services:
                 entity_service: ProtocolServices = self.services.get(entity)
                 data = entity_service.get_data(
                     [query_type], wallet, entity_value, block_number, **kwargs)
