@@ -21,7 +21,7 @@ class TokenServices:
     def get_data(wallet: str, token: str, decoded_data: dict, block_number: int = "latest", **kwargs):
         token_prices = kwargs.get("token_prices", {})
         decimals_key = f"decimals_{token}_{block_number}".lower()
-        balance_key = f"balanceOf_{wallet}_{token}_{block_number}".lower()
+        balance_key = f"balanceOf_{token}_{[wallet]}_{block_number}".lower()
         if balance_key in decoded_data:
             balance = decoded_data.get(balance_key) or 0
             decimals = decoded_data.get(decimals_key) or 18
@@ -50,11 +50,12 @@ class TokenServices:
         return result
 
     def get_function_balance_info(self, wallet: str, token: str, block_number: int = "latest"):
-        key = f"balanceOf_{wallet}_{token}_{block_number}".lower()
+        fn_paras = [wallet]
+        key = f"balanceOf_{token}_{fn_paras}_{block_number}".lower()
         if token == Token.native_token:
             return {key: self.state_service.get_native_token_balance_info(wallet, block_number)}
 
-        return {key: self.state_service.get_function_info(token, ERC20_ABI, "balanceOf", [wallet], block_number)}
+        return {key: self.state_service.get_function_info(token, ERC20_ABI, "balanceOf", fn_paras, block_number)}
 
     def get_decimals_info(self, token: str, block_number: int = "latest"):
         decimals_token = token
