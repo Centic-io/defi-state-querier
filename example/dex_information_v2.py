@@ -1,28 +1,13 @@
 import json
-import os
-
-from dotenv import load_dotenv
 
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.dex_constant import Dex
 from defi_services.constants.entities.dex_info_constant import DexInfo
+from defi_services.constants.network_constants import Networks, Chains
 from defi_services.constants.query_constant import Query
-from defi_services.jobs.processors.state_processor import StateProcessor
+from defi_services.jobs.processors.state_processor_multichain import StateProcessor
 
 from defi_services.databases.mongodb_exporter import MongoExporter
-
-load_dotenv()
-
-provider_url = {
-    '0x1': os.environ.get("ETHEREUM_PROVIDER"),
-    '0x38': os.environ.get("BSC_PROVIDER"),
-    '0x89': os.environ.get("POLYGON_PROVIDER"),
-    '0xfa': os.environ.get("FANTOM_PROVIDER"),
-    '0xa4b1': os.environ.get("ARBITRUM_PROVIDER"),
-    '0xa': os.environ.get("OPTIMISM_PROVIDER"),
-    '0xa86a': os.environ.get("AVALANCHE_PROVIDER"),
-    '0x2b6653dc': os.environ.get("TRON_PROVIDER")
-}
 
 
 def get_lp_token_list(job, wallet, dex_protocol):
@@ -38,7 +23,7 @@ def get_lp_token_list(job, wallet, dex_protocol):
             'query_id': f'{dex_protocol}_{Query.farming_lp_token_list}',
             "entity_id": dex_protocol,
             'query_type': Query.farming_lp_token_list,
-            'number_lp': 10000
+            'number_lp': 10
         }
     ]
 
@@ -56,7 +41,7 @@ def get_lp_token_info(job, wallet, dex_protocol):
 
     queries = [
         # {
-        #     'query_id': f'{dex_protocol}_{Query.lp_token_list}',
+        #     'query_id': f'{dex_protocol}_{Query.lp_token_info}',
         #     "entity_id": dex_protocol,
         #     'query_type': Query.lp_token_info,
         #     'supplied_data': {
@@ -183,14 +168,16 @@ def export_to_mongodb(chain_id, dex_protocol):
 
 
 if __name__ == "__main__":
-    w = "0x48ee54660db56ec007e129c2b2b52cc7d27b8b35"
+    w = "0x025d50c11596869993b94F4bEb626eff6bEA8AAE"
 
-    dex_ids = [Dex.pancake]
+    dex_ids = [Dex.sushi_v2]
 
-    for chain_id in [Chain.bsc, Chain.ethereum, Chain.fantom, Chain.polygon, Chain.arbitrum, Chain.avalanche]:
+    for chain_id in [Chain.ethereum]:
+    # for chain_id in [Chain.bsc, Chain.ethereum, Chain.fantom, Chain.polygon, Chain.arbitrum, Chain.avalanche]:
         for dex_id in dex_ids:
             try:
-                job_ = StateProcessor(provider_url[chain_id], chain_id)
+                provider_url = Networks.archive_node.get(Chains.names[chain_id])
+                job_ = StateProcessor(provider_url, chain_id)
                 if dex_id in job_.services:
                     get_lp_token_list(job=job_, wallet=w, dex_protocol=dex_id)
                     get_lp_token_info(job=job_, wallet=w, dex_protocol=dex_id)

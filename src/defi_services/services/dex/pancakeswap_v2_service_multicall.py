@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 from defi_services.abis.dex.pancakeswap.pancakeswap_lp_token_abi import LP_TOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
@@ -7,7 +8,7 @@ from defi_services.constants.entities.dex_constant import Dex
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.blockchain.multicall_v2 import W3Multicall
 from defi_services.services.dex.dex_info.pancakeswap_info import PANCAKESWAP_V2_BSC_INFO
-from defi_services.services.dex.uniswap_v2_service import UniswapV2Services
+from defi_services.services.dex.uniswap_v2_service_multicall import UniswapV2Services
 
 logger = logging.getLogger("PancakeSwap V2 State Service")
 
@@ -22,11 +23,11 @@ class PancakeSwapV2Services(UniswapV2Services):
     def __init__(self, state_service: StateQuerier, chain_id: str = '0x38'):
         super().__init__(state_service=state_service, chain_id=chain_id)
 
+        self._w3 = self.state_service.get_w3()
         self.pool_info = PancakeSwapV2Info.mapping.get(chain_id)
         if self.pool_info:
             self.masterchef_abi = self.pool_info['master_chef_abi']
             self.factory_abi = self.pool_info['factory_abi']
-
 
     def get_service_info(self):
         info = {
@@ -40,44 +41,39 @@ class PancakeSwapV2Services(UniswapV2Services):
 
     # Get all lp tokens
     def get_farming_supported_lp_token(self, limit: int = 1):
-        web3 = self.state_service.get_w3()
         masterchef_addr = self.pool_info.get('master_chef_address')
-
-        master_chef_contract = web3.eth.contract(abi=self.masterchef_abi,
-                                                 address=web3.to_checksum_address(masterchef_addr))
+        master_chef_contract = self._w3.eth.contract(
+            abi=self.masterchef_abi, address=self._w3.to_checksum_address(masterchef_addr))
         pool_length = master_chef_contract.functions.poolLength().call()
 
-        rpc_calls = {}
+        multicall_calls: List['W3Multicall.Call'] = []
         for pid in range(0, min(pool_length, limit)):
-            query_id = f'lpToken_{masterchef_addr}_{pid}_latest'.lower()
-            rpc_calls[query_id] = self.get_masterchef_function_info(fn_name="lpToken", fn_paras=[pid])
+            multicall_calls.append(W3Multicall.Call(
+                address=masterchef_addr, abi=self.masterchef_abi, fn_paras=pid, fn_name='lpToken', block_number="latest"))
 
-        return rpc_calls
+        return multicall_calls
 
-    def decode_farming_supported_lp_token(self, decoded_data, ):
+    def decode_farming_supported_lp_token(self, decoded_data):
         result = {}
         for query_id, value in decoded_data.items():
             # Format query_id: f'lpToken_{self.masterchef_addr}_{pid}_latest'
 
-            pid = int(query_id.split("_")[-2])
+            pid = int(query_id.split("_")[2])
             result[value.lower()] = {"farming_pid": pid}
 
         return result
 
     # Get lp token info
     def get_lp_token_function_info(self, supplied_data, block_number: int = "latest"):
-        rpc_calls = super().get_lp_token_function_info(supplied_data=supplied_data, block_number=block_number)
+        multicall_calls: List['W3Multicall.Call'] = super().get_lp_token_function_info(supplied_data=supplied_data, block_number=block_number)
 
         masterchef_addr = self.pool_info.get('master_chef_address')
-
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
-            query_id = f'balanceOf_{lp_token}_{masterchef_addr}_{block_number}'.lower()
-            rpc_calls[query_id] = self.state_service.get_function_info(
-                address=lp_token, abi=LP_TOKEN_ABI, fn_name="balanceOf", fn_paras=[masterchef_addr],
-                block_number=block_number)
+            multicall_calls.append(W3Multicall.Call(
+                address=lp_token, abi=LP_TOKEN_ABI, fn_paras=masterchef_addr, fn_name="balanceOf", block_number=block_number))
 
-        return rpc_calls
+        return multicall_calls
 
     def decode_lp_token_info(self, supplied_data, decoded_data, block_number: int = "latest"):
         result = super().decode_lp_token_info(
@@ -94,20 +90,18 @@ class PancakeSwapV2Services(UniswapV2Services):
 
     # Get balance of token
     def get_balance_of_token_function_info(self, supplied_data, block_number: int = "latest"):
-        rpc_calls = super().get_balance_of_token_function_info(
-            supplied_data=supplied_data, block_number=block_number
-        )
+        multicall_calls: List['W3Multicall.Call'] = super().get_balance_of_token_function_info(
+            supplied_data=supplied_data, block_number=block_number)
 
         masterchef_addr = self.pool_info.get('master_chef_address')
 
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
-            query_id = f'balanceOf_{lp_token}_{masterchef_addr}_{block_number}'.lower()
-            rpc_calls[query_id] = self.state_service.get_function_info(
-                address=lp_token, abi=LP_TOKEN_ABI, fn_name="balanceOf", fn_paras=[masterchef_addr],
-                block_number=block_number)
+            multicall_calls.append(W3Multicall.Call(
+                address=lp_token, abi=LP_TOKEN_ABI, fn_paras=masterchef_addr, fn_name='balanceOf',
+                block_number="latest"))
 
-        return rpc_calls
+        return multicall_calls
 
     def decode_balance_of_token_function_info(self, supplied_data, decoded_data, block_number: int = "latest"):
         result = super().decode_balance_of_token_function_info(
@@ -132,21 +126,19 @@ class PancakeSwapV2Services(UniswapV2Services):
     # User Information
     def get_user_info_function(
             self, wallet: str, supplied_data, stake: bool = True, block_number: int = "latest"):
-        rpc_calls = super().get_user_info_function(
+        multicall_calls: List['W3Multicall.Call'] = super().get_user_info_function(
             wallet=wallet, supplied_data=supplied_data, stake=stake, block_number=block_number)
-
         masterchef_addr = self.pool_info.get('master_chef_address')
 
         lp_token_info = supplied_data['lp_token_info']
         for lp_token, info in lp_token_info.items():
             if stake and (info.get('farming_pid') is not None):
                 pid = int(info.get('farming_pid'))
+                multicall_calls.append(W3Multicall.Call(
+                    address=masterchef_addr, abi=self.masterchef_abi, fn_name="userInfo",
+                    fn_paras=[pid, self._w3.to_checksum_address(wallet)], block_number=block_number))
 
-                query_id = f'userInfo_{masterchef_addr}_{[pid, wallet]}_{block_number}'.lower()
-                rpc_calls[query_id] = self.get_masterchef_function_info(
-                    fn_name="userInfo", fn_paras=[pid, wallet], block_number=block_number)
-
-        return rpc_calls
+        return multicall_calls
 
     def decode_user_info_function(
             self, wallet: str, supplied_data, decoded_data: dict, stake: bool = True, block_number: int = "latest"):
@@ -234,25 +226,21 @@ class PancakeSwapV2Services(UniswapV2Services):
 
     # User Reward
     def get_rewards_balance_function_info(self, wallet, supplied_data, block_number: int = "latest"):
-        rpc_calls = {}
-
+        multicall_calls: List['W3Multicall.Call'] = []
         reward_token = self.pool_info.get("reward_token")
-        decimals_query_id = f'decimals_{reward_token}_{block_number}'.lower()
-        rpc_calls[decimals_query_id] = self.state_service.get_function_info(
-            address=reward_token, abi=ERC20_ABI, fn_name="decimals", block_number=block_number)
-
         masterchef_addr = self.pool_info.get('master_chef_address')
-
         lp_token_info = supplied_data['lp_token_info']
+
+        multicall_calls.append(W3Multicall.Call(
+            address=reward_token, abi=ERC20_ABI, fn_name="decimals", block_number=block_number))
         for lp_token, info in lp_token_info.items():
             if info.get('farming_pid') is not None:
                 pid = int(info.get('farming_pid'))
+                multicall_calls.append(W3Multicall.Call(
+                    address=masterchef_addr, abi=self.masterchef_abi, fn_name="pendingCake",
+                    fn_paras=[int(pid), self._w3.to_checksum_address(wallet)], block_number=block_number))
 
-                query_id = f'pendingCake_{masterchef_addr}_{[pid, wallet]}_{block_number}'.lower()
-                rpc_calls[query_id] = self.get_masterchef_function_info(
-                    fn_name="pendingCake", fn_paras=[int(pid), wallet], block_number=block_number)
-
-        return rpc_calls
+        return multicall_calls
 
     def calculate_rewards_balance(self, wallet: str, supplied_data: dict, decoded_data: dict,
                                   block_number: int = "latest") -> dict:
@@ -272,9 +260,3 @@ class PancakeSwapV2Services(UniswapV2Services):
                 result[lp_token] = {reward_token: {'amount': decoded_data.get(query_id) / 10 ** reward_decimals}}
 
         return result
-
-    def get_masterchef_function_info(self, fn_name, fn_paras, block_number: int = 'latest'):
-        masterchef_addr = self.pool_info['master_chef_address']
-        return self.state_service.get_function_info(
-            masterchef_addr, self.masterchef_abi, fn_name, fn_paras, block_number
-        )
