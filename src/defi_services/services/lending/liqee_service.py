@@ -89,6 +89,35 @@ class LiqeeStateService(CompoundStateService):
         return tokens
 
     # CALCULATE APY LENDING POOL
+    def get_apy_lending_pool_function_info(
+            self,
+            reserves_info: dict,
+            block_number: int = "latest"
+    ):
+        rpc_calls = {}
+        for token_address, reserve_info in reserves_info.items():
+            if token_address != Token.native_token:
+                query_id = f"decimals_{token_address}_{block_number}".lower()
+                rpc_calls[query_id] = self.state_service.get_function_info(token_address, ERC20_ABI, "decimals", [], block_number)
+
+            ctoken = reserve_info.get("cToken")
+            for fn_name in ['decimals', 'totalSupply', 'totalBorrows', 'supplyRatePerBlock', 'borrowRatePerBlock', 'exchangeRateStored']:
+                if ctoken in [
+                    '0xd1254d280e7504836e1b0e36535ebff248483cee', '0x591595bfae3f5d51a820ecd20a1e3fbb6638f34b', '0xfa2e831c674b61475c175b2206e81a5938b298dd', '0x028db7a9d133301bd49f27b5e41f83f56ab0faa6',  # Ethereum Network
+                    '0x36f4c36d1f6e8418ecb2402f896b2a8fedde0991', '0xb22ef996c0a2d262a19db2a66a256067f51511eb', '0x6e42423e1bcb6a093a58e203b5eb6e8a8023b4e5', '0x6ac0a0b3959c1e5fcbd09b59b09abf7c53c72346',  # BSC Network
+                ] and (fn_name == 'supplyRatePerBlock'):
+                    # Some dForce token does not support function supplyRatePerBlock
+                    continue
+
+                query_id = f"{fn_name}_{ctoken}_{block_number}".lower()
+                rpc_calls[query_id] = self.get_ctoken_function_info(
+                    ctoken=ctoken,
+                    fn_name=fn_name,
+                    block_number=block_number
+                )
+
+        return rpc_calls
+
     def get_reserve_tokens_metadata(
             self,
             decoded_data: dict,
