@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 
 from defi_services.constants.entities.lending_constant import Lending
-from defi_services.jobs.processors.state_processor import StateProcessor
+from defi_services.jobs.processors.state_processor_multichain import StateProcessor
 from defi_services.utils.logger_utils import get_logger
 
 logger = get_logger('Test processor job')
@@ -34,7 +34,7 @@ def test_processor_job():
         queries = []
         info = job.get_service_info()
         for p_id, p in info.items():
-            if p_id != Lending.liqee:
+            if p_id != Lending.morpho_aave_v3:
                 continue
             if p['type'] == 'lending':
                 queries.append({
