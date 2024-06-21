@@ -54,7 +54,7 @@ class StateQuerier:
         }
         return data
 
-    def query_state_data(self, queries: List['W3Multicall.Call'], batch_size: int = 100, workers: int = 5, ignore_error: bool = False):
+    def query_state_data(self, queries: List['W3Multicall.Call'], batch_size: int = 100):
         """
         Args:
             queries: dict - defi state queries
@@ -76,10 +76,8 @@ class StateQuerier:
                 - key: str - id of query
                 - value: result of query
         """
-        # list_rpc_call, list_call_id = [], []
         for value in queries:
             key = value.id
-            # fn_paras = value.f
             block_number = value.block_number
             items = key.split('_')
             if Token.native_token == items[1] and "balanceof" == items[0]:

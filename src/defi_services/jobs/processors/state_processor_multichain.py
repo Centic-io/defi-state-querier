@@ -73,14 +73,13 @@ class StateProcessor:
         tokens = list(set(tokens))
         return {query_id: queries}, tokens
 
-    def execute_rpc_calls(self, queries: dict, batch_size: int = 100, max_workers: int = 8, ignore_error: bool = False):
+    def execute_rpc_calls(self, queries: dict, batch_size: int = 100):
         rpc_calls = []
         for query, query_info in queries.items():
             for entity, entity_value in query_info.items():
                 rpc_calls.extend(entity_value)
 
-        decoded_data = self.state_querier.query_state_data(
-            rpc_calls, batch_size=batch_size, workers=max_workers, ignore_error=ignore_error)
+        decoded_data = self.state_querier.query_state_data(rpc_calls, batch_size=batch_size)
         result = {}
         for query, query_info in queries.items():
             query_data = {}
@@ -125,8 +124,7 @@ class StateProcessor:
 
         return result
 
-    def run(self, address: str, queries: list, block_number: int = 'latest',
-            batch_size: int = 100, max_workers: int = 8, ignore_error=False):
+    def run(self, address: str, queries: list, block_number: int = 'latest', batch_size: int = 100):
         wallet = address
         if self.chain_id == Chain.tron and address and not self.check_address(address):
             wallet = base58_to_hex(address)
@@ -148,7 +146,7 @@ class StateProcessor:
                 supplied_data=supplied_data, stake=stake, number_lp=number_lp)
             all_multicall_calls.update(multicall_calls)
 
-        decoded_data = self.execute_rpc_calls(all_multicall_calls, batch_size, max_workers, ignore_error=ignore_error)
+        decoded_data = self.execute_rpc_calls(all_multicall_calls, batch_size)
 
         result = []
         for query in queries:

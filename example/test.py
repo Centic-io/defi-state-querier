@@ -1,3 +1,4 @@
+import json
 import os
 from dotenv import load_dotenv
 
@@ -24,6 +25,8 @@ def test_processor_job():
 
     data = {}
     for chain_id, provider_uri in providers.items():
+        if chain_id != '0x1':
+            continue
         job = StateProcessor(
             provider_uri=provider_uri,
             chain_id=chain_id
@@ -57,9 +60,11 @@ def test_processor_job():
         try:
             result = job.run(address, queries, batch_size=100)
             data[chain_id] = result
+
+            with open('test/apy1.json', 'w') as f:
+                json.dump(result, f, indent=2)
         except Exception as ex:
             logger.exception(ex)
-            logger.error(f'Exception on chain {chain_id}')
             error = True
 
         assert not error

@@ -27,7 +27,7 @@ def get_lp_token_list(job, wallet, dex_protocol):
         #
         # }
     ]
-    res = job.run(wallet, queries, batch_size=100, max_workers=8, ignore_error=True)
+    res = job.run(wallet, queries, batch_size=100,)
     with open('test/lp_token_list.json', 'w') as f:
         json.dump(res, f)
 
@@ -67,7 +67,7 @@ def get_lp_token_info(job, wallet, dex_protocol):
         # },
 
     ]
-    res = job.run(wallet, queries, batch_size=100, max_workers=8, ignore_error=True)
+    res = job.run(wallet, queries, batch_size=100)
     with open('test/lp_token_info.json', 'w') as f:
         json.dump(res, f)
 
@@ -82,7 +82,7 @@ def get_user_nft(job, wallet, dex_protocol):
         }
     ]
 
-    res = job.run(wallet, queries, batch_size=100, max_workers=8, ignore_error=True)
+    res = job.run(wallet, queries, batch_size=100,)
     print('get user nft successful')
     with open('test/user_nft.json', 'w') as f:
         json.dump(res, f)
@@ -103,7 +103,7 @@ def get_user_info(job, wallet, dex_protocol):
         }
     ]
 
-    res = job.run(wallet, queries, batch_size=100, max_workers=8, ignore_error=True)
+    res = job.run(wallet, queries, batch_size=100,)
     print('get user info successful')
     with open('test/user_info.json', 'w') as f:
         json.dump(res, f)
@@ -129,7 +129,7 @@ def get_user_token_balance(job, wallet, dex_protocol):
         }
     ]
 
-    res = job.run(wallet, queries, batch_size=100, max_workers=8, ignore_error=True)
+    res = job.run(wallet, queries, batch_size=100,)
     print('get user token balance successful')
     with open('test/user_token_balance.json', 'w') as f:
         json.dump(res, f)
@@ -154,7 +154,7 @@ def get_user_token_reward(job, wallet, dex_protocol):
             }
         }
     ]
-    res = job.run(wallet, queries, batch_size=100, max_workers=8, ignore_error=True)
+    res = job.run(wallet, queries, batch_size=100,)
     print('get user token reward successful')
     with open('test/user_token_reward.json', 'w') as f:
         json.dump(res, f)
