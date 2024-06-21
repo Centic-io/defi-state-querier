@@ -1,6 +1,6 @@
 from defi_services.constants.entities.dex_services_multicall import DexServices
 from defi_services.constants.entities.lending_services_multicall import LendingServices
-from defi_services.constants.entities.vault_services import VaultServices
+from defi_services.constants.entities.vault_services_multicall import VaultServices
 from defi_services.jobs.queriers.state_querier import StateQuerier
 
 

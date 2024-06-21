@@ -93,7 +93,7 @@ class CompoundStateService(ProtocolServices):
         multicall_calls: List['W3Multicall.Call'] = []
         for token, reserve_info in reserves_info.items():
             ctoken = self._w3.to_checksum_address(reserve_info.get("ctoken"))
-            multicall_calls.append(self.get_lens_function_info('cTokenMetadata', [ctoken], block_number))
+            multicall_calls.append(self.get_lens_function_info('cTokenMetadata', ctoken, block_number))
 
         return multicall_calls
 

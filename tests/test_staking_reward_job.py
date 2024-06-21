@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from defi_services.jobs.processors.state_processor import StateProcessor
+from defi_services.jobs.processors.state_processor_multichain import StateProcessor
 from defi_services.utils.logger_utils import get_logger
 
 logger = get_logger('Test staking reward job')
@@ -40,7 +40,7 @@ def test_staking_reward_job():
         if queries:
             error = False
             try:
-                result = job.run(address, queries, batch_size=100, max_workers=5, ignore_error=True)
+                result = job.run(address, queries, batch_size=100)
                 data[chain_id] = result
             except Exception as ex:
                 logger.exception(ex)

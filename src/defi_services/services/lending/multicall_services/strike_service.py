@@ -3,9 +3,8 @@ from typing import List
 
 from web3 import Web3
 
-from defi_services.abis.lending.onyx.onyx_comptroller_abi import ONYX_COMPTROLLER_ABI
-from defi_services.abis.lending.onyx.onyx_lens_abi import ONYX_LENS_ABI
-from defi_services.abis.lending.onyx.onyx_token_abi import ONYX_TOKEN_ABI
+from defi_services.abis.lending.strike.strike_comptroller_abi import STRIKE_COMPTROLLER_ABI
+from defi_services.abis.lending.strike.strike_lens_abi import STRIKE_LENS_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain, BlockTime
 from defi_services.constants.entities.lending_constant import Lending
@@ -13,33 +12,32 @@ from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.blockchain.multicall_v2 import W3Multicall
 from defi_services.services.lending.multicall_services.compound_service import CompoundStateService
-from defi_services.services.lending.lending_info.ethereum.onyx_eth import ONYX_ETH
+from defi_services.services.lending.lending_info.ethereum.strike_eth import STRIKE_ETH
 
-logger = logging.getLogger("Onyx Lending Pool State Service")
+logger = logging.getLogger("Compound Lending Pool State Service")
 
 
-class OnyxInfo:
+class StrikeInfo:
     mapping = {
-        Chain.ethereum: ONYX_ETH
+        Chain.ethereum: STRIKE_ETH
     }
 
 
-class OnyxStateService(CompoundStateService):
+class StrikeStateService(CompoundStateService):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
         super().__init__(state_service, chain_id)
-        self.name = f"{chain_id}_{Lending.onyx}"
+        self.name = f"{chain_id}_{Lending.strike}"
         self.chain_id = chain_id
-        self.pool_info = OnyxInfo.mapping.get(chain_id)
+        self.pool_info = StrikeInfo.mapping.get(chain_id)
         self.state_service = state_service
-        self.lens_abi = ONYX_LENS_ABI
-        self.comptroller_abi = ONYX_COMPTROLLER_ABI
-        self.token_abi = ONYX_TOKEN_ABI
+        self.lens_abi = STRIKE_LENS_ABI
+        self.comptroller_abi = STRIKE_COMPTROLLER_ABI
         self._w3 = state_service.get_w3()
 
     # BASIC FUNCTIONS
     def get_service_info(self):
         info = {
-            Lending.onyx: {
+            Lending.strike: {
                 "chain_id": self.chain_id,
                 "type": "lending",
                 "protocol_info": self.pool_info
@@ -64,7 +62,7 @@ class OnyxStateService(CompoundStateService):
             address=Web3.to_checksum_address(self.pool_info.get("lensAddress")), abi=self.lens_abi
         )
         tokens = [Web3.to_checksum_address(i) for i in ctokens]
-        metadata = lens_contract.functions.oTokenMetadataAll(tokens).call(block_identifier=block_number)
+        metadata = lens_contract.functions.sTokenMetadataAll(tokens).call(block_identifier=block_number)
         reserves_info = {}
         for data in metadata:
             underlying = data[11].lower()
@@ -85,42 +83,6 @@ class OnyxStateService(CompoundStateService):
         return reserves_info
 
     # PROTOCOL APY
-    def get_reserve_tokens_metadata(
-            self,
-            decoded_data: dict,
-            reserves_info: dict,
-            block_number: int = "latest"
-    ):
-        reserve_tokens_info = []
-        for token_address, reserve_info in reserves_info.items():
-            if token_address != Token.native_token:
-                underlying_decimals_query_id = f"decimals_{token_address}_{block_number}".lower()
-                underlying_decimals = decoded_data.get(underlying_decimals_query_id)
-            else:
-                underlying_decimals = Chain.native_decimals.get(self.chain_id, 18)
-
-            ctoken = reserve_info.get("cToken")
-            ctoken_decimals_query_id = f"decimals_{ctoken}_{block_number}".lower()
-            total_supply_query_id = f"totalSupply_{ctoken}_{block_number}".lower()
-            total_borrow_query_id = f"totalBorrows_{ctoken}_{block_number}".lower()
-            supply_rate_query_id = f"supplyRatePerBlock_{ctoken}_{block_number}".lower()
-            borrow_rate_query_id = f"borrowRatePerBlock_{ctoken}_{block_number}".lower()
-            exchange_rate_query_id = f"exchangeRateStored_{ctoken}_{block_number}".lower()
-
-            ctoken_decimals = decoded_data.get(ctoken_decimals_query_id)
-            reserve_tokens_info.append({
-                "token": ctoken,
-                "token_decimals": ctoken_decimals,
-                "borrow_rate": decoded_data.get(borrow_rate_query_id),
-                "supply_rate": decoded_data.get(supply_rate_query_id),
-                "supply": decoded_data.get(total_supply_query_id),
-                "borrow": decoded_data.get(total_borrow_query_id),
-                "exchange_rate": decoded_data.get(exchange_rate_query_id),
-                "underlying_decimals": underlying_decimals or 8,  # Onyx protocol support NFT as reserves
-                "underlying": token_address
-            })
-        return reserve_tokens_info
-
     def calculate_apy_lending_pool_function_call(
             self,
             reserves_info: dict,
@@ -133,7 +95,7 @@ class OnyxStateService(CompoundStateService):
         reserve_tokens_info = self.get_reserve_tokens_metadata(decoded_data, reserves_info, block_number)
 
         if self.chain_id == Chain.ethereum:
-            apx_block_speed_in_seconds = 15  # Changed for onyx protocol
+            apx_block_speed_in_seconds = 15  # Follow document of dForce
         else:
             apx_block_speed_in_seconds = BlockTime.block_time_by_chains[self.chain_id]
 
@@ -159,13 +121,12 @@ class OnyxStateService(CompoundStateService):
             reserves_info: dict = None,
             block_number: int = "latest",
     ):
-        multicall_call = self.get_comptroller_function_info(
-            "xcnAccrued", self._w3.to_checksum_address(wallet), block_number)
+        multicall_call = self.get_comptroller_function_info("strikeAccrued", self._w3.to_checksum_address(wallet), block_number)
         return [multicall_call]
 
     def calculate_rewards_balance(
             self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
-        get_reward_id = f'xcnAccrued_{self.pool_info["comptrollerAddress"]}_{wallet}_{block_number}'.lower()
+        get_reward_id = f'strikeAccrued_{self.pool_info["comptrollerAddress"]}_{wallet}_{block_number}'.lower()
         rewards = decoded_data.get(get_reward_id) / 10 ** 18
         reward_token = self.pool_info.get("rewardToken")
         result = {
@@ -181,7 +142,6 @@ class OnyxStateService(CompoundStateService):
             block_number: int = "latest",
             health_factor: bool = False
     ):
-
         multicall_calls: List['W3Multicall.Call'] = []
         wallet = self._w3.to_checksum_address(wallet)
         # Check asset is collateral
@@ -190,19 +150,17 @@ class OnyxStateService(CompoundStateService):
 
         for token, value in reserves_info.items():
             underlying = token
-
+            ctoken = value.get('cToken')
             if token == Token.native_token:
                 underlying = Token.wrapped_token.get(self.chain_id)
-            if value.get("decimals"):
-                continue
-
+            multicall_calls.append(self.get_ctoken_function_info(
+                ctoken, "borrowBalanceCurrent", wallet, block_number
+            ))
+            multicall_calls.append(self.get_ctoken_function_info(
+                ctoken, "balanceOfUnderlying", wallet, block_number
+            ))
             multicall_calls.append(W3Multicall.Call(
                 address=underlying, abi=ERC20_ABI, fn_name="decimals", block_number=block_number))
-            ctoken = self._w3.to_checksum_address(value.get("cToken"))
-
-            call = self.get_lens_function_info("oTokenBalances", [ctoken, wallet])
-            call.id = f"oTokenBalances_{self.name}_{wallet}_{token}_{block_number}".lower()
-            multicall_calls.append(call)
 
         return multicall_calls
 
@@ -224,20 +182,17 @@ class OnyxStateService(CompoundStateService):
         result = {}
         total_borrow, total_collateral = 0, 0
         for token, value in reserves_info.items():
-            key = f"oTokenBalances_{self.name}_{wallet}_{token}_{block_number}".lower()
-            ctoken_balance = decoded_data.get(key)
             data = {}
             underlying = token
             ctoken = value.get("cToken")
             if token == Token.native_token:
                 underlying = Token.wrapped_token.get(self.chain_id)
-
+            get_total_deposit_id = f"balanceOfUnderlying_{ctoken}_{wallet}_{block_number}".lower()
+            get_total_borrow_id = f"borrowBalanceCurrent_{ctoken}_{wallet}_{block_number}".lower()
             get_decimals_id = f"decimals_{underlying}_{block_number}".lower()
-            decimals = decoded_data.get(get_decimals_id, 0)
-            if decimals is None:
-                decimals = 0
-            deposit_amount = ctoken_balance[3] / 10 ** decimals
-            borrow_amount = ctoken_balance[2] / 10 ** decimals
+            decimals = decoded_data[get_decimals_id]
+            deposit_amount = decoded_data[get_total_deposit_id] / 10 ** decimals
+            borrow_amount = decoded_data[get_total_borrow_id] / 10 ** decimals
             data[token] = {
                 "borrow_amount": borrow_amount,
                 "deposit_amount": deposit_amount,
@@ -257,14 +212,14 @@ class OnyxStateService(CompoundStateService):
                     total_collateral += deposit_amount_in_usd * value.get("liquidationThreshold")
 
             result[ctoken] = data
+
         if health_factor:
             if total_collateral and total_borrow:
-                hf = total_collateral / total_borrow
+                result['health_factor'] = total_collateral / total_borrow
             elif total_collateral:
-                hf = 100
+                result['health_factor'] = 100
             else:
-                hf = 0
-            result["health_factor"] = hf
+                result['health_factor'] = 0
         return result
 
     # HEALTH FACTOR
@@ -307,7 +262,7 @@ class OnyxStateService(CompoundStateService):
     def get_token_deposit_borrow_balance_function_info(
             self,
             reserves_info: dict,
-            block_number: int = "latest"
+            block_number: int = "latest",
     ):
         multicall_calls: List['W3Multicall.Call'] = []
         for token, value in reserves_info.items():
@@ -329,7 +284,10 @@ class OnyxStateService(CompoundStateService):
         return multicall_calls
 
     def calculate_token_deposit_borrow_balance(
-            self, decoded_data: dict, reserves_info: dict, token_prices: dict = None,
+            self,
+            decoded_data: dict,
+            reserves_info: dict,
+            token_prices: dict = None,
             block_number: int = "latest"
     ):
         result = {}

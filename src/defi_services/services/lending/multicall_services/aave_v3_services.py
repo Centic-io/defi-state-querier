@@ -60,15 +60,14 @@ class AaveV3StateService(AaveV2StateService):
         return info
 
     def get_dapp_asset_info(self, block_number: int = 'latest'):
-        _w3 = self.state_service.get_w3()
         pool_address = self.pool_info.get("address")
-        pool_contract = _w3.eth.contract(address=_w3.to_checksum_address(pool_address), abi=self.lending_abi)
+        pool_contract = self._w3.eth.contract(address=self._w3.to_checksum_address(pool_address), abi=self.lending_abi)
         reserve_list = pool_contract.functions.getReservesList().call(block_identifier=block_number)
         reserves_info = {}
         for token in reserve_list:
             token = token.lower()
             reserve_data = pool_contract.functions.getReserveData(
-                _w3.to_checksum_address(token)).call(block_identifier=block_number)
+                self._w3.to_checksum_address(token)).call(block_identifier=block_number)
             reserves_info[token] = {}
             reserves_info[token]["tToken"] = reserve_data[8].lower()
             reserves_info[token]["sdToken"] = reserve_data[9].lower()

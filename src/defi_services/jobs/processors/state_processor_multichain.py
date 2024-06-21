@@ -5,14 +5,14 @@ from web3 import Web3
 
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.dex_services_multicall import DexServices
-from defi_services.constants.entities.lending_services import LendingServices
-from defi_services.constants.entities.vault_services import VaultServices
+from defi_services.constants.entities.lending_services_multicall import LendingServices
+from defi_services.constants.entities.vault_services_multicall import VaultServices
 from defi_services.constants.query_constant import Query
 from defi_services.jobs.queriers.state_querier_multicall import StateQuerier
 from defi_services.services.blockchain.multicall_v2 import W3Multicall
-from defi_services.services.dex_protocol_services import DexProtocolServices
+from defi_services.services.dex_protocol_services_multicall import DexProtocolServices
 from defi_services.services.nft_services import NFTServices
-from defi_services.services.protocol_services import ProtocolServices
+from defi_services.services.protocol_services_multicall import ProtocolServices
 from defi_services.services.token_services import TokenServices
 from defi_services.utils.convert_address import base58_to_hex
 from defi_services.utils.init_services_multicall import init_services
