@@ -61,5 +61,10 @@ class TokenServices:
         decimals_token = token
         if token == Token.native_token:
             decimals_token = Token.wrapped_token.get(self.chain_id)
+
+            # Ignore decimals of missing native's wrapped token
+            if not decimals_token:
+                return {}
+
         key = f"decimals_{token}_{block_number}".lower()
         return {key: self.state_service.get_function_info(decimals_token, ERC20_ABI, "decimals", [], block_number)}
