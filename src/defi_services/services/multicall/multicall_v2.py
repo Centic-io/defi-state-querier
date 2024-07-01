@@ -57,7 +57,11 @@ class W3Multicall:
             args = []
             if fn_paras is not None:
                 if type(fn_paras) is list:
-                    args = fn_paras
+                    for item in fn_paras:
+                        if Web3.is_address(item):
+                            args.append(Web3.to_checksum_address(item))
+                        else:
+                            args.append(item)
                 else:
                     if Web3.is_address(fn_paras):
                         fn_paras = Web3.to_checksum_address(fn_paras)
