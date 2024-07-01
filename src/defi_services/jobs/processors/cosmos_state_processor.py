@@ -1,15 +1,26 @@
-from defi_services.constants.cosmos_decimals_constant import Denoms
+from defi_services.constants.cosmos_decimals_constant import Denoms, MulticallContract
+from defi_services.constants.network_constants import Chains
 from defi_services.services.cosmos_token_services import CosmosTokenServices
 
 
 class CosmosStateProcessor:
-    def __init__(self, lcd: str, rest_uri: str):
+    def __init__(self, lcd: str, rest_uri: str = None, chain_id: str = Chains.oraichain):
+        self.chain_id = chain_id
         self.lcd = lcd
         self.rest_uri = rest_uri
 
     def get_token_balance(self, address, tokens):
-        cosmos = CosmosTokenServices(self.lcd, self.rest_uri)
-        data = cosmos.query_balances(address, tokens)
+        cosmos = CosmosTokenServices(self.lcd, self.rest_uri, self.chain_id)
+        if self.chain_id in MulticallContract.mapping:
+            data = cosmos.query_balances(address, tokens)
+        else:
+            data = cosmos.query_coin_balances(address=address)
+            result = {}
+            for item in data:
+                denom = item.get('denom', "").lower()
+                amount = int(item.get('amount', None))
+                decimal = Denoms.all.get(denom, {}).get("decimal", 0)
+                result[denom] = amount / 10 ** decimal
         return data
 
     def run(self, address: str, queries: list):

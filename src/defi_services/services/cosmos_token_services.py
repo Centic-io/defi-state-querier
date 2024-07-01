@@ -7,11 +7,12 @@ from cosmpy.cosmwasm.rest_client import RestClient
 from cosmpy.cosmwasm.rest_client import CosmWasmRestClient
 from cosmpy.protos.cosmwasm.wasm.v1.query_pb2 import QuerySmartContractStateRequest
 
-from defi_services.constants.cosmos_decimals_constant import Denoms
+from defi_services.constants.cosmos_decimals_constant import Denoms, MulticallContract
 
 
 class CosmosTokenServices:
-    def __init__(self, lcd: str, rest_uri: str):
+    def __init__(self, lcd: str, rest_uri: str, chain_id: str):
+        self.chain_id = chain_id
         self.lcd = lcd
         self.rest_uri = rest_uri
         self.client = CosmWasmRestClient(RestClient(rest_address=rest_uri))
@@ -60,7 +61,7 @@ class CosmosTokenServices:
                 "data": self.encode_data({"token_info": {}})
             })
         queries.append({
-            "address": "orai1dyljypavg7qpt5d72a48a4pyg38d580aat55qql6tdcwfgydy6jsznk0h5",
+            "address": MulticallContract.mapping.get(self.chain_id).get("multicall_balance"),
             "data": self.encode_data(balance_query)
         })
         query = {
@@ -70,7 +71,7 @@ class CosmosTokenServices:
         }
         query = json.dumps(query).encode('utf-8')
         request_ = QuerySmartContractStateRequest(
-            address="orai1q7x644gmf7h8u8y6y8t9z9nnwl8djkmspypr6mxavsk9ual7dj0sxpmgwd", query_data=query)
+            address=MulticallContract.mapping.get(self.chain_id).get("multicall"), query_data=query)
         response_ = self.client.SmartContractState(request_)
         decoded_data = self.decode_response_data(response_, cw20_tokens, tokens)
         return decoded_data
