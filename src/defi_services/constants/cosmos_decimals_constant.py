@@ -1,9 +1,5 @@
 class Denoms:
-    def __init__(self, denom: str, decimal: int):
-        self.denom = denom
-        self.decimal = decimal
-
-    data = {
+    cosmos = {
         "uatom": {
             "name": "ATOM",
             "denom": "uatom",
@@ -182,6 +178,117 @@ class Denoms:
         "ibc/20a7dc8e24709e6f1ee0f4e832c2ed345add77425890482a349ae3c43cac6b2c": {
             "name": "ATOLO",
             "denom": "ibc/20a7dc8e24709e6f1ee0f4e832c2ed345add77425890482a349ae3c43cac6b2c",
+            "decimal": 6
+        }
+    }
+    orai = {
+        "orai1gjdmce2cfu2ld7cw0p9p7mkmssnry4zhwz3tmsmah435pkdv9qkqg2n7qm": {
+            "name": "Aave USDT",
+            "denom": "orai1gjdmce2cfu2ld7cw0p9p7mkmssnry4zhwz3tmsmah435pkdv9qkqg2n7qm",
+            "decimal": 6
+        },
+        "orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg": {
+            "name": "aiRight",
+            "denom": "orai10ldgzued6zjp0mkqwsv2mux3ml50l97c74x8sg",
+            "decimal": 6,
+            "base_denom": "AIRI"
+        },
+        "orai10g6frpysmdgw5tdqke47als6f97aqmr8s3cljsvjce4n5enjftcqtamzsd": {
+            "name": "Bitcoin",
+            "denom": "orai10g6frpysmdgw5tdqke47als6f97aqmr8s3cljsvjce4n5enjftcqtamzsd",
+            "decimal": 6
+        },
+        "ibc/a2e2eec9057a4a1c2c0a6a4c78b0239118df5f278830f50b4a6bdd7a66506b78": {
+            "name": "Cosmos Hub",
+            "denom": "ibc/a2e2eec9057a4a1c2c0a6a4c78b0239118df5f278830f50b4a6bdd7a66506b78",
+            "decimal": 6
+        },
+        "orai19rtmkk6sn4tppvjmp5d5zj6gfsdykrl5rw2euu5gwur3luheuuusesqn49": {
+            "name": "Injective",
+            "denom": "orai19rtmkk6sn4tppvjmp5d5zj6gfsdykrl5rw2euu5gwur3luheuuusesqn49",
+            "decimal": 6
+        },
+        "orai1nd4r053e3kgedgld2ymen8l9yrw8xpjyaal7j5": {
+            "name": "Kawaii Islands",
+            "denom": "orai1nd4r053e3kgedgld2ymen8l9yrw8xpjyaal7j5",
+            "decimal": 6
+        },
+        "orai1gzvndtzceqwfymu2kqhta2jn6gmzxvzqwdgvjw": {
+            "name": "Milky",
+            "denom": "orai1gzvndtzceqwfymu2kqhta2jn6gmzxvzqwdgvjw",
+            "decimal": 6,
+            "base_denom": "MILKY"
+        },
+        "ibc/576b1d63e401b6a9a071c78a1d1316d016ec9333d2feb14ad503fac4b8731cd1": {
+            "name": "Neutaro",
+            "denom": "ibc/576b1d63e401b6a9a071c78a1d1316d016ec9333d2feb14ad503fac4b8731cd1",
+            "decimal": 6
+        },
+        "orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q": {
+            "name": "OraiDEX",
+            "denom": "orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q",
+            "decimal": 6
+        },
+        "orai1lplapmgqnelqn253stz6kmvm3ulgdaytn89a8mz9y85xq8wd684s6xl3lt": {
+            "name": "Orchai",
+            "denom": "orai1lplapmgqnelqn253stz6kmvm3ulgdaytn89a8mz9y85xq8wd684s6xl3lt",
+            "decimal": 6
+        },
+        "orai": {
+            "name": "Oraichain",
+            "denom": "orai",
+            "decimal": 6,
+            "base_denom": "orai"
+        },
+        "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge": {
+            "name": "OraiDEX",
+            "denom": "orai1lus0f0rhx8s03gdllx2n6vhkmf0536dv57wfge",
+            "decimal": 6
+        },
+        "orai19q4qak2g3cj2xc2y3060t0quzn3gfhzx08rjlrdd3vqxhjtat0cq668phq": {
+            "name": "Orchai Protocol Staked Compound ATOM",
+            "denom": "orai19q4qak2g3cj2xc2y3060t0quzn3gfhzx08rjlrdd3vqxhjtat0cq668phq",
+            "decimal": 6
+        },
+        "ibc/9c4dcd21b48231d0bc2ac3d1b74a864746b37e4292694c93c617324250d002fc": {
+            "name": "Osmosis",
+            "denom": "ibc/9c4dcd21b48231d0bc2ac3d1b74a864746b37e4292694c93c617324250d002fc",
+            "decimal": 6
+        },
+        "orai1x6uwy6p5rkh4tv44pztafvkj7y9pgqpfyg82006ts4l97fy0kjzs5mzm8p": {
+            "name": "Stride Staked Atom",
+            "denom": "orai1x6uwy6p5rkh4tv44pztafvkj7y9pgqpfyg82006ts4l97fy0kjzs5mzm8p",
+            "decimal": 6
+        },
+        "orai1d2e02yn3h382ajsqjuz0xlc8qvv5d320m2walmcnfsc406azk9vqf639fa": {
+            "name": "Stride Staked Osmo",
+            "denom": "orai1d2e02yn3h382ajsqjuz0xlc8qvv5d320m2walmcnfsc406azk9vqf639fa",
+            "decimal": 6
+        },
+        "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh": {
+            "name": "Tether",
+            "denom": "orai12hzjxfh77wl572gdzct2fxv2arxcwh6gykc7qh",
+            "decimal": 6
+        },
+        "orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd": {
+            "name": "USDC",
+            "denom": "orai15un8msx3n5zf9ahlxmfeqd2kwa5wm0nrpxer304m9nd5q6qq0g6sku5pdd",
+            "decimal": 6,
+            "base_denom": "USDC"
+        },
+        "orai1dqa52a7hxxuv8ghe7q5v0s36ra0cthea960q2cukznleqhk0wpnshfegez": {
+            "name": "WETH",
+            "denom": "orai1dqa52a7hxxuv8ghe7q5v0s36ra0cthea960q2cukznleqhk0wpnshfegez",
+            "decimal": 6
+        },
+        "orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0": {
+            "name": "Wrapped Tron",
+            "denom": "orai1c7tpjenafvgjtgm9aqwm7afnke6c56hpdms8jc6md40xs3ugd0es5encn0",
+            "decimal": 6
+        },
+        "orai1065qe48g7aemju045aeyprflytemx7kecxkf5m7u5h5mphd0qlcs47pclp": {
+            "name": "Staking Compound ORAI",
+            "denom": "orai1065qe48g7aemju045aeyprflytemx7kecxkf5m7u5h5mphd0qlcs47pclp",
             "decimal": 6
         }
     }

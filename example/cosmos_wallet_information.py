@@ -1,7 +1,7 @@
 from defi_services.jobs.processors.cosmos_state_processor import CosmosStateProcessor
 from defi_services.services.cosmos_token_services import CosmosTokenServices
 
-job = CosmosStateProcessor(lcd='https://cosmos-lcd.quickapi.com', denom='')
+job = CosmosStateProcessor(lcd='https://cosmos-lcd.quickapi.com', rest_uri='')
 
 queries = [
     {

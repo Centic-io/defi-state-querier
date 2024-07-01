@@ -3,24 +3,19 @@ from defi_services.services.cosmos_token_services import CosmosTokenServices
 
 
 class CosmosStateProcessor:
-    def __init__(self, lcd: str, denom: str):
+    def __init__(self, lcd: str, rest_uri: str):
         self.lcd = lcd
-        self.denom = denom
+        self.rest_uri = rest_uri
 
-    def get_token_balance(self, address):
-        cosmos = CosmosTokenServices(self.lcd, self.denom)
-        data = cosmos.query_balances(address)
-        result = {}
-        for item in data:
-            denom = item.get('denom', "").lower()
-            amount = int(item.get('amount', None))
-            decimal = Denoms.data.get(denom, {}).get("decimal", 0)
-            result[denom] = amount / 10 ** decimal
-        return result
+    def get_token_balance(self, address, tokens):
+        cosmos = CosmosTokenServices(self.lcd, self.rest_uri)
+        data = cosmos.query_balances(address, tokens)
+        return data
 
     def run(self, address: str, queries: list):
         result = []
-        token_balances = self.get_token_balance(address)
+        tokens = [query.get('entity_id').lower() for query in queries if query.get('query_type') == 'token_balance']
+        token_balances = self.get_token_balance(address, tokens)
         for query in queries:
             query_id = query.get("query_id")
             entity_id = query.get("entity_id")

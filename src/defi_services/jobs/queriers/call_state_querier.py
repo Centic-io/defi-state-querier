@@ -47,7 +47,7 @@ class CallStateQuerier(StateQuerier):
             fn_paras = value.get(Query.params)
             block_number = value.get(Query.block_number)
             items = key.split('_')
-            if Token.native_token == items[2] and "balanceof" == items[0]:
+            if (not value.get(Query.address) or value.get(Query.address) == Token.native_token) and "balanceof" == items[0]:
                 w3_multicall.add(W3Multicall.Call(
                     self.multicall_address, MULTICALL_V3_ABI, fn_paras=fn_paras,
                     fn_name="getEthBalance", block_number=block_number, key=key
@@ -69,7 +69,7 @@ class CallStateQuerier(StateQuerier):
             list_rpc_call=list_rpc_call, list_call_id=list_call_id,
             batch_size=batch_size
         )
-        response_data = self.client_querier.sent_batch_to_provider(list_rpc_call, batch_size, workers)
+        response_data = self.client_querier.sent_batch_to_provider(list_rpc_call, 1, workers)
         filtered_response_data = {}
         # loại bỏ những phần tử không có data
         for key, value in response_data.items():
