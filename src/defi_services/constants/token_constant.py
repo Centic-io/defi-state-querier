@@ -43,7 +43,9 @@ class Token:
         Chain.linea: '0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f',
         Chain.okc: '0x8f8526dbfd6e38e3d8307702ca8469bae6c56c15',
         Chain.aurora: '0xc9bdeed33cd01541e1eed10f90519d2c06fe3feb',
-        Chain.moonriver: '0x98878b06940ae243284ca214f92bb71a2b032b8a'
+        Chain.moonriver: '0x98878b06940ae243284ca214f92bb71a2b032b8a',
+        Chain.blast: '0x4300000000000000000000000000000000000004',
+        Chain.oasis_sapphire: '0x8bc2b030b299964eefb5e1e0b36991352e56d2d3'
     }
 
 
