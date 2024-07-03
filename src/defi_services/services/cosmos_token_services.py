@@ -93,7 +93,7 @@ class CosmosTokenServices:
             balances[tokens[idx]] = int(balance_data[idx])
 
         for token in tokens:
-            if token in decimals:
+            if decimals.get(token) is not None:
                 balances[token] /= 10**decimals[token]
             else:
                 balances[token] /= 10**self.decimals.get(token, {}).get("decimal", 0)
