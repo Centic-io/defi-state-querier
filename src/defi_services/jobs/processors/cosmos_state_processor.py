@@ -24,7 +24,7 @@ class CosmosStateProcessor:
 
         return data
 
-    def run(self, address: str, queries: list):
+    def run(self, address: str, queries: list, *args, **kwargs):
         result = []
         tokens = [query.get('entity_id').lower() for query in queries if query.get('query_type') == 'token_balance']
         token_balances = self.get_token_balance(address, tokens)

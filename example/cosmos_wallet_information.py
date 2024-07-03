@@ -26,5 +26,5 @@ queries = [
     }
 ]
 address = "orai1l07l0e3r35x6uymapqvuty7tgr2suh6klc4y8c"
-data = job.run(address, queries)
+data = job.run(address, queries, 10, batch_size=100)
 print(data)
