@@ -14,8 +14,10 @@ class CosmosTokenServices:
     def __init__(self, lcd: str, rest_uri: str, chain_id: str):
         self.chain_id = chain_id
         self.lcd = lcd
+
         self.rest_uri = rest_uri
         self.client = CosmWasmRestClient(RestClient(rest_address=rest_uri))
+
         self.decimals = Denoms.cosmos
         self.decimals.update(Denoms.orai)
 
@@ -23,34 +25,34 @@ class CosmosTokenServices:
     def query_coin_balances(self, address: str):
         responses = []
         endpoint = '/cosmos/bank/v1beta1/balances/'
-        try:
-            results = json.loads(requests.get(self.lcd + endpoint + address, timeout=60).content)
+
+        response = requests.get(self.lcd + endpoint + address, timeout=60).content
+        results = json.loads(response)
+
+        responses += results['balances']
+        pagination = results['pagination']['next_key']
+
+        while pagination is not None:
+            response = requests.get(self.lcd + endpoint + '?pagination.key=' + quote(str(pagination)), timeout=60)
+            results = json.loads(response.content)
+
             responses += results['balances']
             pagination = results['pagination']['next_key']
-            while pagination is not None:
-                results = json.loads(
-                    requests.get(self.lcd + endpoint + '?pagination.key=' + quote(str(pagination)), timeout=60).content)
-                responses += results['balances']
-                pagination = results['pagination']['next_key']
-            return responses
-        except Exception:
-            raise Exception
+
+        return responses
 
     # queries the balance of a given denom for a single account.
     def query_balances_by_denom(self, address, denom):
         endpoint = '/cosmos/bank/v1beta1/balances/'
-        try:
-            return json.loads(
-                requests.get(self.lcd + endpoint + address + '/by_denom?denom=' + denom, timeout=60).content)
-        except Exception:
-            raise Exception
+
+        response = requests.get(self.lcd + endpoint + address + '/by_denom?denom=' + denom, timeout=60)
+        return json.loads(response.content)
 
     def query_token_decimal(self):
         endpoint = '/cosmos/bank/v1beta1/denoms_metadata'
-        try:
-            return json.loads(requests.get(self.lcd + endpoint, timeout=60).content)
-        except Exception:
-            raise Exception
+
+        response = requests.get(self.lcd + endpoint, timeout=60)
+        return json.loads(response.content)
 
     def query_balances(self, address: str, tokens: list):
         balance_query, cw20_tokens = self.get_balance_function_info(address, tokens)
@@ -93,7 +95,7 @@ class CosmosTokenServices:
             balances[tokens[idx]] = int(balance_data[idx])
 
         for token in tokens:
-            if token in decimals:
+            if decimals.get(token) is not None:
                 balances[token] /= 10**decimals[token]
             else:
                 balances[token] /= 10**self.decimals.get(token, {}).get("decimal", 0)

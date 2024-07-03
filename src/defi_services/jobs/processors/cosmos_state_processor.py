@@ -14,16 +14,17 @@ class CosmosStateProcessor:
         if self.chain_id in MulticallContract.mapping:
             data = cosmos.query_balances(address, tokens)
         else:
-            data = cosmos.query_coin_balances(address=address)
-            result = {}
-            for item in data:
+            result = cosmos.query_coin_balances(address=address)
+            data = {}
+            for item in result:
                 denom = item.get('denom', "").lower()
                 amount = int(item.get('amount', None))
                 decimal = Denoms.all.get(denom, {}).get("decimal", 0)
-                result[denom] = amount / 10 ** decimal
+                data[denom] = amount / 10 ** decimal
+
         return data
 
-    def run(self, address: str, queries: list):
+    def run(self, address: str, queries: list, *args, **kwargs):
         result = []
         tokens = [query.get('entity_id').lower() for query in queries if query.get('query_type') == 'token_balance']
         token_balances = self.get_token_balance(address, tokens)
