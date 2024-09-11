@@ -1,7 +1,10 @@
+import logging
+
 from defi_services.constants.cosmos_decimals_constant import Denoms, MulticallContract
 from defi_services.constants.network_constants import Chains
 from defi_services.services.cosmos_token_services import CosmosTokenServices
 
+logger = logging.getLogger("CosmosStateProcessor")
 
 class CosmosStateProcessor:
     def __init__(self, lcd: str, rest_uri: str = None, chain_id: str = Chains.oraichain):
