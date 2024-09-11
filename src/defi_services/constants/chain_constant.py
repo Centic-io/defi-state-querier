@@ -28,6 +28,8 @@ class Chain:
     okc = '0x42'
     aurora = '0x4e454152'
     moonriver = '0x505'
+    blast = '0xee'
+    oasis_sapphire = '0x5afe'
 
     native_decimals = {
         tron: 6,

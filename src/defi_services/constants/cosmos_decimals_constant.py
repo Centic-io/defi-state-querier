@@ -292,3 +292,13 @@ class Denoms:
             "decimal": 6
         }
     }
+    all = {**orai, **cosmos}
+
+
+class MulticallContract:
+    mapping = {
+        "orai": {
+            "multicall_balance": "orai1dyljypavg7qpt5d72a48a4pyg38d580aat55qql6tdcwfgydy6jsznk0h5",
+            "multicall": "orai1q7x644gmf7h8u8y6y8t9z9nnwl8djkmspypr6mxavsk9ual7dj0sxpmgwd"
+        }
+    }

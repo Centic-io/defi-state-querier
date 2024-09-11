@@ -1,6 +1,7 @@
+from defi_services.constants.network_constants import Chains
 from defi_services.jobs.processors.cosmos_state_processor import CosmosStateProcessor
 
-job = CosmosStateProcessor(lcd='https://lcd.orai.io', rest_uri="https://oraichain-rest.publicnode.com/")
+job = CosmosStateProcessor(lcd='https://lcd.orai.io', rest_uri="https://oraichain-rest.publicnode.com/", chain_id=Chains.oraichain)
 
 queries = [
     {
@@ -18,7 +19,12 @@ queries = [
         "entity_id": "orai1hn8w33cqvysun2aujk5sv33tku4pgcxhhnsxmvnkfvdxagcx0p8qa4l98q",
         "query_type": "token_balance"
     },
+    {
+        "query_id": 4,
+        "entity_id": "orai1gzvndtzceqwfymu2kqhta2jn6gmzxvzqwdgvjw",
+        "query_type": "token_balance"
+    }
 ]
 address = "orai1l07l0e3r35x6uymapqvuty7tgr2suh6klc4y8c"
-data = job.run(address, queries)
+data = job.run(address, queries, 10, batch_size=100)
 print(data)

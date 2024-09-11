@@ -58,12 +58,13 @@ class Chains:
     oasis_sapphire_testnet = '0x5aff'
     blast = '0xee'
     oraichain = 'orai'
+    ton = 'ton'
 
     none_wrapped_token = [arbitrum, fantom, optimism]
     all = [
         bsc, ethereum, fantom, polygon, arbitrum, optimism,
         avalanche, tron, cronos, solana, polkadot, bitcoin, cosmos,
-        oraichain
+        oraichain, ton
     ]
 
     mapping = {
@@ -79,7 +80,8 @@ class Chains:
         'solana': solana,
         'polkadot': polkadot,
         'oasis_sapphire': oasis_sapphire,
-        'oasis_sapphire_testnet': oasis_sapphire_testnet
+        'oasis_sapphire_testnet': oasis_sapphire_testnet,
+        'ton': ton
     }
 
     names = {
@@ -95,7 +97,8 @@ class Chains:
         solana: 'solana',
         polkadot: 'polkadot',
         oasis_sapphire: 'oasis_sapphire',
-        oasis_sapphire_testnet: 'oasis_sapphire_testnet'
+        oasis_sapphire_testnet: 'oasis_sapphire_testnet',
+        ton: 'ton'
     }
 
     abi_mapping = {
@@ -116,7 +119,8 @@ class Chains:
         fantom: 1,
         polygon: 2,
         arbitrum: 0.3,
-        avalanche: 2
+        avalanche: 2,
+        ton: 3
     }
     wrapped_native_token = {
         bsc: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
@@ -127,7 +131,7 @@ class Chains:
         optimism: "0x4200000000000000000000000000000000000006",
         avalanche: "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
         tron: "0x891cdb91d149f23b1a45d9c5ca78a88d0cb44c18",
-        cronos: "0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23"
+        cronos: "0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23",
     }
 
     evm = {
@@ -194,7 +198,8 @@ class Scans:
         Chains.arbitrum: 'https://api.arbiscan.io/api',
         Chains.optimism: 'https://api-optimistic.etherscan.io/api',
         Chains.avalanche: 'https://api.snowtrace.io/api',
-        Chains.cronos: 'https://cronoscan.com/api'
+        Chains.cronos: 'https://cronoscan.com/api',
+        Chains.ton: 'https://toncenter.com/api/'
     }
 
     scan_base_urls = {
@@ -205,7 +210,8 @@ class Scans:
         Chains.arbitrum: 'https://arbiscan.io/',
         Chains.optimism: 'https://optimistic.etherscan.io/',
         Chains.avalanche: 'https://snowtrace.io/',
-        Chains.cronos: 'https://cronoscan.com/'
+        Chains.cronos: 'https://cronoscan.com/',
+        Chains.ton: 'https://toncenter.com/api/'
     }
 
     all_base_urls = {
@@ -258,6 +264,7 @@ class Networks:
     oasis_sapphire_testnet = 'oasis_sapphire_testnet'
     cosmos = 'cosmos'
     oraichain = 'oraichain'
+    ton = 'ton'
 
     providers = {
         bsc: os.getenv('BSC_PROVIDER_URI', 'https://bsc-dataseed1.binance.org/'),
@@ -272,7 +279,8 @@ class Networks:
         solana: os.getenv('SOLANA_PROVIDER_URI', 'https://crimson-multi-putty.solana-mainnet.quiknode.pro/997174ce6ab5cc9d42cb037e931d18ae1a98346a/'),
         polkadot: os.getenv('POLKADOT_PROVIDER_URI', 'https://late-yolo-diagram.dot-mainnet.quiknode.pro/51a1aaf2372854dfd211fca3ab375e5451222be4/'),
         oasis_sapphire: os.getenv('OASIS_SAPPHIRE_PROVIDER_URI'),
-        oasis_sapphire_testnet: os.getenv('OASIS_SAPPHIRE_PROVIDER_URI')
+        oasis_sapphire_testnet: os.getenv('OASIS_SAPPHIRE_PROVIDER_URI'),
+        ton: os.getenv('TON_PROVIDER_URI')
     }
 
     archive_node = {
@@ -288,7 +296,8 @@ class Networks:
         solana: os.getenv('SOLANA_PROVIDER_ARCHIVE_URI'),
         polkadot: os.getenv('POLKADOT_PROVIDER_ARCHIVE_URI'),
         oasis_sapphire: os.getenv('OASIS_SAPPHIRE_PROVIDER_ARCHIVE_URI'),
-        oasis_sapphire_testnet: os.getenv('OASIS_SAPPHIRE_PROVIDER_ARCHIVE_URI')
+        oasis_sapphire_testnet: os.getenv('OASIS_SAPPHIRE_PROVIDER_ARCHIVE_URI'),
+        ton: os.getenv('TON_PROVIDER_ARCHIVE_URI', 'https://toncenter.com/api/')
     }
 
 
@@ -325,7 +334,8 @@ class DefiLlama:
         'Moonriver': Chains.moonriver,
         'Oasis Sapphire': Chains.oasis_sapphire,
         'Blast': Chains.blast,
-        'Oraichain': Chains.oraichain
+        'Oraichain': Chains.oraichain,
+        'Ton': Chains.ton
     }
 
 
@@ -341,7 +351,8 @@ class Opensea:
         Chains.tron: 'TRON',
         Chains.solana: 'SOLANA',
         Chains.base: 'BASE',
-        Chains.klaytn: 'KLAYTN'
+        Chains.klaytn: 'KLAYTN',
+        Chains.ton: 'TON'
     }
 
 
@@ -355,7 +366,8 @@ NATIVE_TOKENS = {
     Chains.arbitrum: '0x0000000000000000000000000000000000000000',
     Chains.optimism: '0x0000000000000000000000000000000000000000',
     Chains.avalanche: '0x0000000000000000000000000000000000000000',
-    Chains.tron: '0x0000000000000000000000000000000000000000'
+    Chains.tron: '0x0000000000000000000000000000000000000000',
+    Chains.ton: 'EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c'
 }
 
 
