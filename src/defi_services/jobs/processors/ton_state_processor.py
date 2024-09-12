@@ -1,7 +1,7 @@
 import logging
 
-from src.defi_services.constants.ton_decimals_constant import TonTokens
-from defi_services.constants.network_constants import Chains, NATIVE_TOKEN, NATIVE_TOKENS
+from defi_services.constants.ton_decimals_constant import TonTokens
+from defi_services.constants.network_constants import Chains, NATIVE_TOKENS
 from defi_services.jobs.queriers.ton_state_querier import TonStateQuerier
 
 logger = logging.getLogger("CosmosStateProcessor")
