@@ -10,6 +10,7 @@ from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
+from defi_services.constants.network_constants import NATIVE_TOKEN
 from defi_services.constants.time_constant import TimeConstants
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.avalanche.aave_v2_avalanche import AAVE_V2_AVALANCHE
@@ -83,18 +84,19 @@ class AaveV2StateService(ProtocolServices):
             reserve_key = f"getReserveData_{self.name}_{token_address}_{block_number}".lower()
             atoken_total_supply_key = f'totalSupply_{value["tToken"]}_{block_number}'.lower()
             debt_token_total_supply_key = f'totalSupply_{value["dToken"]}_{block_number}'.lower()
-            sdebt_token_total_supply_key = f'totalSupply_{value["sdToken"]}_{block_number}'.lower()
             decimals_key = f"decimals_{token_address}_{block_number}".lower()
-
             rpc_calls[reserve_key] = self.get_function_lending_pool_info("getReserveData", [token_address])
             rpc_calls[atoken_total_supply_key] = self.state_service.get_function_info(
                 value["tToken"], ERC20_ABI, "totalSupply", block_number=block_number)
             rpc_calls[debt_token_total_supply_key] = self.state_service.get_function_info(
                 value["dToken"], ERC20_ABI, "totalSupply", block_number=block_number)
-            rpc_calls[sdebt_token_total_supply_key] = self.state_service.get_function_info(
-                value["sdToken"], ERC20_ABI, "totalSupply", block_number=block_number)
             rpc_calls[decimals_key] = self.state_service.get_function_info(
                 token_address, ERC20_ABI, "decimals", block_number=block_number)
+
+            if value["sdToken"] != NATIVE_TOKEN:
+                sdebt_token_total_supply_key = f'totalSupply_{value["sdToken"]}_{block_number}'.lower()
+                rpc_calls[sdebt_token_total_supply_key] = self.state_service.get_function_info(
+                    value["sdToken"], ERC20_ABI, "totalSupply", block_number=block_number)
 
         return rpc_calls
 
@@ -173,18 +175,23 @@ class AaveV2StateService(ProtocolServices):
             decimals_call_id = f"decimals_{token_address}_{block_number}".lower()
             atoken_total_supply_key = f'totalSupply_{atoken}_{block_number}'.lower()
             debt_token_total_supply_key = f'totalSupply_{debt_token}_{block_number}'.lower()
-            sdebt_token_total_supply_key = f'totalSupply_{sdebt_token}_{block_number}'.lower()
-
-            reserve_tokens_info.append({
+            data = {
                 'underlying': token_address,
                 'underlying_decimals': decoded_data.get(decimals_call_id),
                 'a_token_supply': decoded_data.get(atoken_total_supply_key),
                 'd_token_supply': decoded_data.get(debt_token_total_supply_key),
-                'sd_token_supply': decoded_data.get(sdebt_token_total_supply_key),
                 'supply_apy': reserve_data[3],
-                'borrow_apy': reserve_data[4],
-                'stable_borrow_apy': reserve_data[5]
-            })
+                'borrow_apy': reserve_data[4]
+            }
+            if sdebt_token != NATIVE_TOKEN:
+                sdebt_token_total_supply_key = f'totalSupply_{sdebt_token}_{block_number}'.lower()
+                data['sd_token_supply'] = decoded_data.get(sdebt_token_total_supply_key)
+                data['stable_borrow_apy'] = reserve_data[5]
+            else:
+                data['sd_token_supply'] = 0
+                data['stable_borrow_apy'] = 0
+
+            reserve_tokens_info.append(data)
 
         return reserve_tokens_info
 
@@ -208,19 +215,19 @@ class AaveV2StateService(ProtocolServices):
 
     @classmethod
     def _calculate_interest_rates(cls, token_info: dict):
-        total_supply_t = token_info.get('a_token_supply')
-        total_supply_d = token_info.get('d_token_supply')
-        total_supply_sd = token_info.get('sd_token_supply')
+        total_supply_t = token_info.get('a_token_supply', 0)
+        total_supply_d = token_info.get('d_token_supply', 0)
+        total_supply_sd = token_info.get('sd_token_supply', 0)
         total_borrow = total_supply_d + total_supply_sd
 
         total_supply = total_supply_t / 10 ** token_info['underlying_decimals']
         total_borrow = total_borrow / 10 ** token_info['underlying_decimals']
 
-        supply_apr = float(token_info['supply_apy']) / 10 ** 27
+        supply_apr = float(token_info.get('supply_apy', 0)) / 10 ** 27
         supply_apy = apr_to_apy(supply_apr)
-        borrow_apr = float(token_info['borrow_apy']) / 10 ** 27
+        borrow_apr = float(token_info.get('borrow_apy', 0)) / 10 ** 27
         borrow_apy = apr_to_apy(borrow_apr)
-        stable_borrow_apr = float(token_info['stable_borrow_apy']) / 10 ** 27
+        stable_borrow_apr = float(token_info.get('stable_borrow_apy', 0)) / 10 ** 27
         stable_borrow_apy = apr_to_apy(stable_borrow_apr)
 
         return {
@@ -260,21 +267,23 @@ class AaveV2StateService(ProtocolServices):
             decimals_call_id = f"decimals_{token_address}_{block_number}".lower()
             atoken_assets_key = f"assets_{atoken}_{block_number}".lower()
             debt_token_assets_key = f"assets_{debt_token}_{block_number}".lower()
-            sdebt_token_assets_key = f"assets_{sdebt_token}_{block_number}".lower()
             atoken_total_supply_key = f'totalSupply_{atoken}_{block_number}'.lower()
             debt_token_total_supply_key = f'totalSupply_{debt_token}_{block_number}'.lower()
-            sdebt_token_total_supply_key = f'totalSupply_{sdebt_token}_{block_number}'.lower()
-
             atokens[lower_address] = atoken
             debt_tokens[lower_address] = debt_token
             sdebt_tokens[lower_address] = sdebt_token
             decimals[lower_address] = decoded_data.get(decimals_call_id)
             asset_data_tokens[atoken] = decoded_data.get(atoken_assets_key)
             asset_data_tokens[debt_token] = decoded_data.get(debt_token_assets_key)
-            asset_data_tokens[sdebt_token] = decoded_data.get(sdebt_token_assets_key)
             total_supply_tokens[atoken] = decoded_data.get(atoken_total_supply_key)
             total_supply_tokens[debt_token] = decoded_data.get(debt_token_total_supply_key)
-            total_supply_tokens[sdebt_token] = decoded_data.get(sdebt_token_total_supply_key)
+            if sdebt_token != NATIVE_TOKEN:
+                sdebt_token_assets_key = f"assets_{sdebt_token}_{block_number}".lower()
+                sdebt_token_total_supply_key = f'totalSupply_{sdebt_token}_{block_number}'.lower()
+                asset_data_tokens[sdebt_token] = decoded_data.get(sdebt_token_assets_key)
+                total_supply_tokens[sdebt_token] = decoded_data.get(sdebt_token_total_supply_key)
+                interest_rate[lower_address]['stable_borrow_apy'] = float(reserve_data[5]) / 10 ** 27
+
 
         asset_price_key = f"getAssetsPrices_{self.name}_{block_number}".lower()
         if not token_prices and asset_price_key in decoded_data:
@@ -303,17 +312,19 @@ class AaveV2StateService(ProtocolServices):
             value = reserves_info[token]
             atoken_balance_of_key = f'balanceOf_{value["tToken"]}_{wallet}_{block_number}'.lower()
             debt_token_balance_of_key = f'balanceOf_{value["dToken"]}_{wallet}_{block_number}'.lower()
-            sdebt_token_balance_of_key = f'balanceOf_{value["sdToken"]}_{wallet}_{block_number}'.lower()
             decimals_key = f"decimals_{token}_{block_number}".lower()
 
             rpc_calls[atoken_balance_of_key] = self.state_service.get_function_info(
                 value["tToken"], ERC20_ABI, "balanceOf", [wallet], block_number=block_number)
             rpc_calls[debt_token_balance_of_key] = self.state_service.get_function_info(
                 value["dToken"], ERC20_ABI, "balanceOf", [wallet], block_number=block_number)
-            rpc_calls[sdebt_token_balance_of_key] = self.state_service.get_function_info(
-                value["sdToken"], ERC20_ABI, "balanceOf", [wallet], block_number=block_number)
             rpc_calls[decimals_key] = self.state_service.get_function_info(
                 token, ERC20_ABI, "decimals", block_number=block_number)
+            if value["sdToken"] != NATIVE_TOKEN:
+                sdebt_token_balance_of_key = f'balanceOf_{value["sdToken"]}_{wallet}_{block_number}'.lower()
+                rpc_calls[sdebt_token_balance_of_key] = self.state_service.get_function_info(
+                value["sdToken"], ERC20_ABI, "balanceOf", [wallet], block_number=block_number)
+
         if health_factor:
             rpc_calls.update(self.get_health_factor_function_info(wallet, reserves_info, block_number))
 
@@ -375,8 +386,12 @@ class AaveV2StateService(ProtocolServices):
             get_decimals_id = f"decimals_{token}_{block_number}".lower()
             deposit_amount[token] = decoded_data.get(get_total_deposit_id)
             borrow_amount[token] = decoded_data.get(get_total_borrow_id)
-            stable_borrow_amount[token] = decoded_data.get(get_total_stable_borrow_id)
             decimals[token] = decoded_data.get(get_decimals_id)
+            if value['sdToken'] != NATIVE_TOKEN:
+                stable_borrow_amount[token] = decoded_data.get(get_total_stable_borrow_id)
+            else:
+                stable_borrow_amount[token] = 0
+
         data = self.get_wallet_deposit_borrow_balance(
                 reserves_info, token_prices, decimals, deposit_amount,
                 borrow_amount, stable_borrow_amount

@@ -10,12 +10,13 @@ from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.db_constant import DBConst
 from defi_services.constants.entities.lending_constant import Lending
+from defi_services.constants.network_constants import NATIVE_TOKEN
 from defi_services.constants.time_constant import TimeConstants
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.aave_v2_services import AaveV2StateService
 from defi_services.services.lending.lending_info.arbitrum.aave_v3_arbitrum import AAVE_V3_ARB
 from defi_services.services.lending.lending_info.avalanche.aave_v3_avalanche import AAVE_V3_AVALANCHE
-from defi_services.services.lending.lending_info.ethereum.aave_v3_eth import AAVE_V3_ETH
+from defi_services.services.lending.lending_info.ethereum.old_aave_v3_eth import AAVE_V3_ETH
 from defi_services.services.lending.lending_info.fantom.aave_v3_ftm import AAVE_V3_FTM
 from defi_services.services.lending.lending_info.optimism.aave_v3_optimism import AAVE_V3_OPTIMISM
 from defi_services.services.lending.lending_info.polygon.aave_v3_polygon import AAVE_V3_POLYGON
@@ -88,25 +89,33 @@ class AaveV3StateService(AaveV2StateService):
         for token_address, reserve_info in reserves_info.items():
             get_reserve_data_call_id = f'getReserveData_{self.name}_{token_address}_{block_number}'.lower()
             reserve_data = decoded_data.get(get_reserve_data_call_id)
-
             atoken = reserve_data[8].lower()
-            sdebt_token = reserve_data[9].lower()
             debt_token = reserve_data[10].lower()
             decimals_call_id = f"decimals_{token_address}_{block_number}".lower()
             atoken_total_supply_key = f'totalSupply_{atoken}_{block_number}'.lower()
             debt_token_total_supply_key = f'totalSupply_{debt_token}_{block_number}'.lower()
-            sdebt_token_total_supply_key = f'totalSupply_{sdebt_token}_{block_number}'.lower()
+            sdebt_token = reserve_data[9].lower()
 
-            reserve_tokens_info.append({
+
+            data = {
                 'underlying': token_address,
                 'underlying_decimals': decoded_data.get(decimals_call_id),
                 'a_token_supply': decoded_data.get(atoken_total_supply_key),
                 'd_token_supply': decoded_data.get(debt_token_total_supply_key),
-                'sd_token_supply': decoded_data.get(sdebt_token_total_supply_key),
+
                 'supply_apy': reserve_data[2],
                 'borrow_apy': reserve_data[4],
-                'stable_borrow_apy': reserve_data[5]
-            })
+
+            }
+            if sdebt_token != NATIVE_TOKEN:
+                sdebt_token_total_supply_key = f'totalSupply_{sdebt_token}_{block_number}'.lower()
+                data['sd_token_supply'] = decoded_data.get(sdebt_token_total_supply_key)
+                data['stable_borrow_apy'] = reserve_data[5]
+            else:
+                data['sd_token_supply'] = 0
+                data['stable_borrow_apy'] = 0
+
+            reserve_tokens_info.append(data)
 
         return reserve_tokens_info
 
@@ -121,17 +130,17 @@ class AaveV3StateService(AaveV2StateService):
             reserve_key = f"getReserveData_{self.name}_{token_address}_{block_number}".lower()
             atoken_total_supply_key = f'totalSupply_{value["tToken"]}_{block_number}'.lower()
             debt_token_total_supply_key = f'totalSupply_{value["dToken"]}_{block_number}'.lower()
-            sdebt_token_total_supply_key = f'totalSupply_{value["sdToken"]}_{block_number}'.lower()
             decimals_key = f"decimals_{token_address}_{block_number}".lower()
             for reward_token in reward_tokens:
                 atoken_assets_key = f"getRewardsData_{value['tToken']}_{reward_token}_{block_number}".lower()
                 debt_token_assets_key = f"getRewardsData_{value['dToken']}_{reward_token}_{block_number}".lower()
-                sdebt_token_assets_key = f"getRewardsData_{value['sdToken']}_{reward_token}_{block_number}".lower()
                 rpc_calls[atoken_assets_key] = self.get_function_incentive_info(
                     "getRewardsData", [value['tToken'], reward_token], block_number)
                 rpc_calls[debt_token_assets_key] = self.get_function_incentive_info(
                     "getRewardsData", [value['dToken'], reward_token], block_number)
-                rpc_calls[sdebt_token_assets_key] = self.get_function_incentive_info(
+                if value['sdToken'] != NATIVE_TOKEN:
+                    sdebt_token_assets_key = f"getRewardsData_{value['sdToken']}_{reward_token}_{block_number}".lower()
+                    rpc_calls[sdebt_token_assets_key] = self.get_function_incentive_info(
                     "getRewardsData", [value['sdToken'], reward_token], block_number)
 
             rpc_calls[reserve_key] = self.get_function_lending_pool_info("getReserveData", [token_address])
@@ -139,10 +148,13 @@ class AaveV3StateService(AaveV2StateService):
                 value["tToken"], ERC20_ABI, "totalSupply", block_number=block_number)
             rpc_calls[debt_token_total_supply_key] = self.state_service.get_function_info(
                 value["dToken"], ERC20_ABI, "totalSupply", block_number=block_number)
-            rpc_calls[sdebt_token_total_supply_key] = self.state_service.get_function_info(
-                value["sdToken"], ERC20_ABI, "totalSupply", block_number=block_number)
             rpc_calls[decimals_key] = self.state_service.get_function_info(
                 token_address, ERC20_ABI, "decimals", block_number=block_number)
+
+            if value['sdToken'] != NATIVE_TOKEN:
+                sdebt_token_total_supply_key = f'totalSupply_{value["sdToken"]}_{block_number}'.lower()
+                rpc_calls[sdebt_token_total_supply_key] = self.state_service.get_function_info(
+                    value["sdToken"], ERC20_ABI, "totalSupply", block_number=block_number)
 
         return rpc_calls
 
@@ -240,29 +252,32 @@ class AaveV3StateService(AaveV2StateService):
             sdebt_token = reserve_data[8].lower()
             debt_token = reserve_data[9].lower()
             decimals_call_id = f"decimals_{token_address}_{block_number}".lower()
-
             atoken_total_supply_key = f'totalSupply_{atoken}_{block_number}'.lower()
             debt_token_total_supply_key = f'totalSupply_{debt_token}_{block_number}'.lower()
-            sdebt_token_total_supply_key = f'totalSupply_{sdebt_token}_{block_number}'.lower()
             asset_data_tokens[atoken] = {}
             asset_data_tokens[debt_token] = {}
-            asset_data_tokens[sdebt_token] = {}
+            if sdebt_token != NATIVE_TOKEN:
+                asset_data_tokens[sdebt_token] = {}
+
             total_supply_tokens[atoken] = {}
             for reward_token in reward_tokens:
                 atoken_assets_key = f"getRewardsData_{atoken}_{reward_token}_{block_number}".lower()
                 debt_token_assets_key = f"getRewardsData_{debt_token}_{reward_token}_{block_number}".lower()
-                sdebt_token_assets_key = f"getRewardsData_{sdebt_tokens}_{reward_token}_{block_number}".lower()
                 asset_data_tokens[atoken][reward_token] = decoded_data.get(atoken_assets_key)
                 asset_data_tokens[debt_token][reward_token] = decoded_data.get(debt_token_assets_key)
-                asset_data_tokens[sdebt_token][reward_token] = decoded_data.get(sdebt_token_assets_key)
                 total_supply_tokens[atoken][reward_token] = decoded_data.get(atoken_total_supply_key)
+                if sdebt_token != NATIVE_TOKEN:
+                    sdebt_token_assets_key = f"getRewardsData_{sdebt_tokens}_{reward_token}_{block_number}".lower()
+                    asset_data_tokens[sdebt_token][reward_token] = decoded_data.get(sdebt_token_assets_key)
 
             atokens[lower_address] = atoken
             debt_tokens[lower_address] = debt_token
             sdebt_tokens[lower_address] = sdebt_token
             decimals[lower_address] = decoded_data.get(decimals_call_id)
             total_supply_tokens[debt_token] = decoded_data.get(debt_token_total_supply_key)
-            total_supply_tokens[sdebt_token] = decoded_data.get(sdebt_token_total_supply_key)
+            if sdebt_token != NATIVE_TOKEN:
+                sdebt_token_total_supply_key = f'totalSupply_{sdebt_token}_{block_number}'.lower()
+                total_supply_tokens[sdebt_token] = decoded_data.get(sdebt_token_total_supply_key)
 
         asset_price_key = f"getAssetsPrices_{self.name}_{block_number}".lower()
         if not token_prices and asset_price_key in decoded_data:
