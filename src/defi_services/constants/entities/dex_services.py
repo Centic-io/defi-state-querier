@@ -45,7 +45,8 @@ class DexServices:
     #     Dex.sushi: SushiSwapV2Services
     # }
     arbitrum = {
-        Dex.sushi_v2: SushiSwapV2Services
+        Dex.sushi_v2: SushiSwapV2Services,
+        Dex.uniswap_v3: UniswapV3Services
     }
     mapping = {
         Chain.ethereum: ethereum,

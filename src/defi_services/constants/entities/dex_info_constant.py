@@ -36,7 +36,8 @@ class DexInfo:
     #     Dex.sushi: SushiSwapV2Services
     # }
     arbitrum = {
-        Dex.sushi_v2: SUSHISWAP_V2_ARBITRUM_INFO
+        Dex.sushi_v2: SUSHISWAP_V2_ARBITRUM_INFO,
+        Dex.uniswap_v3: UNISWAP_V3_ARBITRUM_INFO
     }
     mapping = {
         Chain.ethereum: ethereum,
@@ -47,4 +48,3 @@ class DexInfo:
         Chain.arbitrum: arbitrum,
         # Chain.optimism: optimism,
     }
-
