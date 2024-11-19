@@ -18,5 +18,15 @@ UNISWAP_V3_ETH_INFO = {
     'NFT_manager_abi': UNISWAP_V3_NFT_TOKEN_MANGAGER_ABI,
     'pool_abi': UNISWAP_V3_POOL_ABI,
     'forked': 'uniswap-v3'
+}
 
+
+UNISWAP_V3_ARBITRUM_INFO = {
+    'factory_address': '0x1f98431c8ad98523631ae4a59f267346ea31f984',
+    'factory_abi': UNISWAP_V3_FACTORY_ABI,
+    'staker_address': '0xe34139463ba50bd61336e0c446bd8c0867c6fe65',
+    'NFT_manager_address': '0xc36442b4a4522e871399cd717abdd847ab11fe88',
+    'NFT_manager_abi': UNISWAP_V3_NFT_TOKEN_MANGAGER_ABI,
+    'pool_abi': UNISWAP_V3_POOL_ABI,
+    'forked': 'uniswap-v3'
 }

@@ -2,16 +2,9 @@ import json
 
 from defi_services.jobs.processors.state_processor import StateProcessor
 
-chains = ["0x38", '0x1', '0xfa', '0xa', '0xa4b1', '0xa86a', '0x89']
-lending_protocols = ["venus", "aave-v2", "aave-v3", "justlend", "compound-v3", "compound", "spark", 'morpho-compound',
-                     'morpho-aave', 'morpho-aavev3', "radiant-v2"]
-provider_uri = ['https://bsc-dataseed3.binance.org/',
-                "https://rpc.ankr.com/eth",
-                "https://fantom.publicnode.com",
-                "https://optimism.llamarpc.com",
-                "https://rpc.ankr.com/arbitrum",
-                "https://rpc.ankr.com/avalanche",
-                "https://rpc.ankr.com/polygon"]
+chains = ["0xa4b1"]
+lending_protocols = ["radiant-v2"]
+provider_uri = ['https://nd-800-603-872.p2pify.com/e874cc3efd9e36b8b05bd16a1ab2bf2c']
 res = []
 for ind, chain_id in enumerate(chains):
     for entity in lending_protocols:
@@ -23,10 +16,10 @@ for ind, chain_id in enumerate(chains):
             {
                 "query_id": chain_id,
                 "entity_id": entity,
-                "query_type": "protocol_apy"
+                "query_type": "deposit_borrow"
             }
         ]
-        data = job.run('', queries, ignore_error=True)
+        data = job.run('0xb60e2465e1c31176dfbb32d712b226896d58b955', queries, ignore_error=True)
         # if "protocol_apy" in data:
         res.append(data)
         print("append!")
