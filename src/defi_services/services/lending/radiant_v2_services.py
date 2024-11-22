@@ -6,6 +6,7 @@ from defi_services.constants.entities.lending_constant import Lending
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.arbitrum.radiant_arbitrum import RADIANT_ARB
 from defi_services.services.lending.lending_info.bsc.radiant_bsc import RADIANT_BSC
+from defi_services.services.lending.lending_info.ethereum.radiant_eth import RADIANT_ETH
 from defi_services.services.lending.valas_services import ValasStateService
 from defi_services.utils.apy import apr_to_apy
 
@@ -15,7 +16,8 @@ logger = logging.getLogger("Radiant Lending Pool State Service")
 class RadiantInfo:
     mapping = {
         Chain.arbitrum: RADIANT_ARB,
-        Chain.bsc: RADIANT_BSC
+        Chain.bsc: RADIANT_BSC,
+        Chain.ethereum: RADIANT_ETH
     }
 
 

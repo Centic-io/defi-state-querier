@@ -26,6 +26,9 @@ class StateQuerier:
     def get_client_querier(self):
         return self.client_querier
 
+    def get_provider(self):
+        return self.provider_uri
+
     @staticmethod
     def get_function_info(address: str, abi: list, fn_name: str, fn_paras: list = None, block_number: int = 'latest'):
         if fn_paras is None:

@@ -30,6 +30,7 @@ class Chain:
     moonriver = '0x505'
     blast = '0xee'
     oasis_sapphire = '0x5afe'
+    zeta = '0x1b58'
 
     native_decimals = {
         tron: 6,
