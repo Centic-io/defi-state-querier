@@ -40,7 +40,7 @@ class TCV:
                         tvl[info['token1']] = 0
                     tvl[info['token0']] += info['token0_amount']
                     tvl[info['token1']] += info['token1_amount']
-            result[token].update(tvl)
+            result[token].update({"tvl": tvl})
         return result
 
     def get_user_nft(self, wallet, dex_protocol):
