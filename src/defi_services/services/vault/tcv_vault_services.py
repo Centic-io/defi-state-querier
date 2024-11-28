@@ -20,7 +20,7 @@ class TCVVaultInfo:
 class TCVVaultStateService(ProtocolServices):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0xa4b1"):
         super().__init__()
-        self.name = f"{chain_id}_{Vault.trava_vault}"
+        self.name = f"{chain_id}_{Vault.tcv_vault}"
         self.chain_id = chain_id
         self.pool_info = TCVVaultInfo.mapping.get(chain_id)
         self.vault_abi = TCV_ABI
@@ -29,7 +29,7 @@ class TCVVaultStateService(ProtocolServices):
     # BASIC FUNCTION
     def get_service_info(self):
         info = {
-            Vault.trava_vault: {
+            Vault.tcv_vault: {
                 "chain_id": self.chain_id,
                 "type": "vault",
                 "protocol_info": self.pool_info

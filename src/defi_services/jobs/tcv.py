@@ -1,7 +1,7 @@
 from defi_services.constants.entities.dex_constant import Dex
 from defi_services.constants.query_constant import Query
 from defi_services.jobs.processors.state_processor import StateProcessor
-from defi_services.services.vault.vault_info.arbitrum.tcv_arb import TCV_VAULT_ARBITRUM
+
 
 class TCV:
     def __init__(self, provider_uri, chain_id):
