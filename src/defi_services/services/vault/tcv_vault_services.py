@@ -94,7 +94,6 @@ class TCVVaultStateService(ProtocolServices):
             }
         return result
 
-
     # REWARDS BALANCE
     def get_rewards_balance_function_info(
             self,
