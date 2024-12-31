@@ -1,17 +1,18 @@
 import logging
 
+from defi_services.constants.chain_constant import Chain
 from defi_services.constants.ton_decimals_constant import TonTokens
-from defi_services.constants.network_constants import Chains, NATIVE_TOKENS
+from defi_services.constants.network_constants import NATIVE_TOKENS
 from defi_services.jobs.queriers.ton_state_querier import TonStateQuerier
 
 logger = logging.getLogger("CosmosStateProcessor")
 
+
 class TonStateProcessor:
-    def __init__(self, provider_uri: str, chain_id: str = Chains.ton):
+    def __init__(self, provider_uri: str, chain_id: str = Chain.ton):
         self.chain_id = chain_id
         self.provider_uri = provider_uri
         self.state_querier = TonStateQuerier(self.provider_uri)
-
 
     def get_token_balance(self, address, tokens):
         result = {}

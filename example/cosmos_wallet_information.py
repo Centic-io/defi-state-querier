@@ -1,7 +1,7 @@
-from defi_services.constants.network_constants import Chains
+from defi_services.constants.chain_constant import Chain
 from defi_services.jobs.processors.cosmos_state_processor import CosmosStateProcessor
 
-job = CosmosStateProcessor(lcd='https://lcd.orai.io', rest_uri="https://oraichain-rest.publicnode.com/", chain_id=Chains.oraichain)
+job = CosmosStateProcessor(lcd='https://lcd.orai.io', rest_uri="https://oraichain-rest.publicnode.com/", chain_id=Chain.oraichain)
 
 queries = [
     {
