@@ -1,7 +1,7 @@
-from defi_services.constants.network_constants import Chains
+from defi_services.constants.chain_constant import Chain
 from defi_services.jobs.processors.ton_state_processor import TonStateProcessor
 
-job = TonStateProcessor(provider_uri="https://toncenter.com/api/", chain_id=Chains.ton)
+job = TonStateProcessor(provider_uri="https://toncenter.com/api/", chain_id=Chain.ton)
 
 queries = [
     {
