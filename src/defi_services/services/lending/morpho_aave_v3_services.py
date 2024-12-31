@@ -3,8 +3,8 @@ import time
 
 from web3 import Web3
 
-from defi_services.abis.lending.aave_v2_and_forlks.aave_v2_incentives_abi import AAVE_V2_INCENTIVES_ABI
-from defi_services.abis.lending.aave_v2_and_forlks.oracle_abi import ORACLE_ABI
+from defi_services.abis.lending.aave_v2_and_forks.aave_v2_incentives_abi import AAVE_V2_INCENTIVES_ABI
+from defi_services.abis.lending.aave_v2_and_forks.oracle_abi import ORACLE_ABI
 from defi_services.abis.lending.aave.aave_v3.aave_v3_lending_pool_abi import AAVE_V3_LENDING_POOL_ABI
 from defi_services.abis.lending.morpho.morpho_aave_v3_comptroller_abi import MORPHO_AAVE_V3_COMPTROLLER_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI

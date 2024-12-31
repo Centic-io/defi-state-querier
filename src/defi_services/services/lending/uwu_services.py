@@ -3,9 +3,9 @@ import time
 
 from web3 import Web3
 
-from defi_services.abis.lending.aave_v2_and_forlks.lending_pool_abi import LENDING_POOL_ABI
-from defi_services.abis.lending.aave_v2_and_forlks.oracle_abi import ORACLE_ABI
-from defi_services.abis.lending.aave_v2_and_forlks.uwu_incentives_abi import UWU_INCENTIVES_ABI
+from defi_services.abis.lending.aave_v2_and_forks.lending_pool_abi import LENDING_POOL_ABI
+from defi_services.abis.lending.aave_v2_and_forks.oracle_abi import ORACLE_ABI
+from defi_services.abis.lending.aave_v2_and_forks.uwu_incentives_abi import UWU_INCENTIVES_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending

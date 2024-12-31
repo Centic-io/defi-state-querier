@@ -3,8 +3,8 @@ import time
 
 from web3 import Web3
 
-from defi_services.abis.lending.aave_v2_and_forlks.oracle_abi import ORACLE_ABI
-from defi_services.abis.lending.aave_v2_and_forlks.staked_incentives_abi import STAKED_INCENTIVES_ABI
+from defi_services.abis.lending.aave_v2_and_forks.oracle_abi import ORACLE_ABI
+from defi_services.abis.lending.aave_v2_and_forks.staked_incentives_abi import STAKED_INCENTIVES_ABI
 from defi_services.abis.lending.trava.trava_lending_pool_abi import TRAVA_LENDING_POOL_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
