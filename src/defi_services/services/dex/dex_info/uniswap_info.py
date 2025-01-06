@@ -30,3 +30,23 @@ UNISWAP_V3_ARBITRUM_INFO = {
     'pool_abi': UNISWAP_V3_POOL_ABI,
     'forked': 'uniswap-v3'
 }
+
+UNISWAP_V3_BASE_INFO = {
+    'factory_address': '0x33128a8fC17869897dcE68Ed026d694621f6FDfD',
+    'factory_abi': UNISWAP_V3_FACTORY_ABI,
+    'staker_address': '0x42bE4D6527829FeFA1493e1fb9F3676d2425C3C1',
+    'NFT_manager_address': '0x03a520b32C04BF3bEEf7BEb72E919cf822Ed34f1',
+    'NFT_manager_abi': UNISWAP_V3_NFT_TOKEN_MANGAGER_ABI,
+    'pool_abi': UNISWAP_V3_POOL_ABI,
+    'forked': 'uniswap-v3'
+}
+
+UNISWAP_V3_ZKSYNC_INFO = {
+    'factory_address': '0x8FdA5a7a8dCA67BBcDd10F02Fa0649A937215422',
+    'factory_abi': UNISWAP_V3_FACTORY_ABI,
+    'staker_address': '0xf84268FA8EB857c2e4298720C1C617178F5e78e1',
+    'NFT_manager_address': '0x0616e5762c1E7Dc3723c50663dF10a162D690a86',
+    'NFT_manager_abi': UNISWAP_V3_NFT_TOKEN_MANGAGER_ABI,
+    'pool_abi': UNISWAP_V3_POOL_ABI,
+    'forked': 'uniswap-v3'
+}
