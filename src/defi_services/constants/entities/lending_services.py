@@ -102,6 +102,13 @@ class LendingServices:
     tron = {
         Lending.justlend: JustLendStateService
     }
+
+    base = {
+        Lending.aave_v3: AaveV3StateService
+    }
+    zksync = {
+        Lending.aave_v3: AaveV3StateService
+    }
     # mapping
     mapping = {
         Chain.ethereum: ethereum,
@@ -111,5 +118,7 @@ class LendingServices:
         Chain.polygon: polygon,
         Chain.arbitrum: arbitrum,
         Chain.optimism: optimism,
-        Chain.tron: tron
+        Chain.tron: tron,
+        Chain.zksync: zksync,
+        Chain.base: base
     }
