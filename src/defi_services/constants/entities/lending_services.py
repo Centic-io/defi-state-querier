@@ -87,7 +87,8 @@ class LendingServices:
         Lending.aave_v3: AaveV3StateService,
         Lending.granary: GranaryStateService,
         Lending.wepiggy: WepiggyStateService,
-        Lending.iron_bank: IronBankStateService
+        Lending.iron_bank: IronBankStateService,
+        Lending.compound_v3: CompoundV3StateService
     }
 
     arbitrum = {
@@ -104,11 +105,14 @@ class LendingServices:
     }
 
     base = {
-        Lending.aave_v3: AaveV3StateService
+        Lending.aave_v3: AaveV3StateService,
+        Lending.compound_v3: CompoundV3StateService
     }
+
     zksync = {
         Lending.aave_v3: AaveV3StateService
     }
+
     # mapping
     mapping = {
         Chain.ethereum: ethereum,
