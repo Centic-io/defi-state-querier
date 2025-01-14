@@ -7,7 +7,6 @@ UNISWAP_ETH_INFO = {
     'factory_address': '0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f',
     'factory_abi': UNISWAP_FACTORY_ABI,
     'forked': 'uniswap-v2'
-
 }
 
 UNISWAP_V3_ETH_INFO = {
@@ -19,7 +18,6 @@ UNISWAP_V3_ETH_INFO = {
     'pool_abi': UNISWAP_V3_POOL_ABI,
     'forked': 'uniswap-v3'
 }
-
 
 UNISWAP_V3_ARBITRUM_INFO = {
     'factory_address': '0x1f98431c8ad98523631ae4a59f267346ea31f984',

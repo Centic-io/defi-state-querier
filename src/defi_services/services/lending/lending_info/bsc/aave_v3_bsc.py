@@ -1,11 +1,12 @@
 AAVE_V3_BSC = {
     "address": "0x6807dc923806fe8fd134338eabca509979a7e0cb",
-    "name": "AAVE Lending Pool",
+    "name": "AAVE V3 Lending Pool",
     "stakedIncentiveAddress": '0xc206c2764a9dbf27d599613b8f9a63acd1160ab4',
+    "rewardTokensList": ["0xc5f0f7b66764f6ec8c8dff7ba683102295e16409"],
     "oracleAddress": "0x39bc1bfda2130d6bb6dbefd366939b4c7aa7c697",
-    "rewardTokensList": [],
     "type": "LENDING_POOL",
     "poolToken": "0xfb6115445bff7b52feb98650c87f44907e58f802",
+    "forked": "aave-v3",
     "reservesList": {
          "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82": {
           "tToken": "0x4199cc1f5ed0d796563d7ccb2e036253e2c18281",
