@@ -25,6 +25,7 @@ from defi_services.services.lending.liqee_service import LiqeeStateService
 from defi_services.services.lending.strike_service import StrikeStateService
 from defi_services.services.lending.onyx_service import OnyxStateService
 from defi_services.services.lending.wepiggy_services import WepiggyStateService
+from defi_services.services.lending.zerolend_services import ZeroLendStateService
 
 
 class LendingServices:
@@ -48,7 +49,8 @@ class LendingServices:
         Lending.spark: SparkStateService,
         Lending.silo: SiloStateService,
         Lending.compound_v3: CompoundV3StateService,
-        Lending.radiant_v2: RadiantStateService
+        Lending.radiant_v2: RadiantStateService,
+        Lending.zerolend: ZeroLendStateService
     }
     fantom = {
         Lending.trava: TravaStateService,
@@ -66,7 +68,8 @@ class LendingServices:
         Lending.liqee: LiqeeStateService,
         Lending.wepiggy: WepiggyStateService,
         Lending.granary: GranaryStateService,
-        Lending.ape_swap: ApeSwapStateService
+        Lending.ape_swap: ApeSwapStateService,
+        Lending.aave_v3: AaveV3StateService
     }
 
     avalanche = {
@@ -106,11 +109,13 @@ class LendingServices:
 
     base = {
         Lending.aave_v3: AaveV3StateService,
-        Lending.compound_v3: CompoundV3StateService
+        Lending.compound_v3: CompoundV3StateService,
+        Lending.zerolend: ZeroLendStateService
     }
 
     zksync = {
-        Lending.aave_v3: AaveV3StateService
+        Lending.aave_v3: AaveV3StateService,
+        Lending.zerolend: ZeroLendStateService
     }
 
     # mapping
