@@ -54,5 +54,6 @@ class BlockTime:
         Chain.optimism: 1,  # TODO: check
         Chain.avalanche: 2,
         Chain.tron: 3,
-        Chain.cronos: 6
+        Chain.cronos: 6,
+        Chain.base: 2
     }
