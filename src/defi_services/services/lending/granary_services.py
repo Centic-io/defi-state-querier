@@ -14,6 +14,7 @@ from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.arbitrum.granary_arbitrum import GRANARY_ARBITRUM
 from defi_services.services.lending.lending_info.avalanche.granary_avalanche import GRANARY_AVALANCHE
+from defi_services.services.lending.lending_info.base.granary_base import GRANARY_BASE
 from defi_services.services.lending.lending_info.bsc.granary_bsc import GRANARY_BSC
 from defi_services.services.lending.lending_info.ethereum.granary_eth import GRANARY_V1_ETH
 from defi_services.services.lending.lending_info.fantom.granary_ftm import GRANARY_FTM
@@ -31,7 +32,8 @@ class GranaryV1Info:
         Chain.optimism: GRANARY_OPTIMISM,
         Chain.fantom: GRANARY_FTM,
         Chain.avalanche: GRANARY_AVALANCHE,
-        Chain.arbitrum: GRANARY_ARBITRUM
+        Chain.arbitrum: GRANARY_ARBITRUM,
+        Chain.base: GRANARY_BASE
     }
 
 
