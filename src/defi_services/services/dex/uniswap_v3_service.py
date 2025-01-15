@@ -5,7 +5,8 @@ from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.dex_constant import Dex
 from defi_services.jobs.queriers.state_querier import StateQuerier
-from defi_services.services.dex.dex_info.uniswap_info import UNISWAP_V3_ETH_INFO
+from defi_services.services.dex.dex_info.uniswap_info import UNISWAP_V3_ETH_INFO, UNISWAP_V3_ARBITRUM_INFO, \
+    UNISWAP_V3_ZKSYNC_INFO, UNISWAP_V3_BASE_INFO
 from defi_services.services.dex_protocol_services import DexProtocolServices
 from defi_services.utils.get_fees import get_fees
 from defi_services.utils.sqrt_price_math import get_token_amount_of_user, get_token_amount_of_pool
@@ -15,7 +16,10 @@ logger = logging.getLogger("UniSwap V3 State Service")
 
 class UniswapV3Info:
     mapping = {
-        Chain.ethereum: UNISWAP_V3_ETH_INFO
+        Chain.ethereum: UNISWAP_V3_ETH_INFO,
+        Chain.arbitrum: UNISWAP_V3_ARBITRUM_INFO,
+        Chain.zksync: UNISWAP_V3_ZKSYNC_INFO,
+        Chain.base: UNISWAP_V3_BASE_INFO
     }
 
 

@@ -45,8 +45,18 @@ class DexServices:
     #     Dex.sushi: SushiSwapV2Services
     # }
     arbitrum = {
-        Dex.sushi_v2: SushiSwapV2Services
+        Dex.sushi_v2: SushiSwapV2Services,
+        Dex.uniswap_v3: UniswapV3Services
     }
+
+    zksync = {
+        Dex.uniswap_v3: UniswapV3Services
+    }
+
+    base = {
+        Dex.uniswap_v3: UniswapV3Services
+    }
+
     mapping = {
         Chain.ethereum: ethereum,
         Chain.fantom: fantom,
@@ -55,4 +65,6 @@ class DexServices:
         Chain.polygon: polygon,
         Chain.arbitrum: arbitrum,
         # Chain.optimism: optimism,
+        Chain.zksync: zksync,
+        Chain.base: base
     }
