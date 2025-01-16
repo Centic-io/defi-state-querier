@@ -5,6 +5,7 @@ from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.arbitrum.radiant_arbitrum import RADIANT_ARB
+from defi_services.services.lending.lending_info.base.radiant_v2_base import RADIANT_BASE
 from defi_services.services.lending.lending_info.bsc.radiant_bsc import RADIANT_BSC
 from defi_services.services.lending.lending_info.ethereum.radiant_eth import RADIANT_ETH
 from defi_services.services.lending.valas_services import ValasStateService
@@ -17,7 +18,8 @@ class RadiantInfo:
     mapping = {
         Chain.arbitrum: RADIANT_ARB,
         Chain.bsc: RADIANT_BSC,
-        Chain.ethereum: RADIANT_ETH
+        Chain.ethereum: RADIANT_ETH,
+        Chain.base: RADIANT_BASE
     }
 
 
