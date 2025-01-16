@@ -4,6 +4,7 @@ from defi_services.services.lending.aave_v2_services import AaveV2StateService
 from defi_services.services.lending.apeswap_services import ApeSwapStateService
 from defi_services.services.lending.compound_v3_services import CompoundV3StateService
 from defi_services.services.lending.granary_services import GranaryStateService
+from defi_services.services.lending.ionic_service import IonicStateService
 from defi_services.services.lending.justlend_service import JustLendStateService
 from defi_services.services.lending.moonwell_service import MoonWellStateService
 from defi_services.services.lending.morpho_aave_v2_services import MorphoAaveV2StateService
@@ -114,7 +115,8 @@ class LendingServices:
         Lending.zerolend: ZeroLendStateService,
         Lending.moonwell: MoonWellStateService,
         Lending.granary: GranaryStateService,
-        Lending.radiant_v2: RadiantStateService
+        Lending.radiant_v2: RadiantStateService,
+        Lending.ionic: IonicStateService
     }
 
     zksync = {
