@@ -1,9 +1,12 @@
 RADIANT_BASE = {
     "address": "0x30798cfe2cca822321ceed7e6085e633aabc492f",
     "name": "Radiant V2 Lending Pool",
-    "rewardToken": "0xd722e55c1d9d9fa0021a5215cbb904b92b3dc5d4",
+    "rewardToken": ["0xd722e55c1d9d9fa0021a5215cbb904b92b3dc5d4",
+                    "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+                    "0x4200000000000000000000000000000000000006"],
     "multiFeeAddress": "0xd87f8a52a91680c993ece968b281bf92505a3741",
     "stakedIncentiveAddress": "",
+    "rewardConverter": "0xb905f3c95576baa125c56e477d119db9f9eabfb7",
     "oracleAddress": "0xe373749cd9b2d379f7f6dd595e5164498b922164",
     "type": "LENDING_POOL",
     "forked": "aave-v2",

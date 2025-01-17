@@ -2,7 +2,7 @@ GRANARY_BASE = {
     "address": "0xb702ce183b4e1faa574834715e5d4a6378d0eed3",
     "name": "Granary Finance Lending Pool",
     "rewardToken": [],
-    "rewarder": "",
+    "rewarder": "0xc043ba54f34c9fb3a0b45d22e2ef1f171272bc9d",
     "stakedIncentiveAddress": "",
     "poolToken": "",
     "oracleAddress": "0x5a3423210536d930150080f699248edebc65e2b4",

@@ -154,7 +154,9 @@ class VenusStateService(CompoundStateService):
         w3 = self.state_service.get_w3()
         contract = w3.eth.contract(address=w3.to_checksum_address(self.pool_info.get("lensAddress")), abi = self.lens_abi)
         # get_reward_id = f"pendingRewards_{self.name}_{wallet}_{block_number}".lower()
-        return_data = contract.functions.pendingRewards(w3.to_checksum_address(wallet), w3.to_checksum_address(self.pool_info.get("comptrollerAddress"))).call(block_identifier=block_number)
+        return_data = contract.functions.pendingRewards(
+            w3.to_checksum_address(wallet),
+            w3.to_checksum_address(self.pool_info.get("comptrollerAddress"))).call(block_identifier=block_number)
         rewards = return_data[2]
         for item in return_data[-1]:
             rewards += item[-1]
