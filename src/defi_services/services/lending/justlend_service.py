@@ -2,7 +2,7 @@ from web3 import Web3
 
 from defi_services.abis.lending.justlend.just_token_abi import JUST_TOKEN_ABI
 from defi_services.abis.lending.justlend.justlend_comptroller_abi import JUSTLEND_COMPTROLLER_ABI
-from defi_services.abis.token.erc20_abi import ERC20_ABI
+from defi_services.abis.token.trc20_abi import TRC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.token_constant import Token
@@ -74,8 +74,9 @@ class JustLendStateService(CompoundStateService):
             liquidation_threshold = decoded_data.get(markets)[1] / 10 ** 18
 
             if underlying != Token.native_token:
-                underlying_contract = _w3.eth.contract(address=Web3.to_checksum_address(underlying), abi=ERC20_ABI)
+                underlying_contract = _w3.eth.contract(address=Web3.to_checksum_address(underlying), abi=TRC20_ABI)
                 underlying_decimal = underlying_contract.functions.decimals().call()
+
             else:
                 underlying_decimal = Chain.native_decimals.get(self.chain_id, 18)
             exchange_rate_query_id = f'exchangeRateStored_{token}_{block_number}'
@@ -139,7 +140,7 @@ class JustLendStateService(CompoundStateService):
             rpc_calls[underlying_balance_key] = self.get_ctoken_function_info(
                 ctoken, "balanceOfUnderlying", [wallet])
             rpc_calls[underlying_decimals_key] = self.state_service.get_function_info(
-                underlying, ERC20_ABI, "decimals", []
+                underlying, TRC20_ABI, "decimals", []
             )
 
         return rpc_calls
