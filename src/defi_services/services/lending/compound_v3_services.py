@@ -189,7 +189,7 @@ class CompoundV3StateService(CompoundStateService):
 
             assets = {
                 underlying_token: {
-                    'deposit_apy': 0,
+                    'deposit_apy': asset_info['deposit_apy'],
                     'borrow_apy': asset_info['borrow_apy'],
                     'total_deposit': 0,
                     'total_borrow': asset_info['total_borrow'],
@@ -207,7 +207,7 @@ class CompoundV3StateService(CompoundStateService):
                         'is_base': False
                     }
                 assets[collateral_address]['total_deposit'] += total_supply
-                assets[collateral_address]['deposit_apy'] = asset_info['deposit_apy']
+                # assets[collateral_address]['deposit_apy'] = asset_info['deposit_apy']
 
             comet = token_info['token']
             data[comet] = assets
