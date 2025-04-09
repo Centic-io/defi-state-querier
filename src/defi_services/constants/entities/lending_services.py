@@ -4,11 +4,14 @@ from defi_services.services.lending.aave_v2_services import AaveV2StateService
 from defi_services.services.lending.apeswap_services import ApeSwapStateService
 from defi_services.services.lending.compound_v3_services import CompoundV3StateService
 from defi_services.services.lending.granary_services import GranaryStateService
+from defi_services.services.lending.ionic_service import IonicStateService
 from defi_services.services.lending.justlend_service import JustLendStateService
+from defi_services.services.lending.moonwell_service import MoonWellStateService
 from defi_services.services.lending.morpho_aave_v2_services import MorphoAaveV2StateService
 from defi_services.services.lending.morpho_aave_v3_services import MorphoAaveV3StateService
 from defi_services.services.lending.morpho_compound_services import MorphoCompoundStateService
 from defi_services.services.lending.silo_services import SiloStateService
+from defi_services.services.lending.sonne_service import SonneStateService
 from defi_services.services.lending.spark_services import SparkStateService
 from defi_services.services.lending.uwu_services import UwuStateService
 from defi_services.services.lending.aave_v3_services import AaveV3StateService
@@ -25,6 +28,7 @@ from defi_services.services.lending.liqee_service import LiqeeStateService
 from defi_services.services.lending.strike_service import StrikeStateService
 from defi_services.services.lending.onyx_service import OnyxStateService
 from defi_services.services.lending.wepiggy_services import WepiggyStateService
+from defi_services.services.lending.zerolend_services import ZeroLendStateService
 
 
 class LendingServices:
@@ -47,7 +51,9 @@ class LendingServices:
         Lending.morpho_compound: MorphoCompoundStateService,
         Lending.spark: SparkStateService,
         Lending.silo: SiloStateService,
-        Lending.compound_v3: CompoundV3StateService
+        Lending.compound_v3: CompoundV3StateService,
+        Lending.radiant_v2: RadiantStateService,
+        Lending.zerolend: ZeroLendStateService
     }
     fantom = {
         Lending.trava: TravaStateService,
@@ -65,7 +71,8 @@ class LendingServices:
         Lending.liqee: LiqeeStateService,
         Lending.wepiggy: WepiggyStateService,
         Lending.granary: GranaryStateService,
-        Lending.ape_swap: ApeSwapStateService
+        Lending.ape_swap: ApeSwapStateService,
+        Lending.aave_v3: AaveV3StateService
     }
 
     avalanche = {
@@ -86,7 +93,8 @@ class LendingServices:
         Lending.aave_v3: AaveV3StateService,
         Lending.granary: GranaryStateService,
         Lending.wepiggy: WepiggyStateService,
-        Lending.iron_bank: IronBankStateService
+        Lending.iron_bank: IronBankStateService,
+        Lending.compound_v3: CompoundV3StateService
     }
 
     arbitrum = {
@@ -101,6 +109,23 @@ class LendingServices:
     tron = {
         Lending.justlend: JustLendStateService
     }
+
+    base = {
+        Lending.aave_v3: AaveV3StateService,
+        Lending.compound_v3: CompoundV3StateService,
+        Lending.zerolend: ZeroLendStateService,
+        Lending.moonwell: MoonWellStateService,
+        Lending.granary: GranaryStateService,
+        Lending.radiant_v2: RadiantStateService,
+        Lending.ionic: IonicStateService,
+        Lending.sonne: SonneStateService
+    }
+
+    zksync = {
+        Lending.aave_v3: AaveV3StateService,
+        Lending.zerolend: ZeroLendStateService
+    }
+
     # mapping
     mapping = {
         Chain.ethereum: ethereum,
@@ -110,5 +135,7 @@ class LendingServices:
         Chain.polygon: polygon,
         Chain.arbitrum: arbitrum,
         Chain.optimism: optimism,
-        Chain.tron: tron
+        Chain.tron: tron,
+        Chain.zksync: zksync,
+        Chain.base: base
     }

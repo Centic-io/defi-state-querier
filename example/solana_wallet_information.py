@@ -3,6 +3,7 @@ from defi_services.jobs.processors.solana_state_processor import SolanaStateProc
 
 job = SolanaStateProcessor(
     provider_uri="https://crimson-multi-putty.solana-mainnet.quiknode.pro/997174ce6ab5cc9d42cb037e931d18ae1a98346a/",
+    # provider_uri='https://solana-mainnet.core.chainstack.com/13dd9ef445fe8c91fde9f443a15704c9',
     chain_id="solana"
 )
 queries = [
@@ -23,5 +24,5 @@ queries = [
     },
 ]
 info = job.get_service_info()
-data = job.run('5cz3Jz3QnDmTsQiw5MwkfV9tq4zf2yCzWcH7tXq5BxCw', queries)
+data = job.run('5Q544fKrFoe6tsEbD7S8EmxGTJYAKtTVhAW5Q5pge4j1', queries)
 print(data)

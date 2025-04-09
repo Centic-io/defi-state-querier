@@ -9,7 +9,9 @@ from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.compound_service import CompoundStateService
 from defi_services.services.lending.lending_info.arbitrum.compound_v3_arbitrum import COMPOUND_V3_ARBITRUM
+from defi_services.services.lending.lending_info.base.compound_v3_base import COMPOUND_V3_BASE
 from defi_services.services.lending.lending_info.ethereum.compound_v3_eth import COMPOUND_V3_ETH
+from defi_services.services.lending.lending_info.optimism.compound_v3_optimism import COMPOUND_V3_OPTIMISM
 from defi_services.services.lending.lending_info.polygon.compound_v3_polygon import COMPOUND_V3_POLYGON
 
 
@@ -17,7 +19,9 @@ class CompoundV3Info:
     mapping = {
         Chain.ethereum: COMPOUND_V3_ETH,
         Chain.polygon: COMPOUND_V3_POLYGON,
-        Chain.arbitrum: COMPOUND_V3_ARBITRUM
+        Chain.arbitrum: COMPOUND_V3_ARBITRUM,
+        Chain.base: COMPOUND_V3_BASE,
+        Chain.optimism: COMPOUND_V3_OPTIMISM
     }
 
 
@@ -25,7 +29,7 @@ class CompoundV3StateService(CompoundStateService):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
         super().__init__(state_service, chain_id)
         self.name = f"{chain_id}_{Lending.compound_v3}"
-        self.pool_info = CompoundV3Info.mapping.get(chain_id)
+        self.pool_info = CompoundV3Info.mapping.get(chain_id, {})
         self.comet_abi = COMET_ABI
         self.comet_ext = COMET_EXT_ABI
         self.reward_abi = REWARD_ABI
@@ -47,7 +51,7 @@ class CompoundV3StateService(CompoundStateService):
     ):
         result = {}
         w3 = self.state_service.get_w3()
-        pools = [value.get('comet') for key, value in self.pool_info.get('reservesList').items()]
+        pools = [value.get('comet') for key, value in self.pool_info.get('reservesList', {}).items()]
         if comets:
             pools += comets
         for pool in pools:
@@ -185,7 +189,7 @@ class CompoundV3StateService(CompoundStateService):
 
             assets = {
                 underlying_token: {
-                    'deposit_apy': 0,
+                    'deposit_apy': asset_info['deposit_apy'],
                     'borrow_apy': asset_info['borrow_apy'],
                     'total_deposit': 0,
                     'total_borrow': asset_info['total_borrow'],
@@ -203,7 +207,7 @@ class CompoundV3StateService(CompoundStateService):
                         'is_base': False
                     }
                 assets[collateral_address]['total_deposit'] += total_supply
-                assets[collateral_address]['deposit_apy'] = asset_info['deposit_apy']
+                # assets[collateral_address]['deposit_apy'] = asset_info['deposit_apy']
 
             comet = token_info['token']
             data[comet] = assets

@@ -94,6 +94,8 @@ class CallStateQuerier(StateQuerier):
         results = {}
         for block_number, batch_calls in w3_multicall.batch_calls_iterator(batch_size=batch_size):
             multicall_data = decoded_data.get(f'{batch_idx}_{block_number}')
+            if not multicall_data:
+                continue
             decode_multicall_data = w3_multicall.decode(multicall_data, calls=batch_calls, ignore_error=ignore_error)
             results.update(decode_multicall_data)
             batch_idx += 1

@@ -30,6 +30,12 @@ class Chain:
     moonriver = '0x505'
     blast = '0xee'
     oasis_sapphire = '0x5afe'
+    zetachain = '0x1b58'
+    zksync = '0x144'
+    oraichain = 'orai'
+    bitcoin = 'bitcoin'
+    cosmos = 'cosmos'
+    ton = 'ton'
 
     native_decimals = {
         tron: 6,
@@ -48,5 +54,6 @@ class BlockTime:
         Chain.optimism: 1,  # TODO: check
         Chain.avalanche: 2,
         Chain.tron: 3,
-        Chain.cronos: 6
+        Chain.cronos: 6,
+        Chain.base: 2
     }

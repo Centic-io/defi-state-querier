@@ -3,9 +3,9 @@ import time
 
 from web3 import Web3
 
-from defi_services.abis.lending.aave_v2_and_forlks.aave_v2_incentives_abi import AAVE_V2_INCENTIVES_ABI
-from defi_services.abis.lending.aave_v2_and_forlks.lending_pool_abi import LENDING_POOL_ABI
-from defi_services.abis.lending.aave_v2_and_forlks.oracle_abi import ORACLE_ABI
+from defi_services.abis.lending.aave_v2_and_forks.aave_v2_incentives_abi import AAVE_V2_INCENTIVES_ABI
+from defi_services.abis.lending.aave_v2_and_forks.lending_pool_abi import LENDING_POOL_ABI
+from defi_services.abis.lending.aave_v2_and_forks.oracle_abi import ORACLE_ABI
 from defi_services.abis.lending.granary.granary_rewarder_abi import GRANARY_REWARDER_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
@@ -14,6 +14,7 @@ from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.arbitrum.granary_arbitrum import GRANARY_ARBITRUM
 from defi_services.services.lending.lending_info.avalanche.granary_avalanche import GRANARY_AVALANCHE
+from defi_services.services.lending.lending_info.base.granary_base import GRANARY_BASE
 from defi_services.services.lending.lending_info.bsc.granary_bsc import GRANARY_BSC
 from defi_services.services.lending.lending_info.ethereum.granary_eth import GRANARY_V1_ETH
 from defi_services.services.lending.lending_info.fantom.granary_ftm import GRANARY_FTM
@@ -31,7 +32,8 @@ class GranaryV1Info:
         Chain.optimism: GRANARY_OPTIMISM,
         Chain.fantom: GRANARY_FTM,
         Chain.avalanche: GRANARY_AVALANCHE,
-        Chain.arbitrum: GRANARY_ARBITRUM
+        Chain.arbitrum: GRANARY_ARBITRUM,
+        Chain.base: GRANARY_BASE
     }
 
 
