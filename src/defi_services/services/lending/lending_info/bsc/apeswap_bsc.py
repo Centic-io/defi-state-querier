@@ -1,5 +1,5 @@
 APESWAP_BSC = {
-    "name": "Compound Lending Pool",
+    "name": "ApeSwap Lending Pool",
     "rewardToken": "",
     "comptrollerAddress": "0xad48b2c9dc6709a560018c678e918253a65df86e",
     "lensAddress": "0x183019dc7a8f8f1456df735862761cccf2e23009",
