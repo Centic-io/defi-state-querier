@@ -6,10 +6,12 @@ from defi_services.services.lending.compound_v3_services import CompoundV3StateS
 from defi_services.services.lending.granary_services import GranaryStateService
 from defi_services.services.lending.ionic_service import IonicStateService
 from defi_services.services.lending.justlend_service import JustLendStateService
+from defi_services.services.lending.kinza_services import KinzaStateService
 from defi_services.services.lending.moonwell_service import MoonWellStateService
 from defi_services.services.lending.morpho_aave_v2_services import MorphoAaveV2StateService
 from defi_services.services.lending.morpho_aave_v3_services import MorphoAaveV3StateService
 from defi_services.services.lending.morpho_compound_services import MorphoCompoundStateService
+from defi_services.services.lending.seamless_services import SeamlessStateService
 from defi_services.services.lending.silo_services import SiloStateService
 from defi_services.services.lending.sonne_service import SonneStateService
 from defi_services.services.lending.spark_services import SparkStateService
@@ -53,7 +55,8 @@ class LendingServices:
         Lending.silo: SiloStateService,
         Lending.compound_v3: CompoundV3StateService,
         Lending.radiant_v2: RadiantStateService,
-        Lending.zerolend: ZeroLendStateService
+        Lending.zerolend: ZeroLendStateService,
+        Lending.kinza: KinzaStateService
     }
     fantom = {
         Lending.trava: TravaStateService,
@@ -72,7 +75,8 @@ class LendingServices:
         Lending.wepiggy: WepiggyStateService,
         Lending.granary: GranaryStateService,
         Lending.ape_swap: ApeSwapStateService,
-        Lending.aave_v3: AaveV3StateService
+        Lending.aave_v3: AaveV3StateService,
+        Lending.kinza: KinzaStateService
     }
 
     avalanche = {
@@ -118,7 +122,8 @@ class LendingServices:
         Lending.granary: GranaryStateService,
         Lending.radiant_v2: RadiantStateService,
         Lending.ionic: IonicStateService,
-        Lending.sonne: SonneStateService
+        Lending.sonne: SonneStateService,
+        Lending.seamless: SeamlessStateService
     }
 
     zksync = {

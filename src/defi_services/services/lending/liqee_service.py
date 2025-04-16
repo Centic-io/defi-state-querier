@@ -35,7 +35,7 @@ class LiqeeStateService(CompoundStateService):
         self.state_service = state_service
         self.lending_data_abi = LIQEE_LENDING_DATA_ABI
         self.controller_abi = LIQEE_CONTROLLER_ABI
-        self.lquee_token_abi = LIQEE_TOKEN_ABI
+        self.liqee_token_abi = LIQEE_TOKEN_ABI
 
     # BASIC FUNCTIONS
     def get_service_info(self):
@@ -60,7 +60,7 @@ class LiqeeStateService(CompoundStateService):
         reserves_info = {}
         for token in ctokens:
             address = _w3.to_checksum_address(token)
-            contract = _w3.eth.contract(address=address, abi=self.lquee_token_abi)
+            contract = _w3.eth.contract(address=address, abi=self.liqee_token_abi)
             underlying = contract.functions.underlying().call(block_identifier=block_number)
             liquidation_threshold = comptroller_contract.functions.markets(address).call(block_identifier=block_number)
             liquidation_threshold = liquidation_threshold[0] / 10 ** 18

@@ -55,6 +55,8 @@ class OnyxStateService(CompoundStateService):
             # if token in [ContractAddresses.LUNA.lower(), ContractAddresses.UST.lower(), ContractAddresses.LUNA,
             #              ContractAddresses.UST]:
             #     continue
+            if token == '0x1933f1183c421d44d531ed40a5d2445f6a91646d':
+                continue
             ctokens.append(token)
 
         lens_contract = _w3.eth.contract(
@@ -78,7 +80,6 @@ class OnyxStateService(CompoundStateService):
                 "liquidationThreshold": lt,
                 "loanToValue": ltv
             }
-
         return reserves_info
 
     # PROTOCOL APY
