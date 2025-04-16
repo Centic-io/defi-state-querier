@@ -29,6 +29,7 @@ class Lending:
     moonwell = "moonwell"
     ionic = "ionic-protocol"
     sonne = "sonne-finance"
+    avalon = 'avalon-finance'
 
     all = [
         strike, aave_v2, aave_v3, radiant_v2, compound, flux, onyx, granary,
