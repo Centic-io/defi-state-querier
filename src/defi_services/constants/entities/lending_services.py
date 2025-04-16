@@ -31,6 +31,7 @@ from defi_services.services.lending.liqee_service import LiqeeStateService
 from defi_services.services.lending.strike_service import StrikeStateService
 from defi_services.services.lending.onyx_service import OnyxStateService
 from defi_services.services.lending.wepiggy_services import WepiggyStateService
+from defi_services.services.lending.xlend_services import XlendStateService
 from defi_services.services.lending.zerolend_services import ZeroLendStateService
 
 
@@ -100,7 +101,8 @@ class LendingServices:
         Lending.granary: GranaryStateService,
         Lending.wepiggy: WepiggyStateService,
         Lending.iron_bank: IronBankStateService,
-        Lending.compound_v3: CompoundV3StateService
+        Lending.compound_v3: CompoundV3StateService,
+        Lending.xlend: XlendStateService
     }
 
     arbitrum = {
@@ -125,7 +127,8 @@ class LendingServices:
         Lending.radiant_v2: RadiantStateService,
         Lending.ionic: IonicStateService,
         Lending.sonne: SonneStateService,
-        Lending.seamless: SeamlessStateService
+        Lending.seamless: SeamlessStateService,
+        Lending.xlend: XlendStateService
     }
 
     zksync = {
