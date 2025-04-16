@@ -2,6 +2,7 @@ from defi_services.constants.chain_constant import Chain
 from defi_services.constants.entities.lending_constant import Lending
 from defi_services.services.lending.aave_v2_services import AaveV2StateService
 from defi_services.services.lending.apeswap_services import ApeSwapStateService
+from defi_services.services.lending.avalon_services import AvalonStateService
 from defi_services.services.lending.compound_v3_services import CompoundV3StateService
 from defi_services.services.lending.granary_services import GranaryStateService
 from defi_services.services.lending.ionic_service import IonicStateService
@@ -76,7 +77,8 @@ class LendingServices:
         Lending.granary: GranaryStateService,
         Lending.ape_swap: ApeSwapStateService,
         Lending.aave_v3: AaveV3StateService,
-        Lending.kinza: KinzaStateService
+        Lending.kinza: KinzaStateService,
+        Lending.avalon: AvalonStateService
     }
 
     avalanche = {
