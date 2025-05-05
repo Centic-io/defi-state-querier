@@ -87,7 +87,7 @@ class CompoundV3StateService(CompoundStateService):
 
             comet_address = reserve_info['comet']
             functions = [
-                'decimals', 'totalBorrow', 'getUtilization', 'borrowKink', 'borrowPerSecondInterestRateBase',
+                'decimals', 'totalSupply', 'totalBorrow', 'getUtilization', 'borrowKink', 'borrowPerSecondInterestRateBase',
                 'borrowPerSecondInterestRateSlopeHigh', 'borrowPerSecondInterestRateSlopeLow',
                 'supplyKink', 'supplyPerSecondInterestRateBase', 'supplyPerSecondInterestRateSlopeHigh',
                 'supplyPerSecondInterestRateSlopeLow'
@@ -130,6 +130,7 @@ class CompoundV3StateService(CompoundStateService):
 
             comet_address = reserve_info['comet']
             comet_decimals_query_id = f"decimals_{comet_address}_{block_number}".lower()
+            total_supply_query_id = f"totalSupply_{comet_address}_{block_number}".lower()
             total_borrow_query_id = f"totalBorrow_{comet_address}_{block_number}".lower()
             utilization_query_id = f"getUtilization_{comet_address}_{block_number}".lower()
 
@@ -137,6 +138,7 @@ class CompoundV3StateService(CompoundStateService):
                 "token": comet_address,
                 "token_decimals": decoded_data.get(comet_decimals_query_id),
                 "utilization": decoded_data.get(utilization_query_id),
+                'total_supply': decoded_data.get(total_supply_query_id),
                 'total_borrow': decoded_data.get(total_borrow_query_id),
                 "underlying_decimals": underlying_decimals,
                 "underlying": token_address
@@ -191,7 +193,7 @@ class CompoundV3StateService(CompoundStateService):
                 underlying_token: {
                     'deposit_apy': asset_info['deposit_apy'],
                     'borrow_apy': asset_info['borrow_apy'],
-                    'total_deposit': 0,
+                    'total_deposit': asset_info['total_deposit'],
                     'total_borrow': asset_info['total_borrow'],
                     'is_base': True
                 }
@@ -207,7 +209,6 @@ class CompoundV3StateService(CompoundStateService):
                         'is_base': False
                     }
                 assets[collateral_address]['total_deposit'] += total_supply
-                # assets[collateral_address]['deposit_apy'] = asset_info['deposit_apy']
 
             comet = token_info['token']
             data[comet] = assets
@@ -218,12 +219,12 @@ class CompoundV3StateService(CompoundStateService):
     def _calculate_interest_rates(
             cls, token_info: dict, pool_decimals: int, apx_block_speed_in_seconds: float):
 
+        total_supply = float(token_info["total_supply"]) / 10 ** int(token_info["underlying_decimals"])
         total_borrow = float(token_info["total_borrow"]) / 10 ** int(token_info["underlying_decimals"])
         collaterals = {}
         for asset_info in token_info['assets']:
             collateral_address = asset_info['underlying']
-            total_supply = float(asset_info["total_supply"]) / 10 ** int(asset_info["underlying_decimals"])
-            collaterals[collateral_address] = total_supply
+            collaterals[collateral_address] = float(asset_info["total_supply"]) / 10 ** int(asset_info["underlying_decimals"])
 
         utilization = token_info['utilization'] / 10 ** 18
         interests = {}
@@ -239,7 +240,7 @@ class CompoundV3StateService(CompoundStateService):
         return {
             'deposit_apy': interests['supply'],
             'borrow_apy': interests['borrow'],
-            'total_deposit': None,
+            'total_deposit': total_supply,
             'total_borrow': total_borrow,
             'collaterals': collaterals
         }
