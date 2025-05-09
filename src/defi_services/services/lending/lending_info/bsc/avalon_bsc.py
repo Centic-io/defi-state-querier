@@ -6,7 +6,7 @@ AVALON_BSC = {
     "oracleAddress": "",
     "type": "LENDING_POOL",
     "poolToken": "0x9beee89723ceec27d7c2834bec6834208ffdc202",
-    "forked": "avalon-finance",
+    "forked": "aave-v3",
     "reservesList": {
         "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c": {
             "tToken": "0xb74eb18445a5cde001fdfcc74ddba368cf4c6f2f",
