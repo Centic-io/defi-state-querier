@@ -5,13 +5,15 @@ from defi_services.constants.entities.lending_constant import Lending
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.aave_v3_services import AaveV3StateService
 from defi_services.services.lending.lending_info.ethereum.spark_eth import SPARK_ETH
+from defi_services.services.lending.lending_info.gnosis.spark_gnosis import SPARK_GNOSIS
 
 logger = logging.getLogger("Spark Lending Pool State Service")
 
 
 class SparkInfo:
     mapping = {
-        Chain.ethereum: SPARK_ETH
+        Chain.ethereum: SPARK_ETH,
+        Chain.gnosis: SPARK_GNOSIS
     }
 
 

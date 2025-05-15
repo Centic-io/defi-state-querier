@@ -3,6 +3,7 @@ import logging
 from web3 import Web3
 
 from defi_services.abis.lending.venus.venus_comptroller_abi import VENUS_COMPTROLLER_ABI
+from defi_services.abis.lending.venus.venus_comptroller_optimism_abi import VENUS_COMPTROLLER_OP_ABI
 from defi_services.abis.lending.venus.venus_lens_abi import VENUS_LENS_ABI
 from defi_services.abis.lending.venus.vtoken_abi import VTOKEN_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
@@ -11,14 +12,26 @@ from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.compound_service import CompoundStateService
+from defi_services.services.lending.lending_info.arbitrum.venus_arbitrum import VENUS_ARB
+from defi_services.services.lending.lending_info.base.venus_base import VENUS_BASE
 from defi_services.services.lending.lending_info.bsc.venus_bsc import VENUS_BSC
+from defi_services.services.lending.lending_info.ethereum.venus_eth import VENUS_ETH
+from defi_services.services.lending.lending_info.opBNB.venus_opbnb import VENUS_OPBNB
+from defi_services.services.lending.lending_info.optimism.venus_optimism import VENUS_OPTIMISM
+from defi_services.services.lending.lending_info.zksync.venus_zksync import VENUS_ZKSYNC
 
 logger = logging.getLogger("Venus Lending Pool State Service")
 
 
 class VenusInfo:
     mapping = {
-        Chain.bsc: VENUS_BSC
+        Chain.bsc: VENUS_BSC,
+        Chain.optimism: VENUS_OPTIMISM,
+        Chain.arbitrum: VENUS_ARB,
+        Chain.base: VENUS_BASE,
+        Chain.zksync: VENUS_ZKSYNC,
+        Chain.ethereum: VENUS_ETH,
+        Chain.opbnb: VENUS_OPBNB
     }
 
 
@@ -30,7 +43,10 @@ class VenusStateService(CompoundStateService):
         self.pool_info = VenusInfo.mapping.get(chain_id)
         self.state_service = state_service
         self.lens_abi = VENUS_LENS_ABI
-        self.comptroller_abi = VENUS_COMPTROLLER_ABI
+        if chain_id == Chain.bsc:
+            self.comptroller_abi = VENUS_COMPTROLLER_ABI
+        else:
+            self.comptroller_abi = VENUS_COMPTROLLER_OP_ABI
         self.vtoken_abi = VTOKEN_ABI
 
         # BASIC FUNCTIONS

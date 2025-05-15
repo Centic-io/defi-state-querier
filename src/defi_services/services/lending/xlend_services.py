@@ -14,16 +14,8 @@ from defi_services.constants.network_constants import NATIVE_TOKEN
 from defi_services.constants.time_constant import TimeConstants
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.aave_v2_services import AaveV2StateService
-from defi_services.services.lending.lending_info.arbitrum.aave_v3_arbitrum import AAVE_V3_ARB
-from defi_services.services.lending.lending_info.avalanche.aave_v3_avalanche import AAVE_V3_AVALANCHE
-from defi_services.services.lending.lending_info.base.aave_v3_base import AAVE_V3_BASE
 from defi_services.services.lending.lending_info.base.xlend_base import XLEND_BASE
-from defi_services.services.lending.lending_info.bsc.aave_v3_bsc import AAVE_V3_BSC
-from defi_services.services.lending.lending_info.ethereum.old_aave_v3_eth import AAVE_V3_ETH
-from defi_services.services.lending.lending_info.fantom.aave_v3_ftm import AAVE_V3_FTM
-from defi_services.services.lending.lending_info.optimism.aave_v3_optimism import AAVE_V3_OPTIMISM
-from defi_services.services.lending.lending_info.polygon.aave_v3_polygon import AAVE_V3_POLYGON
-from defi_services.services.lending.lending_info.zksync.aave_v3_zksync import AAVE_V3_ZKSYNC
+from defi_services.services.lending.lending_info.optimism.xlend_optimism import XLEND_OPTIMISM
 
 logger = logging.getLogger("Xlend Lending Pool State Service")
 
@@ -31,7 +23,7 @@ logger = logging.getLogger("Xlend Lending Pool State Service")
 class XlendInfo:
     mapping = {
         Chain.base: XLEND_BASE,
-        Chain.optimism: AAVE_V3_OPTIMISM
+        Chain.optimism: XLEND_OPTIMISM
     }
 
 

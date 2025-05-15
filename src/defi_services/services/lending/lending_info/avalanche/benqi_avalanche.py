@@ -1,5 +1,5 @@
-COMPOUND_ETH = {
-    "name": "Compound Lending Pool",
+BENQI_AVALANCHE = {
+    "name": "Benqi Lending Pool",
     "rewardToken": "",
     "comptrollerAddress": "0xd7c4006d33da2a0a8525791ed212bbcd7aca763f",
     "lensAddress": "",

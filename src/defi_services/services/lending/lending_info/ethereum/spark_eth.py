@@ -7,7 +7,7 @@ SPARK_ETH = {
     ],
     "oracleAddress": "0x8105f69d9c41644c6a0803fda7d03aa70996cfd9",
     "type": "LENDING_POOL",
-    "poolToken": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
+    "poolToken": "",
     "forked": "aave-v3",
     "reservesList": {
         "0x6b175474e89094c44da98b954eedeac495271d0f": {

@@ -36,6 +36,10 @@ class Chain:
     bitcoin = 'bitcoin'
     cosmos = 'cosmos'
     ton = 'ton'
+    sonic = '0x92'
+    scroll = '0x82750'
+    harmony = '0x63564c40'
+    opbnb = '0xcc'
 
     native_decimals = {
         tron: 6,

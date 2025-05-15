@@ -8,6 +8,7 @@ from defi_services.constants.entities.lending_constant import Lending
 from defi_services.constants.token_constant import Token
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.lending_info.base.moonwell_base import MOONWELL_BASE
+from defi_services.services.lending.lending_info.optimism.moonwell_optimism import MOONWELL_OPTIMISM
 from defi_services.services.lending.venus_services import VenusStateService
 
 logger = logging.getLogger("MoonWell Lending Pool State Service")
@@ -15,7 +16,8 @@ logger = logging.getLogger("MoonWell Lending Pool State Service")
 
 class MoonWellInfo:
     mapping = {
-        Chain.base: MOONWELL_BASE
+        Chain.base: MOONWELL_BASE,
+        Chain.optimism: MOONWELL_OPTIMISM
     }
 
 

@@ -32,6 +32,7 @@ from defi_services.services.lending.strike_service import StrikeStateService
 from defi_services.services.lending.onyx_service import OnyxStateService
 from defi_services.services.lending.wepiggy_services import WepiggyStateService
 from defi_services.services.lending.xlend_services import XlendStateService
+from defi_services.services.lending.yldr_services import YLDRStateService
 from defi_services.services.lending.zerolend_services import ZeroLendStateService
 
 
@@ -58,7 +59,8 @@ class LendingServices:
         Lending.compound_v3: CompoundV3StateService,
         Lending.radiant_v2: RadiantStateService,
         Lending.zerolend: ZeroLendStateService,
-        Lending.kinza: KinzaStateService
+        Lending.kinza: KinzaStateService,
+        Lending.yldr: YLDRStateService
     }
     fantom = {
         Lending.trava: TravaStateService,
@@ -111,7 +113,8 @@ class LendingServices:
         Lending.wepiggy: WepiggyStateService,
         Lending.granary: GranaryStateService,
         Lending.silo: SiloStateService,
-        Lending.compound_v3: CompoundV3StateService
+        Lending.compound_v3: CompoundV3StateService,
+        Lending.yldr: YLDRStateService
     }
 
     tron = {

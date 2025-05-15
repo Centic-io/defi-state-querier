@@ -104,7 +104,7 @@ class StateQuerier:
             if value is not None:
                 filtered_response_data[key] = value
             else:
-                print(key)
+                logger.error(key)
         filtered_keys = list(filtered_response_data.keys())
         response_data = filtered_response_data
         list_call_id = [call_id for call_id in list_call_id if call_id in filtered_keys]

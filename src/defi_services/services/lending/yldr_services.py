@@ -6,6 +6,7 @@ from defi_services.abis.lending.aave.aave_v3.aave_v3_incentives_abi import AAVE_
 from defi_services.abis.lending.aave.aave_v3.aave_v3_lending_pool_abi import AAVE_V3_LENDING_POOL_ABI
 from defi_services.abis.lending.aave.aave_v3.aave_v3_oracle_abi import AAVE_V3_ORACLE_ABI
 from defi_services.abis.lending.morpho.morpho_aave_v3_comptroller_abi import MORPHO_AAVE_V3_COMPTROLLER_ABI
+from defi_services.abis.lending.yldr.yldr_lending_abi import YLDR_LENDING_ABI
 from defi_services.abis.token.erc20_abi import ERC20_ABI
 from defi_services.constants.chain_constant import Chain
 from defi_services.constants.db_constant import DBConst
@@ -14,50 +15,28 @@ from defi_services.constants.network_constants import NATIVE_TOKEN
 from defi_services.constants.time_constant import TimeConstants
 from defi_services.jobs.queriers.state_querier import StateQuerier
 from defi_services.services.lending.aave_v2_services import AaveV2StateService
-from defi_services.services.lending.lending_info.arbitrum.aave_v3_arbitrum import AAVE_V3_ARB
-from defi_services.services.lending.lending_info.avalanche.aave_v3_avalanche import AAVE_V3_AVALANCHE
-from defi_services.services.lending.lending_info.base.aave_v3_base import AAVE_V3_BASE
-from defi_services.services.lending.lending_info.bsc.aave_v3_bsc import AAVE_V3_BSC
-from defi_services.services.lending.lending_info.celo.aave_v3_celo import AAVE_V3_CELO
-from defi_services.services.lending.lending_info.ethereum.old_aave_v3_eth import AAVE_V3_ETH
-from defi_services.services.lending.lending_info.fantom.aave_v3_ftm import AAVE_V3_FTM
-from defi_services.services.lending.lending_info.gnosis.aave_v3_gnoisis import AAVE_V3_GNOSIS
-from defi_services.services.lending.lending_info.harmony.aave_v3_harmony import AAVE_V3_HARMONY
-from defi_services.services.lending.lending_info.optimism.aave_v3_optimism import AAVE_V3_OPTIMISM
-from defi_services.services.lending.lending_info.polygon.aave_v3_polygon import AAVE_V3_POLYGON
-from defi_services.services.lending.lending_info.scroll.aave_v3_scroll import AAVE_V3_SCROLL
-from defi_services.services.lending.lending_info.sonic.aave_v3_sonic import AAVE_V3_SONIC
-from defi_services.services.lending.lending_info.zksync.aave_v3_zksync import AAVE_V3_ZKSYNC
+from defi_services.services.lending.lending_info.arbitrum.yldr_arbitrum import YLDR_ARBITRUM
+from defi_services.services.lending.lending_info.base.xlend_base import XLEND_BASE
+from defi_services.services.lending.lending_info.ethereum.yldr_ethereum import YLDR_ETHEREUM
+from defi_services.services.lending.lending_info.optimism.xlend_optimism import XLEND_OPTIMISM
 
-logger = logging.getLogger("Aave V3 Lending Pool State Service")
+logger = logging.getLogger("YLDR Lending Pool State Service")
 
 
-class AaveV3Info:
+class YLDRInfo:
     mapping = {
-        Chain.ethereum: AAVE_V3_ETH,
-        Chain.polygon: AAVE_V3_POLYGON,
-        Chain.avalanche: AAVE_V3_AVALANCHE,
-        Chain.fantom: AAVE_V3_FTM,
-        Chain.optimism: AAVE_V3_OPTIMISM,
-        Chain.arbitrum: AAVE_V3_ARB,
-        Chain.base: AAVE_V3_BASE,
-        Chain.zksync: AAVE_V3_ZKSYNC,
-        Chain.bsc: AAVE_V3_BSC,
-        Chain.harmony: AAVE_V3_HARMONY,
-        Chain.celo: AAVE_V3_CELO,
-        Chain.gnosis: AAVE_V3_GNOSIS,
-        Chain.scroll: AAVE_V3_SCROLL,
-        Chain.sonic: AAVE_V3_SONIC
+        Chain.arbitrum: YLDR_ARBITRUM,
+        Chain.ethereum: YLDR_ETHEREUM
     }
 
 
-class AaveV3StateService(AaveV2StateService):
+class YLDRStateService(AaveV2StateService):
     def __init__(self, state_service: StateQuerier, chain_id: str = "0x1"):
         super().__init__(state_service, chain_id)
-        self.name = f"{chain_id}_{Lending.aave_v3}"
+        self.name = f"{chain_id}_{Lending.xlend}"
         self.chain_id = chain_id
-        self.pool_info = AaveV3Info.mapping.get(chain_id)
-        self.lending_abi = AAVE_V3_LENDING_POOL_ABI
+        self.pool_info = YLDRInfo.mapping.get(chain_id)
+        self.lending_abi = YLDR_LENDING_ABI
         self.incentive_abi = AAVE_V3_INCENTIVES_ABI
         self.oracle_abi = AAVE_V3_ORACLE_ABI
         self.comptroller_abi = MORPHO_AAVE_V3_COMPTROLLER_ABI
@@ -65,7 +44,7 @@ class AaveV3StateService(AaveV2StateService):
 
     def get_service_info(self):
         info = {
-            Lending.aave_v3: {
+            Lending.yldr: {
                 "chain_id": self.chain_id,
                 "type": "lending",
                 "protocol_info": self.pool_info
@@ -84,10 +63,8 @@ class AaveV3StateService(AaveV2StateService):
             reserve_data = pool_contract.functions.getReserveData(
                 _w3.to_checksum_address(token)).call(block_identifier=block_number)
             reserves_info[token] = {}
-            reserves_info[token]["tToken"] = reserve_data[8].lower()
-            reserves_info[token]["sdToken"] = reserve_data[9].lower()
-            reserves_info[token]["dToken"] = reserve_data[10].lower()
-
+            reserves_info[token]["tToken"] = reserve_data[7].lower()
+            reserves_info[token]["dToken"] = reserve_data[8].lower()
             risk_param = bin(reserve_data[0][0])[2:]
             reserves_info[token]["loanToValue"] = int(risk_param[-15:], 2) / 10 ** 4
             reserves_info[token]["liquidationThreshold"] = int(risk_param[-31:-16], 2) / 10 ** 4
@@ -95,6 +72,27 @@ class AaveV3StateService(AaveV2StateService):
         return reserves_info
 
     # CALCULATE APY LENDING POOL
+    def get_apy_lending_pool_function_info(
+            self,
+            reserves_info: dict,
+            block_number: int = "latest"
+    ):
+        rpc_calls = {}
+        for token_address, value in reserves_info.items():
+            reserve_key = f"getReserveData_{self.name}_{token_address}_{block_number}".lower()
+            atoken_total_supply_key = f'totalSupply_{value["tToken"]}_{block_number}'.lower()
+            debt_token_total_supply_key = f'totalSupply_{value["dToken"]}_{block_number}'.lower()
+            decimals_key = f"decimals_{token_address}_{block_number}".lower()
+            rpc_calls[reserve_key] = self.get_function_lending_pool_info("getReserveData", [token_address])
+            rpc_calls[atoken_total_supply_key] = self.state_service.get_function_info(
+                value["tToken"], ERC20_ABI, "totalSupply", block_number=block_number)
+            rpc_calls[debt_token_total_supply_key] = self.state_service.get_function_info(
+                value["dToken"], ERC20_ABI, "totalSupply", block_number=block_number)
+            rpc_calls[decimals_key] = self.state_service.get_function_info(
+                token_address, ERC20_ABI, "decimals", block_number=block_number)
+
+        return rpc_calls
+
     def get_reserve_tokens_metadata(
             self,
             decoded_data: dict,
@@ -105,31 +103,20 @@ class AaveV3StateService(AaveV2StateService):
         for token_address, reserve_info in reserves_info.items():
             get_reserve_data_call_id = f'getReserveData_{self.name}_{token_address}_{block_number}'.lower()
             reserve_data = decoded_data.get(get_reserve_data_call_id)
-            atoken = reserve_data[8].lower()
-            debt_token = reserve_data[10].lower()
+            atoken = reserve_data[7].lower()
+            debt_token = reserve_data[8].lower()
             decimals_call_id = f"decimals_{token_address}_{block_number}".lower()
             atoken_total_supply_key = f'totalSupply_{atoken}_{block_number}'.lower()
             debt_token_total_supply_key = f'totalSupply_{debt_token}_{block_number}'.lower()
-            sdebt_token = reserve_data[9].lower()
-
-
             data = {
                 'underlying': token_address,
                 'underlying_decimals': decoded_data.get(decimals_call_id),
                 'a_token_supply': decoded_data.get(atoken_total_supply_key),
                 'd_token_supply': decoded_data.get(debt_token_total_supply_key),
-
                 'supply_apy': reserve_data[2],
                 'borrow_apy': reserve_data[4],
 
             }
-            if sdebt_token != NATIVE_TOKEN:
-                sdebt_token_total_supply_key = f'totalSupply_{sdebt_token}_{block_number}'.lower()
-                data['sd_token_supply'] = decoded_data.get(sdebt_token_total_supply_key)
-                data['stable_borrow_apy'] = reserve_data[5]
-            else:
-                data['sd_token_supply'] = 0
-                data['stable_borrow_apy'] = 0
 
             reserve_tokens_info.append(data)
 
@@ -154,10 +141,6 @@ class AaveV3StateService(AaveV2StateService):
                     "getRewardsData", [value['tToken'], reward_token], block_number)
                 rpc_calls[debt_token_assets_key] = self.get_function_incentive_info(
                     "getRewardsData", [value['dToken'], reward_token], block_number)
-                if value['sdToken'] != NATIVE_TOKEN:
-                    sdebt_token_assets_key = f"getRewardsData_{value['sdToken']}_{reward_token}_{block_number}".lower()
-                    rpc_calls[sdebt_token_assets_key] = self.get_function_incentive_info(
-                    "getRewardsData", [value['sdToken'], reward_token], block_number)
 
             rpc_calls[reserve_key] = self.get_function_lending_pool_info("getReserveData", [token_address])
             rpc_calls[atoken_total_supply_key] = self.state_service.get_function_info(
@@ -166,11 +149,6 @@ class AaveV3StateService(AaveV2StateService):
                 value["dToken"], ERC20_ABI, "totalSupply", block_number=block_number)
             rpc_calls[decimals_key] = self.state_service.get_function_info(
                 token_address, ERC20_ABI, "decimals", block_number=block_number)
-
-            if value['sdToken'] != NATIVE_TOKEN:
-                sdebt_token_total_supply_key = f'totalSupply_{value["sdToken"]}_{block_number}'.lower()
-                rpc_calls[sdebt_token_total_supply_key] = self.state_service.get_function_info(
-                    value["sdToken"], ERC20_ABI, "totalSupply", block_number=block_number)
 
         return rpc_calls
 
@@ -316,26 +294,101 @@ class AaveV3StateService(AaveV2StateService):
             reserves_info: dict = None,
             block_number: int = "latest"
     ):
-        rpc_calls = {}
-        reward_tokens = self.pool_info.get("rewardTokensList")
-        for reward_token in reward_tokens:
-            decimals_call_id = f"decimals_{reward_token}_{block_number}".lower()
-            rpc_calls[decimals_call_id] = self.state_service.get_function_info(
-                reward_token, ERC20_ABI, "decimals", block_number=block_number)
-        tokens = []
-        for key, value in reserves_info.items():
-            tokens += [Web3.to_checksum_address(value["tToken"]), Web3.to_checksum_address(value["dToken"])]
-        key = f"getAllUserRewards_{self.name}_{wallet}_{block_number}".lower()
-        rpc_calls[key] = self.get_function_incentive_info("getAllUserRewards", [tokens, Web3.to_checksum_address(wallet)], block_number)
-        return rpc_calls
+        return {}
 
     def calculate_rewards_balance(
             self, wallet: str, reserves_info: dict, decoded_data: dict, block_number: int = "latest"):
-        key = f"getAllUserRewards_{self.name}_{wallet}_{block_number}".lower()
-        rewards = decoded_data.get(key)
-        result = dict(zip(*rewards))
-        for key, value in result.items():
-            decimals_call_id = f"decimals_{key}_{block_number}".lower()
-            value /= 10 ** decoded_data.get(decimals_call_id, 18)
-            result[key] = {"amount": value}
-        return result
+        return {}
+
+    # WALLET DEPOSIT BORROW BALANCE
+    def get_wallet_deposit_borrow_balance_function_info(
+            self,
+            wallet: str,
+            reserves_info: dict,
+            block_number: int = "latest",
+            health_factor: bool = False
+    ):
+        rpc_calls = {}
+        for token in reserves_info:
+            value = reserves_info[token]
+            atoken_balance_of_key = f'balanceOf_{value["tToken"]}_{wallet}_{block_number}'.lower()
+            debt_token_balance_of_key = f'balanceOf_{value["dToken"]}_{wallet}_{block_number}'.lower()
+            decimals_key = f"decimals_{token}_{block_number}".lower()
+
+            rpc_calls[atoken_balance_of_key] = self.state_service.get_function_info(
+                value["tToken"], ERC20_ABI, "balanceOf", [wallet], block_number=block_number)
+            rpc_calls[debt_token_balance_of_key] = self.state_service.get_function_info(
+                value["dToken"], ERC20_ABI, "balanceOf", [wallet], block_number=block_number)
+            rpc_calls[decimals_key] = self.state_service.get_function_info(
+                token, ERC20_ABI, "decimals", block_number=block_number)
+
+        if health_factor:
+            rpc_calls.update(self.get_health_factor_function_info(wallet, reserves_info, block_number))
+
+        return rpc_calls
+
+    def get_wallet_deposit_borrow_balance(
+            self,
+            reserves_info: dict,
+            token_prices,
+            decimals,
+            deposit_amount,
+            borrow_amount,
+            stable_borrow_amount
+    ):
+        result = {}
+        for token, info in reserves_info.items():
+            decimals_token = decimals.get(token)
+            deposit_amount_wallet = deposit_amount.get(token) / 10 ** decimals_token
+            borrow_amount_wallet = borrow_amount.get(token) / 10 ** decimals_token
+            result[token] = {
+                "borrow_amount": borrow_amount_wallet,
+                "deposit_amount": deposit_amount_wallet,
+                "is_collateral": True if info.get('liquidationThreshold') > 0 else False
+            }
+            if token_prices:
+                deposit_amount_in_usd = deposit_amount_wallet * token_prices.get(token, 0)
+                borrow_amount_in_usd = borrow_amount_wallet * token_prices.get(token, 0)
+                result[token].update({
+                    "borrow_amount_in_usd": borrow_amount_in_usd,
+                    "deposit_amount_in_usd": deposit_amount_in_usd,
+                })
+
+        return {self.pool_info.get("address"): result}
+
+    def calculate_wallet_deposit_borrow_balance(
+            self,
+            wallet: str,
+            reserves_info: dict,
+            decoded_data: dict,
+            token_prices: dict,
+            pool_decimals: int = 18,
+            block_number: int = 'latest',
+            health_factor: bool = False
+    ):
+        asset_price_key = f"getAssetsPrices_{self.name}_{block_number}".lower()
+        if not token_prices and asset_price_key in decoded_data:
+            token_prices = {}
+            prices = decoded_data.get(asset_price_key)
+            for pos in range(len(reserves_info.keys())):
+                token_prices[reserves_info[pos].lower()] = prices[pos] / 10 ** pool_decimals
+
+        decimals, deposit_amount, borrow_amount, stable_borrow_amount = {}, {}, {}, {}
+        for token in reserves_info:
+            value = reserves_info[token]
+            get_total_deposit_id = f"balanceOf_{value['tToken']}_{wallet}_{block_number}".lower()
+            get_total_borrow_id = f"balanceOf_{value['dToken']}_{wallet}_{block_number}".lower()
+            get_decimals_id = f"decimals_{token}_{block_number}".lower()
+            deposit_amount[token] = decoded_data.get(get_total_deposit_id)
+            borrow_amount[token] = decoded_data.get(get_total_borrow_id)
+            decimals[token] = decoded_data.get(get_decimals_id)
+
+        data = self.get_wallet_deposit_borrow_balance(
+            reserves_info, token_prices, decimals, deposit_amount,
+            borrow_amount, stable_borrow_amount
+        )
+        if health_factor:
+            hf = self.calculate_health_factor(
+                wallet, reserves_info, decoded_data, token_prices, pool_decimals, block_number)
+            data.update(hf)
+        return data
