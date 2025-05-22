@@ -25,7 +25,7 @@ from defi_services.services.lending.radiant_v2_services import RadiantStateServi
 from defi_services.services.lending.trava_services import TravaStateService
 from defi_services.services.lending.valas_services import ValasStateService
 from defi_services.services.lending.flux_services import FluxStateService
-from defi_services.services.lending.iron_bank_service import IronBankStateService
+# from defi_services.services.lending.iron_bank_service import IronBankStateService
 from defi_services.services.lending.venus_services import VenusStateService
 from defi_services.services.lending.liqee_service import LiqeeStateService
 from defi_services.services.lending.strike_service import StrikeStateService
@@ -43,7 +43,7 @@ class LendingServices:
         Lending.compound: CompoundStateService,
         Lending.trava: TravaStateService,
         Lending.flux: FluxStateService,
-        Lending.iron_bank: IronBankStateService,
+        # Lending.iron_bank: IronBankStateService,
         Lending.uwu: UwuStateService,
         Lending.aave_v3: AaveV3StateService,
         Lending.liqee: LiqeeStateService,
@@ -88,7 +88,7 @@ class LendingServices:
         Lending.aave_v3: AaveV3StateService,
         Lending.aave_v2: AaveV2StateService,
         Lending.granary: GranaryStateService,
-        Lending.iron_bank: IronBankStateService
+        # Lending.iron_bank: IronBankStateService
     }
 
     polygon = {
@@ -102,7 +102,7 @@ class LendingServices:
         Lending.aave_v3: AaveV3StateService,
         Lending.granary: GranaryStateService,
         Lending.wepiggy: WepiggyStateService,
-        Lending.iron_bank: IronBankStateService,
+        # Lending.iron_bank: IronBankStateService,
         Lending.compound_v3: CompoundV3StateService,
         Lending.xlend: XlendStateService
     }

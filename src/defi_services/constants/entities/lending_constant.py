@@ -5,7 +5,7 @@ class Lending:
     radiant_v2 = "radiant-v2"
     compound = "compound"
     flux = "flux-finance"
-    iron_bank = "iron-bank"
+    # iron_bank = "iron-bank"
     trava = "trava-finance"
     valas = "valas-finance"
     geist = "geist-finance"
@@ -36,7 +36,8 @@ class Lending:
     yldr = "yldr"
     all = [
         strike, aave_v2, aave_v3, radiant_v2, compound, flux, onyx, granary,
-        iron_bank, trava, valas, geist, cream, venus, liqee, strike, uwu, wepiggy,
+        #iron_bank,
+        trava, valas, geist, cream, venus, liqee, strike, uwu, wepiggy,
         morpho_compound, morpho_aave_v2, morpho_aave_v3, spark, ape_swap, silo, compound_v3,
         justlend, zerolend, moonwell, ionic, sonne, kinza, seamless, avalon, xlend, yldr
     ]
